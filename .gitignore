@@ -1,0 +1,14 @@
+.*
+!.gitignore
+config.toml
+go.sum
+go.mod
+*.exe
+/storage/cache/*
+!/storage/cache/git.keep
+/storage/logs/*
+!/storage/logs/git.keep
+/storage/session/*
+!/storage/session/git.keep
+/uploads/*
+!/storage/git.keep

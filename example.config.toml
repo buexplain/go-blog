@@ -1,0 +1,61 @@
+[App]
+Debug = true
+
+[App.Server]
+IP = "localhost"
+Port = 1991
+ReadTimeout = "60s"
+WriteTimeout = "60s"
+
+[App.Event]
+Async = true
+Worker = 1
+Capacity = 1000
+
+[App.Method]
+Enable = true
+Field = "_method"
+
+[App.StaticFile]
+Enable = true
+Path = ["/resources/asset", "/uploads"]
+Referer = true
+
+[Session]
+Store = "cookie" #cookie|file
+Name = "SESSION"
+Key = "XUU1NDA4JXU0RTAwJXUzMDAy"
+
+[Session.Options]
+Path = ""
+Domain = ""
+MaxAge = 0
+Secure = false
+HttpOnly = true
+SameSite = 1
+
+[Log]
+Async = true
+Capacity = 1000
+Level = "debug" #debug|info|notice|warning|error|critical|alert|emergency
+Name = "default"
+Path = "storage/logs"
+Buffer = 4096
+Flush = "5s"
+
+[CSRF]
+Enable = true
+Key = "32-byte-long-auth-key"
+Name = "CSRF"
+Field = "_token"
+Header = "X-CSRF-Token"
+
+[CSRF.Options]
+Path = ""
+Domain = ""
+MaxAge = 86400
+Secure = false
+HttpOnly = true
+
+[Asset]
+Dir = ["resources/..."]
