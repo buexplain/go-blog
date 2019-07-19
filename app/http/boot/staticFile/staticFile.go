@@ -1,8 +1,8 @@
 package staticFile
 
 import (
-	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-fool"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -19,7 +19,7 @@ func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 				} else {
 					ctx.Throw(w.File(filepath.Join(boot.ROOT_PATH, path)))
 				}
-			}else {
+			} else {
 				ctx.Throw(w.File(filepath.Join(boot.ROOT_PATH, path)))
 			}
 			return

@@ -1,15 +1,15 @@
 package boot
 
 import (
+	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/method"
+	"github.com/buexplain/go-blog/app/http/boot/session"
+	"github.com/buexplain/go-blog/app/http/boot/staticFile"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/flog"
 	"github.com/buexplain/go-fool/flog/extra"
 	"github.com/buexplain/go-fool/flog/formatter"
 	"github.com/buexplain/go-fool/flog/handler"
-	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-blog/app/http/boot/method"
-	"github.com/buexplain/go-blog/app/http/boot/session"
-	"github.com/buexplain/go-blog/app/http/boot/staticFile"
 	"github.com/gorilla/csrf"
 	"log"
 	"net/http"
@@ -36,6 +36,7 @@ func init() {
 
 //设置日志
 var Logger *flog.Logger
+
 func init() {
 	file := handler.NewFile(flog.GetLevelByName(boot.Config.Log.Level), formatter.NewLine(), filepath.Join(boot.ROOT_PATH, boot.Config.Log.Path))
 	//设置文件日志缓冲
@@ -102,14 +103,10 @@ func init() {
 	}
 }
 
-//设置全局路由正则
-func init() {
-	APP.Mux().Regexp("id", `^[1-9][0-9]*$`)
-}
-
 // http 服务器
 var Server http.Handler
-func init()  {
+
+func init() {
 	if boot.Config.CSRF.Enable {
 		Server = csrf.Protect([]byte(boot.Config.CSRF.Key),
 			csrf.ErrorHandler(defaultCSRFErrorHandler),
@@ -121,7 +118,7 @@ func init()  {
 			csrf.HttpOnly(boot.Config.CSRF.Options.HttpOnly),
 			csrf.RequestHeader(boot.Config.CSRF.Header),
 			csrf.FieldName(boot.Config.CSRF.Field))(APP)
-	}else {
+	} else {
 		Server = APP
 	}
 }

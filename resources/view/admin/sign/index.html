@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="Generator" content="EditPlus®">
+    <meta name="Author" content="梦想星辰大海">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <title>登录 - 我的博客</title>
+    <link rel="icon" href="data:image/ico;base64,aWNv">
+    <link rel="stylesheet" href="/resources/asset/layui/css/layui.css">
+    <style>
+        body {
+            background-image: url("/resources/asset/admin/sign/bg.jpg");
+        }
+        #j-captcha a {
+            color: #000;
+        }
+        #j-captcha img {
+            background: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<fieldset class="layui-elem-field" style="width: 380px; margin:0 auto; margin-top: 10%; box-shadow: 0 0 10px #d9edf7;">
+    <legend>
+        登录
+    </legend>
+    <form class="layui-form" action="" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                账号
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" name="account" requiredx lay-verifyx="required" value="" placeholder="请输入账号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" name="password" requiredx lay-verifyx="required" value="" placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                验证码
+            </label>
+            <div class="layui-input-inline" style="width: 76px;" >
+                <input type="text" name="captchaVal" value="" required lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-input-inline" style="width: auto;margin: 0;" id="j-captcha">
+                <a href="javascript:;" onclick="getCaptcha()" style="line-height: 38px;">点击获取验证码</a>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                <button class="layui-btn" lay-submit lay-filter="signIn">提交</button>
+            </div>
+        </div>
+    </form>
+</fieldset>
+<script type="text/javascript" src="/resources/asset/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/resources/asset/layui/layui.js"></script>
+<script type="text/javascript" src="/resources/asset/layui-config.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var fieldSet = $("fieldset").eq(0);
+        fieldSet.css("margin-top", ($(window).height() - fieldSet.height()) * 0.3 + "px");
+    });
+
+    function getCaptcha() {
+        $.ajax({
+            type: "GET",
+            url: "/common/captcha",
+            success: function(json) {
+                $("#j-captcha").html('<img onclick="getCaptcha()" src="'+json.data+'">');
+            }
+        });
+    }
+
+    layui.use(['form', 'jquery'], function() {
+        layui.form.on('submit(signIn)', function(data) {
+            layer.msg('登录中……');
+            return true;
+        });
+    });
+</script>
+</body>
+</html>

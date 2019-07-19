@@ -14,9 +14,10 @@ var assetCmd *cobra.Command
 
 func init() {
 	assetCmd = &cobra.Command{
-		Use: "asset",
+		Use:  "asset",
+		Long: "静态资源打包、解包命令",
 		Run: func(cmd *cobra.Command, args []string) {
-			console.Logger.Info("静态资源打包、解包命令")
+			boot.Logger.Info("静态资源打包、解包命令")
 		},
 	}
 	console.RootCmd.AddCommand(assetCmd)
@@ -27,9 +28,9 @@ var packCmd *cobra.Command
 
 func init() {
 	packCmd = &cobra.Command{
-		Use:"pack",
+		Use: "pack",
 		Run: func(cmd *cobra.Command, args []string) {
-			console.Logger.Info("开始打包静态资源")
+			boot.Logger.Info("开始打包静态资源")
 			cfg := bindata.NewConfig()
 			cfg.Package = "asset"
 			cfg.Output = "app/console/asset/data.go"
@@ -39,10 +40,10 @@ func init() {
 			}
 			err := bindata.Translate(cfg)
 			if err != nil {
-				console.Logger.ErrorF("打包静态资源失败: %s", err)
+				boot.Logger.ErrorF("打包静态资源失败: %s", err)
 				os.Exit(1)
 			}
-			console.Logger.Info("打包静态资源成功")
+			boot.Logger.Info("打包静态资源成功")
 		},
 	}
 	assetCmd.AddCommand(packCmd)
@@ -53,23 +54,23 @@ var unpackCmd *cobra.Command
 
 func init() {
 	unpackCmd = &cobra.Command{
-		Use:"unpack",
+		Use: "unpack",
 		Run: func(cmd *cobra.Command, args []string) {
-			console.Logger.Info("开始解包静态资源")
+			boot.Logger.Info("开始解包静态资源")
 			success := true
 			for _, dir := range boot.Config.Asset.Dir {
 				if strings.HasSuffix(dir, "/...") {
 					dir = filepath.Clean(dir[:len(dir)-4])
 				}
 				if err := RestoreAssets(boot.ROOT_PATH, dir); err != nil {
-					console.Logger.Error(err.Error())
+					boot.Logger.Error(err.Error())
 					success = false
 				}
 			}
 			if success {
-				console.Logger.Info("解包静态资源成功")
-			}else {
-				console.Logger.Error("解包静态资源失败")
+				boot.Logger.Info("解包静态资源成功")
+			} else {
+				boot.Logger.Error("解包静态资源失败")
 				os.Exit(1)
 			}
 		},

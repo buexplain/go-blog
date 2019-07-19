@@ -1,17 +1,17 @@
 package config
 
 type App struct {
-	Debug  bool
-	Server Server
-	Event  Event
+	Debug      bool
+	Server     Server
+	Event      Event
 	StaticFile StaticFile
-	Method Method
+	Method     Method
 }
 
 type Server struct {
-	IP   string
-	Port uint
-	ReadTimeout Duration
+	IP           string
+	Port         uint
+	ReadTimeout  Duration
 	WriteTimeout Duration
 }
 
@@ -23,12 +23,11 @@ type Event struct {
 
 type Method struct {
 	Enable bool
-	Field string
+	Field  string
 }
 
 type StaticFile struct {
-	Enable bool
-	Path []string
+	Enable  bool
+	Path    []string
 	Referer bool
 }
-

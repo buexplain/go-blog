@@ -3,10 +3,10 @@ package boot
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/constant"
 	"github.com/buexplain/go-fool/errors"
-	"github.com/buexplain/go-blog/app/http/boot/code"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -59,9 +59,9 @@ func defaultServerErrorFunc(ctx *fool.Ctx, err error) {
 	} else {
 		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
 		if isDebug {
-			responseErr = ctx.Response().Assign("message", err.Error()).Abort(http.StatusInternalServerError)
+			responseErr = ctx.Response().Abort(http.StatusInternalServerError, err.Error())
 		} else {
-			responseErr = ctx.Response().Assign("message", code.Text(code.SERVER)).Abort(http.StatusInternalServerError)
+			responseErr = ctx.Response().Abort(http.StatusInternalServerError, code.Text(code.SERVER))
 		}
 	}
 	if !isDebug {
@@ -113,15 +113,15 @@ func defaultRoute(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 type CSRFErrorHandler struct {
 }
 
-func (this *CSRFErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
+func (this *CSRFErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	isJSON := strings.Contains(r.Header.Get(constant.HeaderAccept), constant.MIMEApplicationJSON)
 	if isJSON {
 		var content []byte
-		content, _ = json.Marshal(map[string]interface{}{"code":code.CODE_INVALID_CSRF, "message":code.Text(code.CODE_INVALID_CSRF), "data":""})
+		content, _ = json.Marshal(map[string]interface{}{"code": code.CODE_INVALID_CSRF, "message": code.Text(code.CODE_INVALID_CSRF), "data": ""})
 		w.Header().Set(constant.HeaderContentType, constant.MIMEApplicationJSONCharsetUTF8)
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(content)
-	}else {
+	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write([]byte(code.Text(code.CODE_INVALID_CSRF)))
 	}
@@ -130,7 +130,6 @@ func (this *CSRFErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 //默认csrf错误
 var defaultCSRFErrorHandler *CSRFErrorHandler
 
-func init()  {
+func init() {
 	defaultCSRFErrorHandler = new(CSRFErrorHandler)
 }
-

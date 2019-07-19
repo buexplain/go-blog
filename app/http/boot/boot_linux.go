@@ -2,8 +2,8 @@ package boot
 
 import (
 	"fmt"
-	"github.com/buexplain/go-gracehttp"
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-gracehttp"
 	"log"
 	"net/http"
 	"os"
@@ -14,7 +14,7 @@ import (
 //启动http服务器
 func Run() {
 	addr := boot.Config.App.Server.IP + ":" + strconv.Itoa(int(boot.Config.App.Server.Port))
-	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " +"http://" + addr)
+	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr)
 	server := gracehttp.NewServer(
 		addr,
 		Server,
@@ -31,6 +31,10 @@ func Run() {
 		format = "[pid " + pid + "] " + format
 		Logger.Info(fmt.Sprintf(format, args...))
 	})
+	go func() {
+		time.Sleep(time.Second * 2)
+		fmt.Println(APP.Mux().DumpRouteMap())
+	}()
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())
 	}

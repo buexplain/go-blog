@@ -3,6 +3,10 @@ package boot
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/buexplain/go-blog/app/boot/config"
+	"github.com/buexplain/go-fool/flog"
+	"github.com/buexplain/go-fool/flog/extra"
+	"github.com/buexplain/go-fool/flog/formatter"
+	"github.com/buexplain/go-fool/flog/handler"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,4 +36,12 @@ func init() {
 	if _, err := toml.DecodeFile(filepath.Join(ROOT_PATH, "config.toml"), Config); err != nil {
 		log.Panicln(err)
 	}
+}
+
+//全局共用的控制台日志
+var Logger *flog.Logger
+
+func init() {
+	Logger = flog.New("std", handler.NewSTD(flog.LEVEL_DEBUG, formatter.NewLine().SetTimeFormat("2006-01-02 15:04:05.99"), flog.LEVEL_ERROR))
+	Logger.PushExtra(extra.NewFuncCaller())
 }
