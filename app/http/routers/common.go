@@ -5,6 +5,6 @@ import (
 	"github.com/buexplain/go-fool"
 )
 
-func common(mux *fool.Mux)  {
+func common(mux *fool.Mux) {
 	mux.Get("/common/captcha", c_captcha.Index)
 }

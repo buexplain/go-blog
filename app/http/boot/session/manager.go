@@ -22,6 +22,7 @@ func init() {
 	}
 }
 
+//session管理器
 type Manager struct {
 	CookieStore     *sessions.CookieStore
 	FilesystemStore *sessions.FilesystemStore
@@ -29,6 +30,7 @@ type Manager struct {
 	Options         sessions.Options
 }
 
+//返回一个session实例
 func (this *Manager) Get(r *fool.Request) (fool.Session, error) {
 	var s *sessions.Session
 	var err error
@@ -48,6 +50,7 @@ func (this *Manager) Get(r *fool.Request) (fool.Session, error) {
 	return nil, err
 }
 
+//新建一个基于cookie的session管理器
 func NewCookieStoreManager(key string) *Manager {
 	tmp := new(Manager)
 	tmp.Name = "session"
@@ -56,6 +59,7 @@ func NewCookieStoreManager(key string) *Manager {
 	return tmp
 }
 
+//新建一个基于文件的session管理器
 func NewFilesystemStoreManager(path string, key string) *Manager {
 	for ; len(key) < 16; key += key {
 	}

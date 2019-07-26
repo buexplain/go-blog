@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot/method"
 	"github.com/buexplain/go-blog/app/http/boot/session"
 	"github.com/buexplain/go-blog/app/http/boot/staticFile"
+	"github.com/buexplain/go-blog/app/http/boot/viewFunc"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/flog"
 	"github.com/buexplain/go-fool/flog/extra"
@@ -60,6 +61,8 @@ func init() {
 	APP.View().SetPath(filepath.Join(boot.ROOT_PATH, "resources/view"))
 	//设置模板是否缓存
 	APP.View().SetCache(!APP.Debug())
+	//设置模板函数
+	APP.View().AddFunc("message", viewFunc.Message)
 }
 
 //设置事件监听者

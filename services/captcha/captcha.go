@@ -5,7 +5,7 @@ import (
 	"github.com/mojocn/base64Captcha"
 )
 
-const CaptchaID  = "captchaID"
+const CaptchaID = "captchaID"
 
 type Option func(*base64Captcha.ConfigDigit)
 
@@ -33,6 +33,7 @@ func SetDotCount(dotCount int) Option {
 	}
 }
 
+//设置验证码长度
 func SetCaptchaLen(captchaLen int) Option {
 	return func(config *base64Captcha.ConfigDigit) {
 		config.CaptchaLen = captchaLen

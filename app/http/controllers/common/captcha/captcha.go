@@ -9,7 +9,7 @@ import (
 
 //显示验证码
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	url := s_captcha.Generate(r.Session(), s_captcha.SetHeight(20))
+	url := s_captcha.Generate(r.Session())
 	return ctx.Response().
 		Assign("code", code.SUCCESS).
 		Assign("message", code.Text(code.SUCCESS)).Assign("data", url).

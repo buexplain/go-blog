@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//session实例
 type Session struct {
 	s *sessions.Session
 }

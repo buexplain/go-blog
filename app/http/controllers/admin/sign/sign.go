@@ -2,7 +2,6 @@ package c_sign
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/captcha"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
@@ -10,7 +9,6 @@ import (
 	"github.com/thedevsaddam/govalidator"
 	"net/http"
 	"strings"
-	"time"
 )
 
 //显示登录页面
@@ -24,17 +22,14 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.Jump(r.Raw().URL.Path, "验证码错误")
 	}
 
-	account := strings.TrimSpace(r.Form("account", ""))
-	password := strings.TrimSpace(r.Form("password", ""))
-
 	rules := govalidator.MapData{
-		"account": []string{"required"},
+		"account":  []string{"required"},
 		"password": []string{"required"},
 	}
 
 	messages := govalidator.MapData{
-		"account": []string{"required:请输入账号"},
-		"password":    []string{"required:请输入密码"},
+		"account":  []string{"required:请输入账号"},
+		"password": []string{"required:请输入密码"},
 	}
 
 	opts := govalidator.Options{
@@ -43,35 +38,24 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		Messages:        messages,
 		RequiredDefault: true,
 	}
-
 	v := govalidator.New(opts)
 	e := v.Validate()
 
 	if len(e) > 0 {
-		return w.Jump(r.Raw().URL.Path, e.Encode())
+		return w.Assign("message", e).Jump(r.Raw().URL.Path, e)
 	}
 
-	user := new(m_user.User)
-	user.Account = account
-	if has, err := s_user.GetByAccount(user); err != nil {
-		return ctx.Error().WrapServer(err).Location()
-	}else if !has {
-		return w.Jump(r.Raw().URL.Path, "账号或密码错误")
-	}
-
-	if !s_user.ComparePassword(password, user.Password) {
-		return w.Jump(r.Raw().URL.Path, "账号或密码错误")
-	}
-
-	if user.Status != m_user.StatusAllow {
-		return w.Abort(http.StatusBadRequest, "账号已被禁用，请联系管理员")
-	}
-
-	user.LastTime = time.Now()
-
-	if _, err := s_user.Save(user); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+	var err error
+	_, err = s_user.SignIn(ctx.Request().Session(), r.Form("account", ""), r.Form("password", ""))
+	if err != nil {
+		return w.Jump(r.Raw().URL.Path, err.Error())
 	}
 
 	return w.Redirect(http.StatusFound, "/admin/skeleton")
+}
+
+//退出登录
+func Out(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	s_user.SignOut(r.Session())
+	return w.Redirect(http.StatusFound, "/admin/sign")
 }

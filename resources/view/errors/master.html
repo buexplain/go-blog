@@ -9,20 +9,33 @@
         font-size: 3.6rem;
     }
 </style>
-<div>{{if .message }} {{.message}} {{end}}</div>
+<div>{{if .message }} {{message .message}} {{end}}</div>
 {{if .url }}
-页面自动 <a id="href" href="{{.url}}">跳转</a> 等待时间： <b id="wait">{{.wait}}</b>
+页面自动 <a id="j-href" href="{{.url}}">跳转</a> <a href="javascript:;" onclick="jump.stop()">停止</a> 等待时间： <b id="j-wait">{{.wait}}</b>
 <script type="text/javascript">
-    (function(){
-        var wait = document.getElementById('wait'),
-                href = document.getElementById('href').href;
-        var interval = setInterval(function(){
-            var time = --wait.innerHTML;
-            if(time <= 0) {
-                location.href = href;
-                clearInterval(interval);
-            };
-        }, 1000);
-    })();
+    var jump = {
+        _wait:3,
+        _url: '',
+        _interval:0,
+        init: function() {
+            this._wait = document.getElementById('j-wait');
+            this._url = document.getElementById('j-href').href;
+        },
+        start: function() {
+            var that = this;
+            this.interval = setInterval(function() {
+                var time = --that._wait.innerHTML;
+                if(time <= 0) {
+                    that.stop();
+                    window.location.href = that._url;
+                }
+            }, 1000);
+        },
+        stop: function() {
+            clearInterval(this.interval);
+        }
+    };
+    jump.init();
+    jump.start();
 </script>
 {{end}}
