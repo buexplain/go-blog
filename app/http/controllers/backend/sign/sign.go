@@ -13,7 +13,7 @@ import (
 
 //显示登录页面
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	return ctx.Response().Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "admin/sign/index.html")
+	return ctx.Response().Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
 }
 
 //登录
@@ -51,11 +51,11 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.Jump(r.Raw().URL.Path, err.Error())
 	}
 
-	return w.Redirect(http.StatusFound, "/admin/skeleton")
+	return w.Redirect(http.StatusFound, "/backend/skeleton")
 }
 
 //退出登录
 func Out(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	s_user.SignOut(r.Session())
-	return w.Redirect(http.StatusFound, "/admin/sign")
+	return w.Redirect(http.StatusFound, "/backend/sign")
 }

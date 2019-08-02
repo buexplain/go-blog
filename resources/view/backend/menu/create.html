@@ -1,0 +1,63 @@
+{{define "title"}}新增菜单栏{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="/backend/menu" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                父ID
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Pid" value="{{.pid}}" required lay-verify="required" placeholder="请输入父ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                菜单名
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Name" value="" required lay-verify="required" placeholder="请输入菜单名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                访问路径
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="URL" value="" required lay-verify="required" placeholder="请输入访问路径" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                排序ID
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="SortID" value="1991" required lay-verify="required" placeholder="请输入排序ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                <button class="layui-btn layui-btn-sm" lay-submit>
+                    立即提交
+                </button>
+                <a href="/backend/menu" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+        });
+    </script>
+{{end}}

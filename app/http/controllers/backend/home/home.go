@@ -1,4 +1,4 @@
-package c_skeleton
+package c_home
 
 import (
 	"github.com/buexplain/go-blog/services/user"
@@ -7,5 +7,8 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	return w.Assign("user", s_user.IsSignIn(r.Session())).View(http.StatusOK, "admin/skeleton/index.html")
+	return w.
+		Assign("user", s_user.IsSignIn(r.Session())).
+		Layout("backend/layout/layout.html").
+		View(http.StatusOK, "backend/home/index.html")
 }
