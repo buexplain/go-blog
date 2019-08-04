@@ -1,9 +1,9 @@
 .*
 !.gitignore
 config.toml
-go.sum
 go.mod
 *.exe
+/database/database.db
 /storage/cache/*
 !/storage/cache/git.keep
 /storage/logs/*

@@ -81,7 +81,7 @@ func defaultClientErrorFunc(ctx *fool.Ctx, err error) {
 		responseErr = ctx.Response().JSON(http.StatusOK)
 	} else {
 		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
-		responseErr = ctx.Response().Assign("message", err.Error()).Abort(http.StatusBadRequest)
+		responseErr = ctx.Response().Abort(http.StatusBadRequest, err.Error())
 	}
 	if responseErr != nil {
 		ctx.Logger().Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())

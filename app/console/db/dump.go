@@ -6,7 +6,6 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/dao/util"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,7 +31,6 @@ func init() {
 			//获取表信息
 			tables, err := dao.Dao.DBMetas()
 			if err != nil {
-				log.Panicln(err)
 				boot.Logger.ErrorF("获取表信息失败: %s", err.Error())
 				os.Exit(1)
 			}

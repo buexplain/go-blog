@@ -1,0 +1,60 @@
+{{define "title"}}修改密码{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                旧密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" name="oldPassword" required lay-verify="required" placeholder="请输入旧密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                新密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" name="newPassword" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                新密码长度不得小于6个字符！
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                <input type="hidden" name="_method" value="put">
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="send">
+                    提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+            form.on('submit(send)', function(data) {
+                console.log(data);
+                $.post('/backend/user/forget', data.field, function (json) {
+                    if(json.code !== 0) {
+                        layer.msg(json.message);
+                    }else {
+                        layer.msg(json.message, function () {
+                            window.parent.signOut();
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{{end}}

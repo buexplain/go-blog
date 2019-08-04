@@ -19,8 +19,9 @@ type Menu struct {
 
 type List []Menu
 
-func GetList() ([]Menu, error) {
+func GetALL() ([]Menu, error) {
 	result := make([]Menu, 0)
 	err := dao.Dao.Table("Menu").Desc("SortID").Find(&result);
 	return result, err
 }
+

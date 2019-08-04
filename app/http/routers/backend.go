@@ -5,8 +5,10 @@ import (
 	"github.com/buexplain/go-blog/app/http/controllers/backend/menu"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/sign"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
+	c_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
 	"github.com/buexplain/go-blog/app/http/middleware"
 	"github.com/buexplain/go-fool"
+	"net/http"
 )
 
 func backend(mux *fool.Mux) {
@@ -17,15 +19,18 @@ func backend(mux *fool.Mux) {
 	// --------------------------登录 结束---------------------------
 
 	// --------------------------需要权限校验的路由 开始---------------------------
-	mux.Group("", func() {
-		mux.Get("/backend/skeleton", c_skeleton.Index)
-		mux.Get("/backend/home", c_home.Index)
-		mux.Get("/backend/menu", c_menu.Index)
-		mux.Get("/backend/menu/list", c_menu.GetList).AddLabel("json")
-		mux.Get("/backend/menu/create/:pid", c_menu.Create)
-		mux.Post("/backend/menu", c_menu.Store)
-		mux.Delete("/backend/menu", c_menu.Destroy)
-
+	mux.Group("/backend", func() {
+		mux.Get("skeleton", c_skeleton.Index)
+		mux.Get("skeleton/all", c_skeleton.GetALL).AddLabel("json")
+		mux.Get("home", c_home.Index)
+		mux.Get("menu", c_menu.Index)
+		mux.Get("menu/all", c_menu.GetALL).AddLabel("json")
+		mux.Get("menu/create/:pid", c_menu.Create)
+		mux.Post("menu", c_menu.Store)
+		mux.Get("menu/edit/:id", c_menu.Edit)
+		mux.Put("menu/:id", c_menu.Update)
+		mux.Delete("menu", c_menu.Destroy)
+		mux.Any("user/forget", c_user.Forget, http.MethodGet, http.MethodPut)
 	}).Use(middleware.IsSignIn)
 	// --------------------------需要权限校验的路由 结束---------------------------
 }

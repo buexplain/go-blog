@@ -100,9 +100,9 @@ func init() {
 		APP.Use(staticFile.Filter, http.MethodGet)
 	}
 
-	//设置方法模拟中间件
+	//设置方法欺骗中间件
 	if boot.Config.App.Method.Enable {
-		APP.Use(method.Filter, http.MethodGet, http.MethodPut, http.MethodPatch)
+		APP.Use(method.Filter, http.MethodGet, http.MethodPost)
 	}
 }
 

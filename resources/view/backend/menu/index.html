@@ -4,6 +4,7 @@
 
 {{define "content"}}
     <a class="layui-btn layui-btn-sm" href="/backend/menu/create/0">新增</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" id="j-destroy">批量删除</a>
     <table class="layui-table layui-form" id="j-menu-tree" lay-size="sm"></table>
 {{end}}
 
@@ -20,7 +21,7 @@
                 elem: '#j-menu-tree',
                 url:function () {
                     var result = null;
-                    $.ajax({method: 'get', url: '/backend/menu/list', async: false, success: function (json) {
+                    $.ajax({method: 'get', url: '/backend/menu/all', async: false, success: function (json) {
                         result = json.data;
                     }});
                     return result;
@@ -72,8 +73,8 @@
                         align: 'center',
                         template: function(item) {
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/menu/create/'+item.ID+'">新增</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/menu/'+item.ID+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/menu/'+item.ID+'?_method=delete">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/menu/edit/'+item.ID+'">编辑</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/menu/?_method=delete&ids[]='+item.ID+'">删除</a>';
                             return btn;
                         }
                     }
@@ -102,10 +103,17 @@
             //     layer.msg(JSON.stringify(data));
             // });
             //
-            // // 获取选中值，返回值是一个数组（定义的primary_key参数集合）
-            // o('.get-checked').click(function(){
-            //     layer.msg('选中参数'+treeTable.checked(re).join(','))
-            // });
+
+            //批量删除
+            o('#j-destroy').click(function() {
+                var ids = treeTable.checked(menuTree);
+                if(ids.length === 0) {
+                    layer.msg('请勾选目标菜单名');
+                    return;
+                }
+                window.location.href = '/backend/menu/?_method=delete&ids[]='+ids.join('&ids[]=');
+            });
+
             //
             // // 刷新重载树表（一般在异步处理数据后刷新显示）
             // o('.refresh').click(function(){
