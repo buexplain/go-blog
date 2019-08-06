@@ -16,7 +16,7 @@ func IsSignIn(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 			//存在路由，并且路由有json标签，则响应json格式
 			ctx.Throw(ctx.Response().Assign("code", code.CODE_INVALID_AUTH).Assign("message", code.Text(code.CODE_INVALID_AUTH)).Assign("data", "").JSON(http.StatusOK))
 		} else {
-			ctx.Throw(ctx.Response().Abort(http.StatusFound, code.Text(code.CODE_INVALID_AUTH)))
+			ctx.Throw(ctx.Response().Jump("/backend/sign", code.Text(code.CODE_INVALID_AUTH)))
 		}
 	}
 }
