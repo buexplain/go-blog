@@ -23,6 +23,16 @@
         init: function() {
             this._wait = document.getElementById('j-wait');
             this._url = document.getElementById('j-href').href;
+            var that = this;
+            document.onkeydown = function (event) {
+                var e = event || window.event;
+                if(e && e.keyCode === 13) {
+                    that.go();
+                }
+            };
+        },
+        go: function() {
+            window.location.href = this._url;
         },
         start: function() {
             var that = this;
@@ -30,7 +40,7 @@
                 var time = --that._wait.innerHTML;
                 if(time <= 0) {
                     that.stop();
-                    window.location.href = that._url;
+                    that.go();
                 }
             }, 1000);
         },

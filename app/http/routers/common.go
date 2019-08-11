@@ -6,5 +6,6 @@ import (
 )
 
 func common(mux *fool.Mux) {
+	//图形验证码输出
 	mux.Get("/common/captcha", c_captcha.Index)
 }

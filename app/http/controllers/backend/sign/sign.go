@@ -45,13 +45,13 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	e := v.Validate()
 
 	if len(e) > 0 {
-		return w.Assign("message", e).Jump(r.Raw().URL.Path, e)
+		return w.JumpBack(e)
 	}
 
 	var err error
-	_, err = s_user.SignIn(ctx.Request().Session(), r.Form("account", ""), r.Form("password", ""))
+	_, err = s_user.OfficialSignIn(ctx.Request().Session(), r.Form("account", ""), r.Form("password", ""))
 	if err != nil {
-		return w.Jump(r.Raw().URL.Path, err.Error())
+		return w.JumpBack(err)
 	}
 
 	return w.Redirect(http.StatusFound, "/backend/skeleton")

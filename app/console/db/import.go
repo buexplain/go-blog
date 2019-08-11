@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	"github.com/buexplain/go-blog/dao/util"
+	m_util "github.com/buexplain/go-blog/models/util"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -23,7 +23,7 @@ func init() {
 				boot.Logger.Error("缺失参数: --fpath")
 				os.Exit(1)
 			}
-			_, err := util.ImportFromFile(dao.Dao, fpath)
+			_, err := m_util.ImportFromFile(dao.Dao, fpath)
 			if err != nil {
 				boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
 				os.Exit(1)

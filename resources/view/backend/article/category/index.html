@@ -1,0 +1,103 @@
+{{define "title"}}分类{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <a class="layui-btn layui-btn-sm" href="/backend/article/category/create/0">新增</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" id="j-destroy">批量删除</a>
+    <a class="layui-btn layui-btn-sm layui-btn-normal" href="javascript:;" id="j-switch">关闭 | 展开</a>
+    <table class="layui-table layui-form" id="j-tree" lay-size="sm"></table>
+{{end}}
+
+{{define "js"}}
+    <script type="text/javascript">
+        var result = {{.result}};
+    </script>
+    <script type="text/javascript">
+        layui.use(['treeTable','layer','code','form'],function() {
+            var o = layui.$,
+                form = layui.form,
+                layer = layui.layer,
+                treeTable = layui.treeTable;
+
+            //渲染树
+            var	myTree = treeTable.render({
+                elem: '#j-tree',
+                data:result,
+                icon_key: 'Name',
+                is_checkbox: true,
+                end: function(e) {
+                    form.render();
+                },
+                primary_key:'ID',
+                parent_key:'Pid',
+                cols: [
+                    {
+                        key: 'Name',
+                        title: '分类名',
+                        width: '100px',
+                        template: function(item) {
+                            return '<span style="color:#1E9FFF;cursor: pointer;">'+item.Name+'</span>';
+                        }
+                    },
+                    {
+                        key: 'ID',
+                        title: 'ID',
+                        width: '100px',
+                        align: 'center',
+                    },
+                    {
+                        key: 'Pid',
+                        title: '父ID',
+                        width: '100px',
+                        align: 'center',
+                    },
+                    {
+                        key: 'SortID',
+                        title: '排序ID',
+                        width: '100px',
+                        align: 'center',
+                    },
+                    {
+                        title: '访问路径',
+                        align: 'center',
+                        template: function(item) {
+                            return item.URL;
+                        }
+                    },
+                    {
+                        title: '操作',
+                        width: '200px',
+                        align: 'center',
+                        template: function(item) {
+                            var btn = '<a class="layui-btn layui-btn-sm" href="/backend/article/category/create/'+item.ID+'">新增</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/category/edit/'+item.ID+'">编辑</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            return btn;
+                        }
+                    }
+                ]
+            });
+
+            //批量删除
+            o('#j-destroy').click(function() {
+                var ids = treeTable.checked(myTree);
+                if(ids.length === 0) {
+                    layer.msg('请勾选目标分类名');
+                    return;
+                }
+                window.location.href = '/backend/article/category/?_method=delete&ids[]='+ids.join('&ids[]=');
+            });
+
+            //关闭 | 展开
+            o('#j-switch').click(function() {
+                if(localStorage.getItem(myTree.elem.substr(1))) {
+                    treeTable.closeAll(myTree);
+                }else {
+                    treeTable.openAll(myTree);
+                }
+            });
+        })
+    </script>
+
+{{end}}

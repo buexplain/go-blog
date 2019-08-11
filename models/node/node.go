@@ -1,11 +1,12 @@
-package m_menu
+package m_node
 
 import (
+	"encoding/json"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models"
 )
 
-type Menu struct {
+type Node struct {
 	models.Field `xorm:"extends"`
 	//父id
 	Pid          int    `xorm:"INTEGER"`
@@ -17,11 +18,19 @@ type Menu struct {
 	SortID       int    `xorm:"INTEGER"`
 }
 
-type List []Menu
+type List []Node
 
-func GetALL() ([]Menu, error) {
-	result := make([]Menu, 0)
-	err := dao.Dao.Table("Menu").Desc("SortID").Find(&result);
+func (this List) String() string {
+	b, err := json.Marshal(this)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
+}
+
+func GetALL() (List, error) {
+	result := make(List, 0)
+	err := dao.Dao.Table("Node").Desc("SortID").Find(&result)
 	return result, err
 }
 

@@ -1,0 +1,76 @@
+{{define "title"}}
+    用户角色
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>用户“{{.user.Account}}”的角色管理</legend>
+    </fieldset>
+
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+            </label>
+            <div class="layui-input-inline">
+                <div id="j-tree"></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="send">
+                    提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        var role = {{.role}};
+    </script>
+    <script>
+        layui.use(['tree', 'form'], function(){
+            var tree = layui.tree;
+            var form = layui.form;
+            //渲染树
+            var myTree = tree.render({
+                elem: '#j-tree'
+                ,showCheckbox: true
+                ,data: role
+            });
+            //绑定表单提交
+            form.on('submit(send)', function(data) {
+                try {
+                    var checkData = myTree.getChecked();
+                    var ids = [];
+                    var f = function (data) {
+                        for(var i in data) {
+                            ids.push(data[i].id);
+                            if(data[i].children.length > 0) {
+                                f(data[i].children);
+                            }
+                        }
+                    };
+                    f(checkData);
+                    var param = {
+                        _token:$("input[name='_token']").val(),
+                        ids:ids
+                    };
+                    $.post(window.location.pathname, param, function (json) {
+                        layer.msg(json.message);
+                    });
+                }catch (e) {
+                    console.error(e);
+                }
+                return false;
+            });
+        });
+    </script>
+{{end}}

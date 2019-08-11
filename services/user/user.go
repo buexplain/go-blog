@@ -33,8 +33,8 @@ func ComparePassword(plaintext string, password string) bool {
 	return true
 }
 
-//登录
-func SignIn(session fool.Session, account string, password string) (*m_user.User, error) {
+//后台管理人员登录
+func OfficialSignIn(session fool.Session, account string, password string) (*m_user.User, error) {
 	user, has, err := m_user.GetByAccount(account)
 	if err != nil {
 		return nil, err
@@ -49,6 +49,10 @@ func SignIn(session fool.Session, account string, password string) (*m_user.User
 
 	if user.Status != m_user.StatusAllow {
 		return nil, errors.New("账号已被禁用，请联系管理员")
+	}
+
+	if user.Identity != m_user.IdentityOfficial {
+		return nil, errors.New("非法登录")
 	}
 
 	user.LastTime = time.Now()

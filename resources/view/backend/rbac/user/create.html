@@ -1,0 +1,72 @@
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}用户
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="{{if .result}}/backend/rbac/user/{{.result.ID}}{{else}}/backend/rbac/user{{end}}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                账号
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="account" value="{{.result.Account}}" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                密码
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="password" value="" {{if .result}}{{else}}required lay-verify="required"{{end}} placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">身份</label>
+            <div class="layui-input-block">
+                <input type="radio" name="identity" value="1" title="管理" {{if .result }}{{if eq .result.Identity 1}}{{`checked`}}{{end}}{{else}}checked{{end}}>
+                <input type="radio" name="identity" value="2" title="用户" {{if .result }}{{if eq .result.Identity 2}}{{`checked`}}{{end}}{{end}}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="radio" name="status" value="1" title="允许" {{if .result }}{{if eq .result.Status 1}}{{`checked`}}{{end}}{{else}}checked{{end}}>
+                <input type="radio" name="status" value="2" title="禁止" {{if .result }}{{if eq .result.Status 2}}{{`checked`}}{{end}}{{end}}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                昵称
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="nickname" value="{{.result.Nickname}}" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+                <button class="layui-btn layui-btn-sm" lay-submit>
+                    提交
+                </button>
+                <a href="/backend/rbac/user" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+        });
+    </script>
+{{end}}

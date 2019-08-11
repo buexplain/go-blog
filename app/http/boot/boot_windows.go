@@ -22,7 +22,7 @@ func Run() {
 	}
 	go func() {
 		time.Sleep(time.Second * 2)
-		fmt.Println(APP.Mux().DumpRouteMap())
+		fmt.Println(APP.Mux().DumpRouteMap("github.com/buexplain/go-blog/"))
 	}()
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())

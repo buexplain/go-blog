@@ -1,0 +1,60 @@
+{{define "title"}}标签{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <a class="layui-btn layui-btn-sm" href="/backend/article/tag/create">新增</a>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>标签名</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $_, $v := .result}}
+            <tr>
+                <td>{{$v.ID}}</td>
+                <td>{{$v.Name}}</td>
+                <td>{{$v.CreatedAtText}}
+                <td>{{$v.UpdatedAtText}}</td>
+                <td style="width:132px;text-align:center;">
+                    <a class="layui-btn layui-btn-sm" href="/backend/article/tag/edit/{{$v.ID}}">编辑</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/tag/{{$v.ID}}?_method=delete">删除</a>
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+    <div id="j-laypage"></div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        var limit = {{.limit}};
+        var page = {{.page}};
+        var count = {{.count}};
+        layui.use('laypage', function(){
+            var laypage = layui.laypage;
+            laypage.render({
+                elem: 'j-laypage',
+                limit: limit,
+                curr: page,
+                count: count,
+                jump: function (obj, first) {
+                    if(first) {
+                        return;
+                    }
+                    window.location.href = '/backend/article/tag/?page='+obj.curr+'&limit='+obj.limit;
+                }
+            });
+        });
+    </script>
+{{end}}

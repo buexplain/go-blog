@@ -1,0 +1,57 @@
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}角色
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="{{if .result}}/backend/rbac/role/{{.result.ID}}{{else}}/backend/rbac/role{{end}}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                父ID
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Pid" value="{{if .result}}{{.result.Pid}}{{else}}{{.pid}}{{end}}" required lay-verify="required" placeholder="请输入父ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                角色名
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入角色名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                排序ID
+            </label>
+            <div class="layui-input-block">
+                <input type="number" min="1" name="SortID" value="{{if .result}}{{.result.SortID}}{{else}}1991{{end}}" required lay-verify="required" placeholder="请输入排序ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+                <button class="layui-btn layui-btn-sm" lay-submit>
+                    提交
+                </button>
+                <a href="/backend/rbac/role" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+        });
+    </script>
+{{end}}

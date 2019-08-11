@@ -1,0 +1,39 @@
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}标签
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="{{if .result}}/backend/article/tag/{{.result.ID}}{{else}}/backend/article/tag{{end}}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                标签名
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入标签名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+                <button class="layui-btn layui-btn-sm" lay-submit>
+                    提交
+                </button>
+                <a href="/backend/article/tag" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+        });
+    </script>
+{{end}}

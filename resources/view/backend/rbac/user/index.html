@@ -1,0 +1,78 @@
+{{define "title"}}用户管理{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" method="get" action="/backend/rbac/user">
+        <blockquote class="layui-elem-quote">
+            <div class="layui-inline">
+                <input type="hidden" name="keywordField" value="Account">
+                <input type="text" name="keywordValue" value="{{if .keywordValue}}{{.keywordValue}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-sm layui-btn-normal">
+                    搜索
+                </button>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/create">新增</a>
+            </div>
+        </blockquote>
+    </form>
+
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>账号</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
+                <th>登录时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $_, $v := .result}}
+                <tr>
+                    <td>{{$v.ID}}</td>
+                    <td>{{$v.Account}}</td>
+                    <td>{{$v.Nickname}}</td>
+                    <td>{{$v.StatusText}}</td>
+                    <td>{{$v.CreatedAtText}}
+                    <td>{{$v.UpdatedAtText}}</td>
+                    <td>{{$v.LastTimeText}}</td>
+                    <td style="width:132px;text-align:center;">
+                        <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/edit/{{$v.ID}}">编辑</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/user/role/{{$v.ID}}">角色</a>
+                    </td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+    <div id="j-laypage"></div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        var limit = {{.limit}};
+        var page = {{.page}};
+        var count = {{.count}};
+        layui.use('laypage', function(){
+            var laypage = layui.laypage;
+            laypage.render({
+                elem: 'j-laypage',
+                limit: limit,
+                curr: page,
+                count: count,
+                jump: function (obj, first) {
+                    if(first) {
+                        return;
+                    }
+                    window.location.href = '/backend/rbac/user?page='+obj.curr+'&limit='+obj.limit;
+                }
+            });
+        });
+    </script>
+{{end}}

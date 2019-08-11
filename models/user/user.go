@@ -14,21 +14,24 @@ type User struct {
 	Password string `xorm:"TEXT"`
 	//昵称
 	Nickname string `xorm:"TEXT"`
+	//用户身份
+	Identity     int       `xorm:"INTEGER"`
 	//用户状态
 	Status int `xorm:"INTEGER"`
 	//最后登录时间
 	LastTime time.Time `xorm:"DATETIME"`
 }
 
-const (
-	StatusAllow = iota + 1
-	StatusDeny
-)
-
-var StatusText = map[int]string{
-	StatusAllow: "允许",
-	StatusDeny:  "禁止",
+func (this User) StatusText() string {
+	return StatusText[this.Status]
 }
+
+func (this User) LastTimeText() string {
+	return this.LastTime.Format("2006-01-02 15:04:05")
+}
+
+type List []User
+
 
 func GetByAccount(account string) (*User, bool, error) {
 	u := new(User)

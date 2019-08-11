@@ -26,7 +26,6 @@
         <div class="layui-form-item">
             <div class="layui-input-block">
                 {{._token}}
-                <input type="hidden" name="_method" value="put">
                 <button class="layui-btn layui-btn-sm" lay-submit lay-filter="send">
                     提交
                 </button>
@@ -44,7 +43,7 @@
             var form = layui.form;
             form.on('submit(send)', function(data) {
                 console.log(data);
-                $.post('/backend/user/forget', data.field, function (json) {
+                $.post('/backend/rbac/user/forget', data.field, function (json) {
                     if(json.code !== 0) {
                         layer.msg(json.message);
                     }else {

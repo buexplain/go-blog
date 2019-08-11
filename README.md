@@ -29,13 +29,18 @@ go run main.go
 
 ## 二次开发相关
 
-### 静态文件打包
+### 同步models结构体到数据库
 ```bash
-go build -o artisan.exe artisan.go && artisan.exe asset pack
+go build -o artisan.exe artisan.go && artisan.exe db sync
 ```
 
 ### `database/init.sql`制作
 下面的命令是导出数据，表结构与表索引不做导出。
 ```bash
-rm -fr database/init.sql && go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
+```
+
+### 静态文件打包
+```bash
+go build -o artisan.exe artisan.go && artisan.exe asset pack
 ```

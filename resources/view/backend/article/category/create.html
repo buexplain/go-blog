@@ -1,9 +1,11 @@
-{{define "title"}}新增菜单栏{{end}}
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}分类
+{{end}}
 
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="{{if .result}}/backend/menu/{{.result.ID}}{{else}}/backend/menu{{end}}" method="post">
+    <form class="layui-form" action="{{if .result}}/backend/article/category/{{.result.ID}}{{else}}/backend/article/category{{end}}" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">
                 父ID
@@ -15,10 +17,10 @@
 
         <div class="layui-form-item">
             <label class="layui-form-label">
-                菜单名
+                分类名
             </label>
             <div class="layui-input-block">
-                <input type="text" name="Name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入菜单名" autocomplete="off" class="layui-input">
+                <input type="text" name="Name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入分类名" autocomplete="off" class="layui-input">
             </div>
         </div>
 
@@ -47,7 +49,7 @@
                 <button class="layui-btn layui-btn-sm" lay-submit>
                     提交
                 </button>
-                <a href="/backend/menu" class="layui-btn layui-btn-sm layui-btn-primary">
+                <a href="/backend/article/category" class="layui-btn layui-btn-sm layui-btn-primary">
                     取消
                 </a>
             </div>
