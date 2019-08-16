@@ -6,6 +6,7 @@ import (
 	"github.com/buexplain/go-blog/models"
 )
 
+//文章分类表
 type Category struct {
 	models.Field `xorm:"extends"`
 	//父id

@@ -6,9 +6,10 @@ import (
 	"github.com/buexplain/go-blog/app/http/controllers/backend/home"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
 	c_role "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/role"
-	c_user "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/user"
+	c_official_user "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/user"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/sign"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
+	c_citizen_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
 	"github.com/buexplain/go-blog/app/http/middleware"
 	"github.com/buexplain/go-fool"
 	"net/http"
@@ -40,14 +41,14 @@ func backend(mux *fool.Mux) {
 			mux.Put("node/:id", c_node.Update)
 			mux.Delete("node", c_node.Destroy)
 
-			//用户管理
-			mux.Any("user/forget", c_user.Forget, http.MethodGet, http.MethodPost)
-			mux.Get("user", c_user.Index)
-			mux.Get("user/create", c_user.Create)
-			mux.Post("user", c_user.Store)
-			mux.Get("user/edit/:id", c_user.Edit)
-			mux.Put("user/:id", c_user.Update)
-			mux.Any("user/role/:id", c_user.EditRole,  http.MethodGet, http.MethodPost)
+			//管理员用户管理
+			mux.Any("user/forget", c_official_user.Forget, http.MethodGet, http.MethodPost)
+			mux.Get("user", c_official_user.Index)
+			mux.Get("user/create", c_official_user.Create)
+			mux.Post("user", c_official_user.Store)
+			mux.Get("user/edit/:id", c_official_user.Edit)
+			mux.Put("user/:id", c_official_user.Update)
+			mux.Any("user/role/:id", c_official_user.EditRole,  http.MethodGet, http.MethodPost)
 
 			//角色管理
 			mux.Get("role", c_role.Index)
@@ -56,7 +57,15 @@ func backend(mux *fool.Mux) {
 			mux.Get("role/edit/:id", c_role.Edit)
 			mux.Put("role/:id", c_role.Update)
 			mux.Delete("role", c_role.Destroy)
+			mux.Any("role/node/:id", c_role.EditNode,  http.MethodGet, http.MethodPost)
 		})
+
+		//普通用户管理
+		mux.Get("user", c_citizen_user.Index)
+		mux.Get("user/create", c_citizen_user.Create)
+		mux.Post("user", c_citizen_user.Store)
+		mux.Get("user/edit/:id", c_citizen_user.Edit)
+		mux.Put("user/:id", c_citizen_user.Update)
 
 		//文章管理
 		mux.Group("article", func() {
@@ -77,6 +86,6 @@ func backend(mux *fool.Mux) {
 			mux.Delete("tag/:id", c_tag.Destroy)
 		})
 
-	}).Use(middleware.IsSignIn)
+	}).Use(middleware.RbacCheck)
 	// --------------------------需要权限校验的路由 结束---------------------------
 }

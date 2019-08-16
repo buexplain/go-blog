@@ -5,10 +5,18 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-fool"
 	"github.com/go-xorm/xorm"
-	"strconv"
 	"time"
 	"xorm.io/core"
 )
+
+type where []string
+
+func (this where) Get(index int) string {
+	if index+1 <= len(this) {
+		return this[index]
+	}
+	return ""
+}
 
 //列表查询
 type Query struct {
@@ -16,19 +24,9 @@ type Query struct {
 	ctx               *fool.Ctx
 	//表名称
 	tableName         string
-	//关键词字段的key
-	KeywordFieldKey   string
-	//关键词的值的key
-	KeywordValueKey   string
-	//时间字段的key
-	TimeFieldKey      string
-	//开始时间的值的key
-	TimeStartValueKey string
-	//结束时间的值的key
-	TimeEndValueKey   string
 	//表信息
 	tableInfo         *core.Table
-	//统计
+	//统计器
 	Counter           *xorm.Session
 	//查询器
 	Finder            *xorm.Session
@@ -88,7 +86,7 @@ func (this *Query) Count() int64 {
 //分页大小
 func (this *Query) Limit(size ...int) *Query {
 	if len(size) == 0 {
-		size = append(size, 20)
+		size = append(size, 10)
 	}
 	page := this.ctx.Request().QueryInt("page", 1)
 	this.ctx.Response().Assign("limit", size)
@@ -98,76 +96,108 @@ func (this *Query) Limit(size ...int) *Query {
 	return this
 }
 
-//关键词like
-func (this *Query) WhereKeyword() *Query {
-	keywordField := this.ctx.Request().Query(this.KeywordFieldKey)
-	keywordValue := this.ctx.Request().Query(this.KeywordValueKey)
-	this.ctx.Response().Assign(this.KeywordFieldKey, keywordField)
-	this.ctx.Response().Assign(this.KeywordValueKey, keywordValue)
-	if keywordField == "" || keywordValue == "" {
-		return this
-	}
+//筛选，这些条件都是 and 的
+func (this *Query) Screen() *Query {
+	//等于查询的参数
+	eqFieldSlice := where(this.ctx.Request().QuerySlice("eqField[]"))
+	eqValueSlice := where(this.ctx.Request().QuerySlice("eqValue[]"))
+	this.ctx.Response().Assign("eqField", eqFieldSlice)
+	this.ctx.Response().Assign("eqValue", eqValueSlice)
+
+	//大于等于查询的参数
+	geFieldSlice := where(this.ctx.Request().QuerySlice("geField[]"))
+	geValueSlice := where(this.ctx.Request().QuerySlice("geValue[]"))
+	this.ctx.Response().Assign("geField", geFieldSlice)
+	this.ctx.Response().Assign("geValue", geValueSlice)
+
+	//小于等于查询的参数
+	leFieldSlice := where(this.ctx.Request().QuerySlice("leField[]"))
+	leValueSlice := where(this.ctx.Request().QuerySlice("leValue[]"))
+	this.ctx.Response().Assign("leField", leFieldSlice)
+	this.ctx.Response().Assign("leValue", leValueSlice)
+
+	//like查询
+	likeFieldSlice := where(this.ctx.Request().QuerySlice("likeField[]"))
+	likeValueSlice := where(this.ctx.Request().QuerySlice("likeValue[]"))
+	this.ctx.Response().Assign("likeField", likeFieldSlice)
+	this.ctx.Response().Assign("likeValue", likeValueSlice)
+
 	tableInfo := this.TableInfo()
 	if tableInfo == nil {
 		return this
 	}
-	column := tableInfo.GetColumn(keywordField)
-	if column == nil {
-		return this
-	}
-	if column.IsAutoIncrement {
-		this.Finder.Where(fmt.Sprintf("`%s`.`%s`=?", this.tableName, column.Name), keywordValue)
-	} else {
-		if column.SQLType.IsBlob() {
-			b, _ := strconv.ParseBool(keywordValue)
-			this.Finder.Where(fmt.Sprintf("`%s`.`%s`=?", this.tableName, column.Name), b)
-		} else if column.SQLType.IsNumeric() {
-			this.Finder.Where(fmt.Sprintf("`%s`.`%s`=?", this.tableName, column.Name), keywordValue)
-		} else {
-			this.Finder.Where(fmt.Sprintf("`%s`.`%s` LIKE ?", this.tableName, column.Name), fmt.Sprintf("%s%s%s", "%", keywordValue, "%"))
+
+	//等于查询
+	if len(eqFieldSlice) > 0 && (len(eqFieldSlice) == len(eqValueSlice)) {
+		for index, field := range eqFieldSlice {
+			//判断字段是否存在
+			column := tableInfo.GetColumn(field)
+			if column == nil {
+				continue
+			}
+			value := eqValueSlice[index]
+			if value == "" {
+				continue
+			}
+			this.Finder.Where(fmt.Sprintf("`%s`.`%s`=?", this.tableName, column.Name), value)
 		}
 	}
+
+	//大于等于查询
+	if len(geFieldSlice) > 0 && (len(geFieldSlice) == len(geValueSlice)) {
+		for index, field := range geFieldSlice {
+			//判断字段是否存在
+			column := tableInfo.GetColumn(field)
+			if column == nil {
+				continue
+			}
+			value := geValueSlice[index]
+			if value == "" {
+				continue
+			}
+			this.Finder.Where(fmt.Sprintf("`%s`.`%s`>=?", this.tableName, column.Name), value)
+		}
+	}
+
+	//小于等于查询
+	if len(leFieldSlice) > 0 && (len(leFieldSlice) == len(leValueSlice)) {
+		for index, field := range leFieldSlice {
+			//判断字段是否存在
+			column := tableInfo.GetColumn(field)
+			if column == nil {
+				continue
+			}
+			value := leValueSlice[index]
+			if value == "" {
+				continue
+			}
+			this.Finder.Where(fmt.Sprintf("`%s`.`%s`<=?", this.tableName, column.Name), value)
+		}
+	}
+
+	//like查询
+	if len(likeFieldSlice) > 0 && (len(likeFieldSlice) == len(likeValueSlice)) {
+		for index, field := range likeFieldSlice {
+			//判断字段是否存在
+			column := tableInfo.GetColumn(field)
+			if column == nil {
+				continue
+			}
+			value := likeValueSlice[index]
+			if value == "" {
+				continue
+			}
+			this.Finder.Where(fmt.Sprintf("`%s`.`%s` LIKE ?", this.tableName, column.Name), fmt.Sprintf("%s%s%s", "%", value, "%"))
+		}
+	}
+
 	return this
 }
-
-//时间范围
-func (this *Query) WhereTime() *Query {
-	timeField := this.ctx.Request().Query(this.TimeFieldKey)
-	timeStartValue := this.ctx.Request().Query(this.TimeStartValueKey)
-	timeEndValue := this.ctx.Request().Query(this.TimeEndValueKey)
-	this.ctx.Response().Assign(this.TimeFieldKey, timeField)
-	this.ctx.Response().Assign(this.TimeStartValueKey, timeStartValue)
-	this.ctx.Response().Assign(this.TimeEndValueKey, timeEndValue)
-	if timeField == "" || (timeStartValue == "" && timeEndValue == "") {
-		return this
-	}
-	tableInfo := this.TableInfo()
-	if tableInfo == nil {
-		return this
-	}
-	column := tableInfo.GetColumn(timeField)
-	if column == nil {
-		return this
-	}
-	if timeStartValue != "" {
-		this.Finder.Where(fmt.Sprintf("`%s`.`%s`>?", this.tableName, column.Name), timeStartValue)
-	}
-	if timeEndValue != "" {
-		this.Finder.Where(fmt.Sprintf("`%s`.`%s`<?", this.tableName, column.Name), timeEndValue)
-	}
-	return this
-}
-
 
 func NewQuery(tableName string, ctx *fool.Ctx) *Query {
 	tmp := new(Query)
 	tmp.ctx = ctx
 	tmp.tableName = tableName
-	tmp.KeywordFieldKey = "keywordField"
-	tmp.KeywordValueKey = "keywordValue"
-	tmp.TimeFieldKey = "timeField"
-	tmp.TimeStartValueKey = "timeStartValue"
-	tmp.TimeEndValueKey = "timeEndValue"
 	tmp.Finder = dao.Dao.Table(tmp.tableName)
 	return tmp
 }

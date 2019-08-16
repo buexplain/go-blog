@@ -1,0 +1,80 @@
+{{define "title"}}用户管理{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <blockquote class="layui-elem-quote">
+        <form class="layui-form" method="get" action="/backend/user">
+            <div class="layui-inline">
+                <input type="hidden" name="likeField[]" value="Account">
+                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-sm layui-btn-normal">
+                    搜索
+                </button>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn layui-btn-sm" href="/backend/user/create">新增</a>
+            </div>
+        </form>
+    </blockquote>
+
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>账号</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
+                <th>登录时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $_, $v := .result}}
+                <tr>
+                    <td>{{$v.ID}}</td>
+                    <td>{{$v.Account}}</td>
+                    <td>{{$v.Nickname}}</td>
+                    <td>{{$v.StatusText}}</td>
+                    <td>{{$v.CreatedAtText}}
+                    <td>{{$v.UpdatedAtText}}</td>
+                    <td>{{$v.LastTimeText}}</td>
+                    <td style="width:66px;">
+                        <a class="layui-btn layui-btn-sm" href="/backend/user/edit/{{$v.ID}}">编辑</a>
+                    </td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+    <div id="j-laypage"></div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        //渲染表单
+        layui.use('form', function() {});
+
+        var limit = {{.limit}};
+        var page = {{.page}};
+        var count = {{.count}};
+        layui.use(['laypage', 'myUtil'], function() {
+            var laypage = layui.laypage;
+            laypage.render({
+                elem: 'j-laypage',
+                limit: limit,
+                curr: page,
+                count: count,
+                layout:['prev', 'page', 'next', 'count'],
+                jump: function (obj, first) {
+                    if(!first) {
+                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
+                    }
+                }
+            });
+        });
+    </script>
+{{end}}

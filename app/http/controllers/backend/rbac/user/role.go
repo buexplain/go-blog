@@ -1,11 +1,10 @@
-package c_user
+package c_official_user
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	m_user "github.com/buexplain/go-blog/models/user"
-	s_user "github.com/buexplain/go-blog/services/user"
-	s_userRoleRelation "github.com/buexplain/go-blog/services/userRoleRelation"
+	"github.com/buexplain/go-blog/models/user"
+	"github.com/buexplain/go-blog/services/userRoleRelation"
 	"github.com/buexplain/go-fool"
 	"github.com/gorilla/csrf"
 	"html/template"
@@ -27,7 +26,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			return w.JumpBack("参数错误")
 		}
 
-		if role, err := s_user.GetRoleTree(user.ID); err != nil {
+		if role, err := s_userRoleRelation.GetUserRole(user.ID); err != nil {
 			return w.JumpBack(err)
 		}else {
 			w.Assign("role", template.JS(role.String()))
@@ -48,7 +47,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	roleID := r.FormSliceInt("ids[]")
 
-	err := s_userRoleRelation.Store(userID, roleID)
+	err := s_userRoleRelation.SetUserRole(userID, roleID)
 	if err != nil {
 		return w.Assign("code", 1).Assign("message", err.Error()).Assign("data", "").JSON(http.StatusOK)
 	}

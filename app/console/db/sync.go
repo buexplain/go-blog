@@ -6,6 +6,7 @@ import (
 	m_category "github.com/buexplain/go-blog/models/category"
 	m_node "github.com/buexplain/go-blog/models/node"
 	m_role "github.com/buexplain/go-blog/models/role"
+	"github.com/buexplain/go-blog/models/roleNodeRelation"
 	m_tag "github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/models/user"
 	m_userRoleRelation "github.com/buexplain/go-blog/models/userRoleRelation"
@@ -24,8 +25,9 @@ func init() {
 			err := dao.Dao.Sync2(
 				new(m_node.Node),
 				new(m_user.User),
-				new(m_role.Role),
 				new(m_userRoleRelation.UserRoleRelation),
+				new(m_role.Role),
+				new(m_roleNodeRelation.RoleNodeRelation),
 				new(m_category.Category),
 				new(m_tag.Tag),
 			)

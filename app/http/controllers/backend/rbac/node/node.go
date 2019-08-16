@@ -4,7 +4,7 @@ import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/node"
-	s_menu "github.com/buexplain/go-blog/services/node"
+	s_node "github.com/buexplain/go-blog/services/node"
 	"github.com/buexplain/go-fool"
 	"github.com/gorilla/csrf"
 	"github.com/thedevsaddam/govalidator"
@@ -64,7 +64,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(err)
 	}
 
-	if _, err := dao.Dao.Insert(mod); err != nil {
+	if _, err := s_node.Insert(mod); err != nil {
 		return w.JumpBack(err)
 	}
 
@@ -124,7 +124,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	mod.ID = r.ParamInt("id", 0)
 
-	if _, err := dao.Dao.ID(mod.ID).MustCols("Pid").Update(mod); err != nil {
+	if _, err := s_node.Update(mod); err != nil {
 		return w.JumpBack(err)
 	}
 
@@ -137,7 +137,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if len(ids) == 0 {
 		return w.JumpBack("参数错误")
 	}
-	if _, err := s_menu.Destroy(ids); err != nil {
+	if _, err := s_node.Destroy(ids); err != nil {
 		return w.JumpBack(err)
 	}
 	return w.Jump("/backend/rbac/node", "操作成功")

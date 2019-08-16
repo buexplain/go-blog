@@ -3,7 +3,8 @@ package s_node
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
-	m_node "github.com/buexplain/go-blog/models/node"
+	"github.com/buexplain/go-blog/models/node"
+	"github.com/buexplain/go-blog/models/roleNodeRelation"
 )
 
 func Destroy(ids[]int) (affected int64, err error) {
@@ -25,6 +26,52 @@ func Destroy(ids[]int) (affected int64, err error) {
 			}
 		}
 	}
-	affected, err = dao.Dao.In("ID", ids).Delete(new(m_node.Node))
-	return
+
+	//开启事务
+	session := dao.Dao.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		return 0, err
+	}
+
+	//删除节点
+	affected, deleteErr := session.In("ID", ids).Delete(new(m_node.Node))
+	if deleteErr != nil {
+		if err := session.Rollback(); err != nil {
+			return 0, err
+		}
+		return affected, deleteErr
+	}
+
+	//删除角色节点表
+	if _, err := session.In("NodeID", ids).Delete(new(m_roleNodeRelation.RoleNodeRelation)); err != nil {
+		if err := session.Rollback(); err != nil {
+			return 0, err
+		}
+		return 0, err
+	}
+
+	if err := session.Commit(); err != nil {
+		return 0, err
+	}
+
+	return affected, deleteErr
+}
+
+func parseNode(node *m_node.Node) {
+	if node.IsMenu == 0 {
+		node.IsMenu = m_node.IsMenuNo
+	}else {
+		node.IsMenu = m_node.IsMenuYes
+	}
+}
+
+func Insert(node *m_node.Node) (affected int64, err error) {
+	parseNode(node)
+	return dao.Dao.Insert(node)
+}
+
+func Update(node *m_node.Node) (affected int64, err error) {
+	parseNode(node)
+	return dao.Dao.ID(node.ID).MustCols("Pid").Update(node)
 }

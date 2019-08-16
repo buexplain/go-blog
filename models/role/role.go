@@ -6,6 +6,7 @@ import (
 	"github.com/buexplain/go-blog/models"
 )
 
+//rbac 角色表
 type Role struct {
 	models.Field `xorm:"extends"`
 	//父id
@@ -17,7 +18,6 @@ type Role struct {
 }
 
 type List []Role
-
 
 func (this List) String() string {
 	b, err := json.Marshal(this)

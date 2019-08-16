@@ -14,7 +14,7 @@
 </style>
 <div>{{if .message }} {{message .message}} {{end}}</div>
 {{if .url }}
-页面自动 <a id="j-href" href="{{.url}}">跳转</a> <a href="javascript:;" onclick="jump.stop()">停止</a> 等待时间：<b id="j-wait">{{.wait}}</b>
+页面自动 <a id="j-href" href="{{.url}}" title="按下enter直接跳转">跳转</a> <a href="javascript:;" onclick="jump.stop()">停止</a> 等待时间：<b id="j-wait">{{.wait}}</b>
 <script type="text/javascript">
     var jump = {
         _wait:3,

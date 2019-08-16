@@ -59,11 +59,17 @@
                         align: 'center',
                     },
                     {
-                        title: '访问路径',
+                        title: '后台菜单',
+                        width: '100px',
                         align: 'center',
                         template: function(item) {
-                            return item.URL;
+                            return item.IsMenu === 1 ? '是' : '否';
                         }
+                    },
+                    {
+                        key: 'URL',
+                        title: '访问路径',
+                        align: 'center',
                     },
                     {
                         title: '操作',

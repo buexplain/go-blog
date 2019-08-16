@@ -1,0 +1,96 @@
+{{define "title"}}
+    用户角色
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/resources/asset/layext/dtree/dtree.css">
+    <link rel="stylesheet" href="/resources/asset/layext/dtree/font/dtreefont.css">
+{{end}}
+
+{{define "content"}}
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>设置角色“{{.role.Name}}”的节点</legend>
+    </fieldset>
+
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+            </label>
+            <div class="layui-input-inline">
+                <ul id="j-tree" class="dtree" data-id="0"></ul>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="send">
+                    提交
+                </button>
+                <a href="/backend/rbac/role" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        var node = {{.node}};
+        var data = function (node) {
+            var result = [];
+            for(var i in node) {
+                result.push({
+                    "id":node[i].ID,
+                    "title": node[i].Name,
+                    "checkArr": [{
+                        "type": "0", //type表示当前节点的第几个复选框
+                        "checked": node[i].Checked ? '1' : '0' //0-未选中，1-选中，2-半选
+                    }],
+                    "parentId": node[i].Pid
+                });
+            }
+            return result;
+        }(node);
+    </script>
+    <script>
+        layui.use(['dtree', 'form', 'jquery'], function(){
+            var $ = layui.jquery;
+            var dtree = layui.dtree;
+            var form = layui.form;
+            //渲染树
+            var myTree = dtree.render({
+                elem: "#j-tree",
+                initLevel:2, //默认展开层级，当该值大于level时，则会展开树的节点，直到不大于当前待展开节点的level
+                dataFormat: "list", // 用于用户配置的data的数据格式,list:数组格式，levelRelationship：层级关系格式。
+                checkbar: true, //开启复选框
+                skin: "laySimple",  // laySimple主题风格
+                line: true,  // 显示树线
+                data: data
+            });
+            //绑定表单提交
+            form.on('submit(send)', function(data) {
+                try {
+                    var checkData = dtree.getCheckbarNodesParam("j-tree");
+                    var ids = function (checkData) {
+                        var result = [];
+                        for(var i in checkData) {
+                            result.push(checkData[i].nodeId);
+                        }
+                        return result;
+                    }(checkData);
+                    var param = {
+                        _token:$("input[name='_token']").val(),
+                        ids:ids
+                    };
+                    $.post(window.location.pathname, param, function (json) {
+                        layer.msg(json.message);
+                    });
+                }catch (e) {
+                    console.error(e);
+                }
+                return false;
+            });
+        });
+    </script>
+{{end}}

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//用户表
 type User struct {
 	models.Field `xorm:"extends"`
 	//账号

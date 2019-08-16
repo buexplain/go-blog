@@ -4,7 +4,7 @@ import (
 	"github.com/buexplain/go-blog/models"
 )
 
-//用户与角色的关系表
+//rbac 用户与角色的关系表
 type UserRoleRelation struct {
 	models.IDField `xorm:"extends"`
 	models.CreatedAtField `xorm:"extends"`

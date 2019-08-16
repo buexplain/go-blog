@@ -41,7 +41,7 @@
         var limit = {{.limit}};
         var page = {{.page}};
         var count = {{.count}};
-        layui.use('laypage', function(){
+        layui.use(['laypage', 'myUtil'], function() {
             var laypage = layui.laypage;
             laypage.render({
                 elem: 'j-laypage',
@@ -49,10 +49,9 @@
                 curr: page,
                 count: count,
                 jump: function (obj, first) {
-                    if(first) {
-                        return;
+                    if(!first) {
+                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
                     }
-                    window.location.href = '/backend/article/tag/?page='+obj.curr+'&limit='+obj.limit;
                 }
             });
         });

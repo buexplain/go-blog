@@ -35,6 +35,15 @@
 
         <div class="layui-form-item">
             <label class="layui-form-label">
+                后台菜单
+            </label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="IsMenu" {{if .result}}{{if eq .result.IsMenu 1}}checked{{end}}{{end}} value="1" lay-skin="switch">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
                 排序ID
             </label>
             <div class="layui-input-block">

@@ -1,4 +1,4 @@
-package c_user
+package c_official_user
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
@@ -13,17 +13,25 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := m_util.NewQuery("User", ctx).Limit()
+	query := m_util.NewQuery("User", ctx).Screen().Limit()
 	query.Finder.Desc("ID")
-	query.WhereKeyword()
+	//设置查询条件后，先进行分页统计
+	count := query.Count()
+	//然后再进行连表查询，获取用户所有角色
+	query.Finder.Join("LEFT", "`UserRoleRelation`", "`User`.`ID` = `UserRoleRelation`.`UserID`")
+	query.Finder.Join("LEFT", "`Role`", "`UserRoleRelation`.`RoleID` = `Role`.`ID`")
+	query.Finder.GroupBy("User.ID")
+	query.Finder.Select("`User`.*, GROUP_CONCAT(`Role`.`Name`) as `RoleGroup`")
 
-	var result m_user.List
+	type User struct {
+		m_user.User `xorm:"extends"`
+		RoleGroup string
+	}
+	var result []User
 	query.Find(&result)
 
-	count := query.Count()
-
 	if query.Error != nil {
-		return ctx.Error().WrapServer(query.Error).Location()
+		return query.Error
 	}
 
 	return w.

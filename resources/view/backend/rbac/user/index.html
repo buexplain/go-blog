@@ -3,12 +3,22 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <form class="layui-form" method="get" action="/backend/rbac/user">
-        <blockquote class="layui-elem-quote">
+    <blockquote class="layui-elem-quote">
+        <form class="layui-form" method="get" action="/backend/rbac/user">
             <div class="layui-inline">
-                <input type="hidden" name="keywordField" value="Account">
-                <input type="text" name="keywordValue" value="{{if .keywordValue}}{{.keywordValue}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
+                <input type="hidden" name="likeField[]" value="Account">
+                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
             </div>
+
+            <div class="layui-inline" style="width: 170px;">
+                <input type="hidden" name="eqField[]" value="Identity">
+                <select name="eqValue[]" lay-verify="">
+                    <option value="">请选择用户身份</option>
+                    <option value="1" {{if .eqValue}}{{if eq (1 | .eqValue.Get) "1"}}selected{{end}}{{end}}>管理人员</option>
+                    <option value="2" {{if .eqValue}}{{if eq (1 | .eqValue.Get) "2"}}selected{{end}}{{end}}>普通用户</option>
+                </select>
+            </div>
+
             <div class="layui-inline">
                 <button class="layui-btn layui-btn-sm layui-btn-normal">
                     搜索
@@ -17,8 +27,8 @@
             <div class="layui-inline">
                 <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/create">新增</a>
             </div>
-        </blockquote>
-    </form>
+        </form>
+    </blockquote>
 
     <table class="layui-table">
         <thead>
@@ -26,6 +36,7 @@
                 <th>ID</th>
                 <th>账号</th>
                 <th>昵称</th>
+                <th>角色</th>
                 <th>状态</th>
                 <th>创建时间</th>
                 <th>更新时间</th>
@@ -39,13 +50,16 @@
                     <td>{{$v.ID}}</td>
                     <td>{{$v.Account}}</td>
                     <td>{{$v.Nickname}}</td>
+                    <td>{{$v.RoleGroup}}</td>
                     <td>{{$v.StatusText}}</td>
                     <td>{{$v.CreatedAtText}}
                     <td>{{$v.UpdatedAtText}}</td>
                     <td>{{$v.LastTimeText}}</td>
-                    <td style="width:132px;text-align:center;">
+                    <td style="width:120px;">
                         <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/edit/{{$v.ID}}">编辑</a>
+                        {{if eq $v.Identity 1}}
                         <a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/user/role/{{$v.ID}}">角色</a>
+                        {{end}}
                     </td>
                 </tr>
             {{end}}
@@ -56,21 +70,25 @@
 
 {{define "js"}}
     <script>
+        //渲染表单
+        layui.use('form', function() {});
+
+        //设置分页
         var limit = {{.limit}};
         var page = {{.page}};
         var count = {{.count}};
-        layui.use('laypage', function(){
+        layui.use(['laypage', 'myUtil'], function() {
             var laypage = layui.laypage;
             laypage.render({
                 elem: 'j-laypage',
                 limit: limit,
                 curr: page,
                 count: count,
+                layout:['prev', 'page', 'next', 'count'],
                 jump: function (obj, first) {
-                    if(first) {
-                        return;
+                    if(!first) {
+                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
                     }
-                    window.location.href = '/backend/rbac/user?page='+obj.curr+'&limit='+obj.limit;
                 }
             });
         });

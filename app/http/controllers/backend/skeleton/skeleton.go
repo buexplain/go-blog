@@ -1,7 +1,7 @@
 package c_skeleton
 
 import (
-	m_node "github.com/buexplain/go-blog/models/node"
+	"github.com/buexplain/go-blog/models/node"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
 	"html/template"
@@ -9,7 +9,7 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	menu, err := m_node.GetALL()
+	menu, err := m_node.GetMenu()
 	if err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}

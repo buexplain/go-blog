@@ -20,7 +20,7 @@ func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
 	isJSON := (ctx.Request().AcceptJSON() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
 	var err error
 	if isJSON {
-		ctx.Response().Assign("code", code.EXCEPTION).Assign("message", code.Text(code.EXCEPTION))
+		ctx.Response().Assign("code", code.SERVER).Assign("message", code.Text(code.SERVER))
 		if isDebug {
 			ctx.Response().Assign("data", data)
 		} else {
@@ -32,7 +32,7 @@ func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
 		if isDebug {
 			err = ctx.Response().Plain(http.StatusInternalServerError, data)
 		} else {
-			err = ctx.Response().Plain(http.StatusInternalServerError, code.Text(code.EXCEPTION))
+			err = ctx.Response().Plain(http.StatusInternalServerError, code.Text(code.SERVER))
 		}
 	}
 	if !isDebug {
@@ -107,7 +107,7 @@ func defaultErrorFunc(ctx *fool.Ctx, err error) {
 func defaultRoute(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ctx.Response().Buffer().Reset()
 	w.Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
-	return w.Plain(http.StatusNotFound, code.Text(code.CODE_INVALID_ROUTE))
+	return w.Plain(http.StatusNotFound, code.Text(code.INVALID_ROUTE))
 }
 
 type CSRFErrorHandler struct {
@@ -117,13 +117,13 @@ func (this *CSRFErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	isJSON := strings.Contains(r.Header.Get(constant.HeaderAccept), constant.MIMEApplicationJSON)
 	if isJSON {
 		var content []byte
-		content, _ = json.Marshal(map[string]interface{}{"code": code.CODE_INVALID_CSRF, "message": code.Text(code.CODE_INVALID_CSRF), "data": ""})
+		content, _ = json.Marshal(map[string]interface{}{"code": code.INVALID_CSRF, "message": code.Text(code.INVALID_CSRF), "data": ""})
 		w.Header().Set(constant.HeaderContentType, constant.MIMEApplicationJSONCharsetUTF8)
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(content)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte(code.Text(code.CODE_INVALID_CSRF)))
+		_, _ = w.Write([]byte(code.Text(code.INVALID_CSRF)))
 	}
 }
 
