@@ -8,7 +8,7 @@ INSERT INTO `Node` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Pid`, `Name`, 
 INSERT INTO `Node` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Pid`, `Name`, `URL`, `SortID`) VALUES (6, '2019-08-10 22:30:06', '2019-08-10 22:30:06', NULL, 5, '分类', '/backend/article/category', 1991);
 INSERT INTO `Node` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Pid`, `Name`, `URL`, `SortID`) VALUES (7, '2019-08-10 22:30:20', '2019-08-10 22:30:20', NULL, 5, '标签', '/backend/article/tag', 1991);
 
-INSERT INTO `User` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Account`, `Password`, `Nickname`, `Identity`, `Status`, `LastTime`) VALUES (1, '2019-08-10 22:27:36', '2019-08-11 11:31:57', NULL, 'admin', '$2a$10$04DXgt30ZBTS/0ptmE4RKOfZT7Li2D0A2UpexbqRobXhe5Xwspj1.', '超级管理员', 1, 1, '2019-08-11 11:31:57');
+
 
 INSERT INTO `Role` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Pid`, `Name`, `SortID`) VALUES (1, '2019-08-10 22:29:08', '2019-08-11 10:10:20', NULL, 0, '江西', 1991);
 INSERT INTO `Role` (`ID`, `CreatedAt`, `UpdatedAt`, `DeletedAt`, `Pid`, `Name`, `SortID`) VALUES (2, '2019-08-11 10:10:27', '2019-08-11 10:10:27', NULL, 1, '南昌', 1991);

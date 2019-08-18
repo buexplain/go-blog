@@ -35,6 +35,18 @@
 
         <div class="layui-form-item">
             <label class="layui-form-label">
+                请求方法
+            </label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="methods" value="GET" {{if .result}}{{if "GET" | .result.HasMethod}}checked{{end}}{{end}} title="GET" lay-skin="primary">
+                <input type="checkbox" name="methods" value="POST" {{if .result}}{{if "POST" | .result.HasMethod}}checked{{end}}{{end}} title="POST" lay-skin="primary">
+                <input type="checkbox" name="methods" value="PUT" {{if .result}}{{if "PUT" | .result.HasMethod}}checked{{end}}{{end}} title="PUT" lay-skin="primary">
+                <input type="checkbox" name="methods" value="DELETE" {{if .result}}{{if "DELETE" | .result.HasMethod}}checked{{end}}{{end}} title="DELETE" lay-skin="primary">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
                 后台菜单
             </label>
             <div class="layui-input-block">
@@ -48,6 +60,13 @@
             </label>
             <div class="layui-input-block">
                 <input type="number" min="1" name="SortID" value="{{if .result}}{{.result.SortID}}{{else}}1991{{end}}" required lay-verify="required" placeholder="请输入排序ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block" title="自动生成 新增、保存、编辑、更新、删除、查看的路由">
+                <input type="checkbox" name="restful" value="1" title="生成RESTful API">
             </div>
         </div>
 

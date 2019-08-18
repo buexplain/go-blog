@@ -96,8 +96,8 @@ type UserRoleIDList []UserRoleID
 func GetRoleIDByUserID(userID int) (UserRoleIDList, error) {
 	result := make(UserRoleIDList, 0)
 	session := dao.Dao.Table("`User`").Where("`User`.`ID`=?", userID)
-	session.Join("LEFT", "`UserRoleRelation`", "`UserRoleRelation`.UserID = `User`.ID")
-	session.Select("`UserRoleRelation`.`RoleID`")
+	session.Join("INNER", "`UserRoleRelation`", "`UserRoleRelation`.UserID = `User`.ID")
+	session.Select("`UserRoleRelation`.`RoleID` as `UserRoleID`")
 	err := session.Find(&result)
 	return result, err
 }

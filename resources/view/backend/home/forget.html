@@ -43,7 +43,7 @@
             var form = layui.form;
             form.on('submit(send)', function(data) {
                 console.log(data);
-                $.post('/backend/rbac/user/forget', data.field, function (json) {
+                $.post('/backend/home/user/forget', data.field, function (json) {
                     if(json.code !== 0) {
                         layer.msg(json.message);
                     }else {

@@ -66,6 +66,11 @@
                 checkbar: true, //开启复选框
                 skin: "laySimple",  // laySimple主题风格
                 line: true,  // 显示树线
+                checkbarType:'p-casc', //单向级联
+                menubar:true, //开启菜单栏
+                menubarTips:{ //菜单栏配置
+                    group:['moveDown', 'moveUp', 'checkAll', 'unCheckAll', 'invertAll'] // 按钮组控制
+                },
                 data: data
             });
             //绑定表单提交

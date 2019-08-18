@@ -23,14 +23,13 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 				//存在路由，并且路由有json标签，则响应json格式
 				ctx.Throw(ctx.Response().Assign("code", code.INVALID_AUTH).Assign("message", code.Text(code.INVALID_AUTH)).Assign("data", "").JSON(http.StatusOK))
 			} else {
-				ctx.Throw(ctx.Response().Jump("/backend/sign", code.Text(code.INVALID_AUTH)))
+				ctx.Throw(ctx.Response().JumpBack(code.Text(code.INVALID_AUTH)))
 			}
 		}
 	}
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
-	return true
 	user := s_user.IsSignIn(ctx.Request().Session())
 
 	//判断后台用户是否登录

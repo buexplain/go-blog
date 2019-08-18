@@ -57,21 +57,3 @@ func Destroy(ids[]int) (affected int64, err error) {
 
 	return affected, deleteErr
 }
-
-func parseNode(node *m_node.Node) {
-	if node.IsMenu == 0 {
-		node.IsMenu = m_node.IsMenuNo
-	}else {
-		node.IsMenu = m_node.IsMenuYes
-	}
-}
-
-func Insert(node *m_node.Node) (affected int64, err error) {
-	parseNode(node)
-	return dao.Dao.Insert(node)
-}
-
-func Update(node *m_node.Node) (affected int64, err error) {
-	parseNode(node)
-	return dao.Dao.ID(node.ID).MustCols("Pid").Update(node)
-}

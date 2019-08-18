@@ -1,6 +1,7 @@
 package c_node
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/node"
@@ -10,7 +11,18 @@ import (
 	"github.com/thedevsaddam/govalidator"
 	"html/template"
 	"net/http"
+	"strings"
 )
+
+func init()  {
+	govalidator.AddCustomRule("methods", func(field string, rule string, message string, value interface{}) error {
+		fmt.Println(field)
+		fmt.Println(rule)
+		fmt.Println(message)
+		fmt.Println(value)
+		return nil
+	})
+}
 
 //列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -39,11 +51,13 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	rules := govalidator.MapData{
 		"Name": []string{"required"},
 		"URL": []string{"required"},
+		"Methods": []string{"methods"},
 	}
 
 	messages := govalidator.MapData{
 		"Name": []string{"required:请输入节点名"},
 		"URL": []string{"required:请输入访问路径"},
+		"Methods": []string{"methods:请勾选请求方法"},
 	}
 
 	opts := govalidator.Options{
@@ -64,7 +78,10 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(err)
 	}
 
-	if _, err := s_node.Insert(mod); err != nil {
+	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
+
+
+	if _, err := mod.Insert(); err != nil {
 		return w.JumpBack(err)
 	}
 
@@ -98,11 +115,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	rules := govalidator.MapData{
 		"Name": []string{"required"},
 		"URL": []string{"required"},
+		"Methods": []string{"required"},
 	}
 
 	messages := govalidator.MapData{
 		"Name": []string{"required:请输入节点名"},
 		"URL": []string{"required:请输入访问路径"},
+		"Methods": []string{"required:请勾选请求方法"},
 	}
 
 	opts := govalidator.Options{
@@ -122,9 +141,15 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
-	mod.ID = r.ParamInt("id", 0)
 
-	if _, err := s_node.Update(mod); err != nil {
+	mod.ID = r.ParamInt("id", 0)
+	if mod.ID <= 0 {
+		return w.JumpBack("参数错误")
+	}
+
+	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
+
+	if _, err := mod.Update(); err != nil {
 		return w.JumpBack(err)
 	}
 

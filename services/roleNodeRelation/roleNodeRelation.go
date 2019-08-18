@@ -96,8 +96,8 @@ type NodeRoleIDList []NodeRoleID
 func GetRoleIDByNodeURL(nodeURL string) (NodeRoleIDList, error) {
 	result := make(NodeRoleIDList, 0)
 	session := dao.Dao.Table("`Node`").Where("`Node`.`URL`=?", nodeURL)
-	session.Join("LEFT", "`RoleNodeRelation`", "`RoleNodeRelation`.NodeID = `Node`.ID")
-	session.Select("`RoleNodeRelation`.`RoleID`")
+	session.Join("INNER", "`RoleNodeRelation`", "`RoleNodeRelation`.NodeID = `Node`.ID")
+	session.Select("`RoleNodeRelation`.`RoleID` as `NodeRoleID`")
 	err := session.Find(&result)
 	return result, err
 }

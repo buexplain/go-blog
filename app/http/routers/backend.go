@@ -3,7 +3,7 @@ package routers
 import (
 	c_category "github.com/buexplain/go-blog/app/http/controllers/backend/article/category"
 	c_tag "github.com/buexplain/go-blog/app/http/controllers/backend/article/tag"
-	"github.com/buexplain/go-blog/app/http/controllers/backend/home"
+	c_home "github.com/buexplain/go-blog/app/http/controllers/backend/home"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
 	c_role "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/role"
 	c_official_user "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/user"
@@ -29,7 +29,11 @@ func backend(mux *fool.Mux) {
 		mux.Get("skeleton", c_skeleton.Index)
 
 		//我的桌面
-		mux.Get("home", c_home.Index)
+
+		mux.Group("home", func() {
+			mux.Get("/", c_home.Index)
+			mux.Any("user/forget", c_home.ForgetPassword, http.MethodGet, http.MethodPost)
+		})
 
 		//权限管理
 		mux.Group("rbac", func() {
@@ -42,7 +46,6 @@ func backend(mux *fool.Mux) {
 			mux.Delete("node", c_node.Destroy)
 
 			//管理员用户管理
-			mux.Any("user/forget", c_official_user.Forget, http.MethodGet, http.MethodPost)
 			mux.Get("user", c_official_user.Index)
 			mux.Get("user/create", c_official_user.Create)
 			mux.Post("user", c_official_user.Store)
