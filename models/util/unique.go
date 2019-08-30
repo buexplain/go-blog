@@ -8,7 +8,7 @@ import (
 func CheckUnique(tableName string, field string, value interface{}, selfID ...int) bool {
 	d := dao.Dao.Table("`" + tableName + "`")
 	d.Where("`"+field+"`"+"=?", value)
-	if len(selfID) > 0 {
+	if len(selfID) > 0 && selfID[0] > 0 {
 		d.Where("`ID`!=?", selfID[0])
 	}
 	type Tmp struct {

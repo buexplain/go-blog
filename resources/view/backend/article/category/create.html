@@ -11,7 +11,7 @@
                 父ID
             </label>
             <div class="layui-input-block">
-                <input type="text" name="Pid" value="{{if .result}}{{.result.Pid}}{{else}}{{.pid}}{{end}}" required lay-verify="required" placeholder="请输入父ID" autocomplete="off" class="layui-input">
+                <input type="number" min="0" name="Pid" value="{{if .result}}{{.result.Pid}}{{else}}{{.pid}}{{end}}" required lay-verify="required" placeholder="请输入父ID" autocomplete="off" class="layui-input">
             </div>
         </div>
 

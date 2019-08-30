@@ -7,5 +7,6 @@ import (
 func init() {
 	regexp(boot.APP.Mux())
 	common(boot.APP.Mux())
+	frontend(boot.APP.Mux())
 	backend(boot.APP.Mux())
 }

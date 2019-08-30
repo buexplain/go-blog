@@ -16,6 +16,8 @@ github.com/buexplain/go-fool v0.0.0-20190810095056-093f0ca7a61a/go.mod h1:/ZEaFu
 github.com/buexplain/go-gracehttp v0.0.0-20190711071312-a7a06ca8bb65/go.mod h1:gWNbLLBVZlRwRiq7U0VzLwzBxo93FDAOsN3sw/Sgh1A=
 github.com/buexplain/go-gracehttp v0.1.0 h1:ca8qPOEKQQs3BxA87jwQ6jvH3uL+uPUttMA5Fca/WS4=
 github.com/buexplain/go-gracehttp v0.1.0/go.mod h1:gWNbLLBVZlRwRiq7U0VzLwzBxo93FDAOsN3sw/Sgh1A=
+github.com/buexplain/go-validator v0.0.0-20190825100648-8b2f4149bd95 h1:BpeuglLTPpL9SI3H3m/lR/IDugbBbFQYL4xQggdUkYw=
+github.com/buexplain/go-validator v0.0.0-20190825100648-8b2f4149bd95/go.mod h1:tdwn7N22YAeDLep7s2QsvCOnY7Sl3p8f6rcayvvYKL0=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cockroachdb/apd v1.1.0 h1:3LFP3629v+1aKXU5Q37mxmRxX/pIu1nijXydLShEq5I=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=

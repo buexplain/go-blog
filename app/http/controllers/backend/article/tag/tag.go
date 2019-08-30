@@ -1,14 +1,36 @@
 package c_tag
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	m_tag "github.com/buexplain/go-blog/models/tag"
-	m_util "github.com/buexplain/go-blog/models/util"
+	"github.com/buexplain/go-blog/models/tag"
+	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
+	"strconv"
 )
+
+//表单校验器
+var v *validator.Validator
+
+func init()  {
+	v = validator.New()
+	v.Rule("Name").Add("required", "请填写标签名").Add("CheckUnique:id=0", "该标签名已存在")
+	//校验标签是否存在
+	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule) (s string, e error) {
+		str, ok := value.(string)
+		if !ok {
+			str = fmt.Sprintf("%v", v)
+		}
+		if !m_util.CheckUnique("Tag", field, str, rule.GetInt("id")) {
+			return rule.Message(0), nil
+		}
+		return "", nil
+	})
+}
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	query := m_util.NewQuery("Tag", ctx).Limit()
@@ -37,21 +59,18 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result := new(m_tag.Tag)
-
-	if err := r.FormToStruct(result); err != nil {
+	mod := new(m_tag.Tag)
+	if err := r.FormToStruct(mod); err != nil {
 		return err
 	}
 
-	if result.Name == "" {
-		return w.JumpBack("请填写标签名")
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
 	}
 
-	if !m_util.CheckUnique("Tag", "Name", result.Name) {
-		return w.JumpBack("该标签名已存在")
-	}
-
-	if _, err := dao.Dao.Insert(result); err != nil {
+	if _, err := dao.Dao.Insert(mod); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
@@ -80,26 +99,23 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result := new(m_tag.Tag)
-
-	if err := r.FormToStruct(result); err != nil {
+	mod := new(m_tag.Tag)
+	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
+	mod.ID = r.ParamInt("id", 0)
 
-	result.ID = r.ParamInt("id", 0)
-	if result.ID <= 0 {
-		return w.JumpBack("ID错误")
+	vClone := v.Clone()
+	vClone.Rule("ID").Add("required", "ID错误")
+	vClone.Rule("Name").Add("CheckUnique:id="+strconv.Itoa(mod.ID), "该标签名已存在")
+
+	if r, err := vClone.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
 	}
 
-	if result.Name == "" {
-		return w.JumpBack("请填写标签名")
-	}
-
-	if !m_util.CheckUnique("Tag", "Name", result.Name, result.ID) {
-		return w.JumpBack("该标签名已存在")
-	}
-
-	if _, err := dao.Dao.ID(result.ID).Update(result); err != nil {
+	if _, err := dao.Dao.ID(mod.ID).Update(mod); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
 

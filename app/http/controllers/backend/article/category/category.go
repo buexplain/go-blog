@@ -3,14 +3,24 @@ package c_category
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	m_category "github.com/buexplain/go-blog/models/category"
-	s_category "github.com/buexplain/go-blog/services/category"
+	"github.com/buexplain/go-blog/models/category"
+	"github.com/buexplain/go-blog/services/category"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
-	"github.com/thedevsaddam/govalidator"
 	"html/template"
 	"net/http"
 )
+
+
+//表单校验器
+var v *validator.Validator
+
+func init()  {
+	v = validator.New()
+	v.Rule("Name").Add("required", "请输入分类名")
+	v.Rule("URL").Add("required", "请输入访问路径")
+}
 
 //列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -36,32 +46,15 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //保存
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	rules := govalidator.MapData{
-		"Name": []string{"required"},
-		"URL": []string{"required"},
-	}
-
-	messages := govalidator.MapData{
-		"Name": []string{"required:请输入分类名"},
-		"URL": []string{"required:请输入访问路径"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r.Raw(),
-		Rules:           rules,
-		Messages:        messages,
-		RequiredDefault: true,
-	}
-	v := govalidator.New(opts)
-	e := v.Validate()
-
-	if len(e) > 0 {
-		return w.JumpBack(e)
-	}
-
 	mod := &m_category.Category{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
+	}
+
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
 	}
 
 	if _, err := dao.Dao.Insert(mod); err != nil {
@@ -95,34 +88,20 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //更新
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	rules := govalidator.MapData{
-		"Name": []string{"required"},
-		"URL": []string{"required"},
-	}
-
-	messages := govalidator.MapData{
-		"Name": []string{"required:请输入分类名"},
-		"URL": []string{"required:请输入访问路径"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r.Raw(),
-		Rules:           rules,
-		Messages:        messages,
-		RequiredDefault: true,
-	}
-	v := govalidator.New(opts)
-	e := v.Validate()
-
-	if len(e) > 0 {
-		return w.JumpBack(e)
-	}
-
 	mod := &m_category.Category{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
 	mod.ID = r.ParamInt("id", 0)
+
+	vClone := v.Clone()
+	vClone.Rule("ID").Add("required", "ID错误")
+
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
+	}
 
 	if _, err := dao.Dao.ID(mod.ID).MustCols("Pid").Update(mod); err != nil {
 		return w.JumpBack(err)

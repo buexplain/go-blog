@@ -1,27 +1,26 @@
 package c_node
 
 import (
-	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/node"
-	s_node "github.com/buexplain/go-blog/services/node"
+	"github.com/buexplain/go-blog/services/node"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
-	"github.com/thedevsaddam/govalidator"
 	"html/template"
 	"net/http"
 	"strings"
 )
 
+//表单校验器
+var v *validator.Validator
+
 func init()  {
-	govalidator.AddCustomRule("methods", func(field string, rule string, message string, value interface{}) error {
-		fmt.Println(field)
-		fmt.Println(rule)
-		fmt.Println(message)
-		fmt.Println(value)
-		return nil
-	})
+	v = validator.New()
+	v.Rule("Name").Add("required", "请输入节点名")
+	v.Rule("URL").Add("required", "请输入访问路径")
+	v.Rule("Methods").Add(`in:in=,GET,POST,PUT,DELETE&split=\,`, "请勾选请求方法", "错误的请求方法，请重新勾选")
 }
 
 //列表
@@ -48,38 +47,17 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //保存
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	rules := govalidator.MapData{
-		"Name": []string{"required"},
-		"URL": []string{"required"},
-		"Methods": []string{"methods"},
-	}
-
-	messages := govalidator.MapData{
-		"Name": []string{"required:请输入节点名"},
-		"URL": []string{"required:请输入访问路径"},
-		"Methods": []string{"methods:请勾选请求方法"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r.Raw(),
-		Rules:           rules,
-		Messages:        messages,
-		RequiredDefault: true,
-	}
-	v := govalidator.New(opts)
-	e := v.Validate()
-
-	if len(e) > 0 {
-		return w.JumpBack(e)
-	}
-
 	mod := &m_node.Node{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
-
 	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
 
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
+	}
 
 	if _, err := mod.Insert(); err != nil {
 		return w.JumpBack(err)
@@ -110,33 +88,9 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/rbac/node/create.html")
 }
 
+
 //更新
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	rules := govalidator.MapData{
-		"Name": []string{"required"},
-		"URL": []string{"required"},
-		"Methods": []string{"required"},
-	}
-
-	messages := govalidator.MapData{
-		"Name": []string{"required:请输入节点名"},
-		"URL": []string{"required:请输入访问路径"},
-		"Methods": []string{"required:请勾选请求方法"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r.Raw(),
-		Rules:           rules,
-		Messages:        messages,
-		RequiredDefault: true,
-	}
-	v := govalidator.New(opts)
-	e := v.Validate()
-
-	if len(e) > 0 {
-		return w.JumpBack(e)
-	}
-
 	mod := &m_node.Node{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
@@ -146,8 +100,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if mod.ID <= 0 {
 		return w.JumpBack("参数错误")
 	}
-
 	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
+
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
+	}
 
 	if _, err := mod.Update(); err != nil {
 		return w.JumpBack(err)
