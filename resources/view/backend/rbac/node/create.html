@@ -5,7 +5,7 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="{{if .result}}/backend/rbac/node/{{.result.ID}}{{else}}/backend/rbac/node{{end}}" method="post">
+    <form class="layui-form" action="{{if .result}}/backend/rbac/node/update/{{.result.ID}}{{else}}/backend/rbac/node{{end}}" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">
                 父ID
@@ -63,12 +63,14 @@
             </div>
         </div>
 
-        <div class="layui-form-item">
-            <label class="layui-form-label"></label>
-            <div class="layui-input-block" title="自动生成 新增、保存、编辑、更新、删除、查看的路由">
-                <input type="checkbox" name="restful" value="1" title="生成RESTful API">
+        {{if not .result }}
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block" title="自动生成 新增、保存、编辑、更新、删除、查看的路由">
+                    <input type="checkbox" name="restful" value="1" title="生成RESTful API">
+                </div>
             </div>
-        </div>
+        {{end}}
 
         <div class="layui-form-item">
             <div class="layui-input-block">

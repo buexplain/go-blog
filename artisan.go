@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/console"
 	_ "github.com/buexplain/go-blog/app/console/asset"
 	_ "github.com/buexplain/go-blog/app/console/db"
+	"os"
 	"time"
 )
 
@@ -17,6 +18,12 @@ func init() {
 }
 
 func main() {
+	defer func() {
+		if a := recover(); a != nil {
+			boot.Logger.ErrorF("console run failed: %s", a)
+			os.Exit(1)
+		}
+	}()
 	if err := console.RootCmd.Execute(); err != nil {
 		boot.Logger.ErrorF("console start failed: %s", err)
 	}

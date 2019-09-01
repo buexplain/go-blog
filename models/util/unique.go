@@ -2,6 +2,7 @@ package m_util
 
 import (
 	"github.com/buexplain/go-blog/dao"
+	"github.com/buexplain/go-blog/models"
 )
 
 //检查字段值是否存在
@@ -13,6 +14,7 @@ func CheckUnique(tableName string, field string, value interface{}, selfID ...in
 	}
 	type Tmp struct {
 		ID int `xorm:"INTEGER"`
+		models.DeletedAtField `xorm:"extends"`
 	}
 	has, err := d.Exist(new(Tmp))
 	if err != nil {

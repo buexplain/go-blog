@@ -9,7 +9,8 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	menu, err := m_node.GetMenu()
+	user := s_user.IsSignIn(r.Session())
+	menu, err := m_node.GetMenuByUserID(user.ID)
 	if err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}

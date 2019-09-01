@@ -74,3 +74,13 @@ func GetMenu() (List, error) {
 	err := dao.Dao.Table("Node").Where("IsMenu=?", IsMenuYes).Desc("SortID").Find(&result)
 	return result, err
 }
+
+func GetMenuByUserID(userID int) (List, error) {
+	result := make(List, 0)
+	mod := dao.Dao.Table("Node").
+		Join("INNER", "`RoleNodeRelation`", "`Node`.`ID` = `RoleNodeRelation`.`NodeID`").
+		Join("INNER", "`UserRoleRelation`", "`UserRoleRelation`.`RoleID` = `RoleNodeRelation`.`RoleID`").
+		Where("UserRoleRelation.UserID=?", userID).Where("Node.IsMenu=?", IsMenuYes)
+	err := mod.Find(&result)
+	return result, err
+}

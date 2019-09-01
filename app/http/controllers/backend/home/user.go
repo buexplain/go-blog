@@ -2,7 +2,7 @@ package c_home
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-blog/app/http/boot/code"
+	c_util "github.com/buexplain/go-blog/app/http/controllers/util"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
@@ -30,29 +30,27 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(err)
 	}
 
-	//表单校验器
-	var v *validator.Validator
-	v = validator.New()
+	v := validator.New()
 	v.Rule("OldPassword").Add("required", "请输入旧密码")
-	v.Rule("NewPassword", "新密码：").Add("password:min=8,max=16",
+	v.Rule("NewPassword",).Add("password:min=8,max=16",
 		"请输入新密码",
-		"密码长度在8~16位之间",
+		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
 		"密码格式有误，数字、字母、符号至少两种")
 
 	if r, err := v.Validate(mod); err != nil {
-		return w.Assign("message", err.Error()).Assign("code", 1).Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, err.Error())
 	}else if !r.IsEmpty() {
-		return w.Assign("message", r.ToSimpleString()).Assign("code", 1).Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, r.ToSimpleString())
 	}
 
 	user := s_user.IsSignIn(r.Session())
 	if user == nil {
-		return w.Assign("message", "登录信息错误").Assign("code", 1).Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, "错误的登录信息")
 	}
 
 	if !s_user.ComparePassword(mod.OldPassword, user.Password) {
-		return w.Assign("message", "旧密码错误").Assign("code", 1).Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, "错误的旧密码")
 	}
 
 	var err error
@@ -65,5 +63,5 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
-	return w.Assign("message", code.Text(code.SUCCESS)).Assign("code", 0).Assign("data", "").JSON(http.StatusOK)
+	return c_util.Success(w)
 }

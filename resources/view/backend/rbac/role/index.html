@@ -65,7 +65,7 @@
                         template: function(item) {
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/rbac/role/create/'+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/role/edit/'+item.ID+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/rbac/role/?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/rbac/role/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/role/node/'+item.ID+'">节点</a>';
                             return btn;
                         }
@@ -80,7 +80,7 @@
                     layer.msg('请勾选目标角色名');
                     return;
                 }
-                window.location.href = '/backend/rbac/role/?_method=delete&ids[]='+ids.join('&ids[]=');
+                window.location.href = '/backend/rbac/role/delete/1?_method=delete&ids[]='+ids.join('&ids[]=');
             });
 
             //关闭 | 展开

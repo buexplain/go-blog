@@ -5,7 +5,7 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="{{if .result}}/backend/article/tag/{{.result.ID}}{{else}}/backend/article/tag{{end}}" method="post">
+    <form class="layui-form" action="{{if .result}}/backend/article/tag/update/{{.result.ID}}{{else}}/backend/article/tag{{end}}" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">
                 标签名

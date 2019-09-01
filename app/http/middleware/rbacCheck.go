@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
@@ -30,7 +31,6 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
-	return true
 	user := s_user.IsSignIn(ctx.Request().Session())
 
 	//判断后台用户是否登录
@@ -40,9 +40,10 @@ func rbacCheck(ctx *fool.Ctx) bool {
 
 	//得到当前命中的路由
 	route := ctx.Route()
+	fmt.Println("route path", route.GetPath())
 
 	//得到当前路由所在角色的列表
-	nodeRoleIDList, err := s_roleNodeRelation.GetRoleIDByNodeURL(route.GetPath())
+	nodeRoleIDList, err := s_roleNodeRelation.GetRoleIDByNodeURL(route.GetPath(), ctx.Request().Raw().Method)
 	if err != nil {
 		ctx.Logger().ErrorF("得到当前路由所在角色的列表错误: %s", ctx.Error().WrapServer(err).Location())
 		return false

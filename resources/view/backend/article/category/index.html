@@ -72,7 +72,7 @@
                         template: function(item) {
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/article/category/create/'+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/category/edit/'+item.ID+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
                             return btn;
                         }
                     }
@@ -86,7 +86,7 @@
                     layer.msg('请勾选目标分类名');
                     return;
                 }
-                window.location.href = '/backend/article/category/?_method=delete&ids[]='+ids.join('&ids[]=');
+                window.location.href = '/backend/article/category/delete/1?_method=delete&ids[]='+ids.join('&ids[]=');
             });
 
             //关闭 | 展开

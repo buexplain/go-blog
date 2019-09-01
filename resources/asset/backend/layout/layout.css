@@ -1,6 +1,6 @@
 body{
     padding: 10px;
 }
-.layui-layer{
-    z-index: 998;
+.layui-layer {
+    z-index: 998 !important;
 }

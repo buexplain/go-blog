@@ -2,6 +2,7 @@ package c_role
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
+	c_util "github.com/buexplain/go-blog/app/http/controllers/util"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
@@ -42,16 +43,16 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入角色节点关系表
 	roleID := r.ParamInt("id")
 	if roleID <= 0 {
-		return w.Assign("code", 1).Assign("message", "参数错误").Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, "参数错误")
 	}
 
 	nodeID := r.FormSliceInt("ids[]")
 
 	err := s_roleNodeRelation.SetRoleNode(roleID, nodeID)
 	if err != nil {
-		return w.Assign("code", 1).Assign("message", err.Error()).Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, err.Error())
 	}
 
-	return w.Assign("code", 0).Assign("message", "操作成功").Assign("data", "").JSON(http.StatusOK)
+	return c_util.Success(w)
 }
 

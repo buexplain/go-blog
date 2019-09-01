@@ -69,7 +69,12 @@
                     {
                         key: 'URL',
                         title: '访问路径',
-                        align: 'center',
+                        align: 'left',
+                    },
+                    {
+                        key: 'Methods',
+                        title: '请求方法',
+                        align: 'left',
                     },
                     {
                         title: '操作',
@@ -78,7 +83,7 @@
                         template: function(item) {
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/rbac/node/create/'+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/node/edit/'+item.ID+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/rbac/node/?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/rbac/node/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
                             return btn;
                         }
                     }
@@ -92,7 +97,7 @@
                     layer.msg('请勾选目标节点名');
                     return;
                 }
-                window.location.href = '/backend/rbac/node/?_method=delete&ids[]='+ids.join('&ids[]=');
+                window.location.href = '/backend/rbac/node/delete/1?_method=delete&ids[]='+ids.join('&ids[]=');
             });
 
             //关闭 | 展开

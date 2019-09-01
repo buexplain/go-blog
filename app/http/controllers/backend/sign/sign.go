@@ -1,15 +1,17 @@
 package c_sign
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/services/captcha"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
-	"github.com/thedevsaddam/govalidator"
 	"net/http"
 	"strings"
 )
+
 
 //显示登录页面
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -21,35 +23,43 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //登录
 func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	if s_captcha.Verify(r.Session(), strings.TrimSpace(r.Form("captchaVal", ""))) == false {
-		return w.Jump(r.Raw().URL.Path, "验证码错误")
+	type In struct {
+		Account string
+		Password string
+		CaptchaVal string
+	}
+	mod := &In{}
+	if err := r.FormToStruct(mod); err != nil {
+		return w.JumpBack(err)
 	}
 
-	rules := govalidator.MapData{
-		"account":  []string{"required"},
-		"password": []string{"required"},
-	}
+	v := validator.New()
+	v.Rule("Account").Add("required", "请输入账号")
+	v.Rule("Password").Add("required", "请输入密码")
+	v.Rule("CaptchaVal").Add("VerifyCaptcha", "请输入验证码", "验证码错误")
+	v.Custom("VerifyCaptcha", func(field string, value interface{}, rule *validator.Rule) (s string, e error) {
+		str, ok := value.(string)
+		if !ok {
+			str = fmt.Sprintf("%v", v)
+		}
+		str = strings.TrimSpace(str)
+		if str == "" {
+			return rule.Message(0), nil
+		}
+		if s_captcha.Verify(r.Session(), str) == false {
+			return rule.Message(1), nil
+		}
+		return "", nil
+	})
 
-	messages := govalidator.MapData{
-		"account":  []string{"required:请输入账号"},
-		"password": []string{"required:请输入密码"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r.Raw(),
-		Rules:           rules,
-		Messages:        messages,
-		RequiredDefault: true,
-	}
-	v := govalidator.New(opts)
-	e := v.Validate()
-
-	if len(e) > 0 {
-		return w.JumpBack(e)
+	if r, err := v.Validate(mod); err != nil {
+		return ctx.Error().WrapServer(err)
+	}else if !r.IsEmpty() {
+		return w.JumpBack(r)
 	}
 
 	var err error
-	_, err = s_user.OfficialSignIn(ctx.Request().Session(), r.Form("account", ""), r.Form("password", ""))
+	_, err = s_user.OfficialSignIn(ctx.Request().Session(), mod.Account, mod.Password)
 	if err != nil {
 		return w.JumpBack(err)
 	}

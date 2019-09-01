@@ -27,11 +27,16 @@ go run main.go
 2. 账号 admin
 3. 密码 123456
 
-## 二次开发相关
+## 二次开发相关的命令
 
 ### 同步models结构体到数据库
 ```bash
 go build -o artisan.exe artisan.go && artisan.exe db sync
+```
+
+### 初始化一个管理员用户
+```bash
+go build -o artisan.exe artisan.go && artisan.exe db sync &&  artisan.exe db addAdmin -a admin -p 123456
 ```
 
 ### `database/init.sql`制作

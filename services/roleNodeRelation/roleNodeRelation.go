@@ -93,11 +93,14 @@ type NodeRoleID int
 type NodeRoleIDList []NodeRoleID
 
 //获取节点的角色id列表
-func GetRoleIDByNodeURL(nodeURL string) (NodeRoleIDList, error) {
+func GetRoleIDByNodeURL(nodeURL string, method ...string) (NodeRoleIDList, error) {
 	result := make(NodeRoleIDList, 0)
 	session := dao.Dao.Table("`Node`").Where("`Node`.`URL`=?", nodeURL)
 	session.Join("INNER", "`RoleNodeRelation`", "`RoleNodeRelation`.NodeID = `Node`.ID")
 	session.Select("`RoleNodeRelation`.`RoleID` as `NodeRoleID`")
+	if len(method) > 0 {
+		session.Where("`Node`.`Methods` LIKE ?", "%"+method[0]+"%")
+	}
 	err := session.Find(&result)
 	return result, err
 }

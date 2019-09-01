@@ -5,12 +5,12 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="{{if .result}}/backend/rbac/user/{{.result.ID}}{{else}}/backend/rbac/user{{end}}" method="post">
+    <form class="layui-form" action="{{if .result}}/backend/rbac/user/update/{{.result.ID}}{{else}}/backend/rbac/user{{end}}" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">
                 账号
             </label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="text" name="account" value="{{.result.Account}}" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">
             </div>
         </div>
@@ -19,8 +19,11 @@
             <label class="layui-form-label">
                 密码
             </label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="text" name="password" value="" {{if .result}}{{else}}required lay-verify="required"{{end}} placeholder="{{if .result}}请输入新密码{{else}}请输入密码{{end}}" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                8位以上长度，数字、字母、符号至少两种
             </div>
         </div>
 
@@ -28,7 +31,7 @@
             <label class="layui-form-label">
                 昵称
             </label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="text" name="nickname" value="{{.result.Nickname}}" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
             </div>
         </div>

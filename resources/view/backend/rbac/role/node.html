@@ -90,6 +90,11 @@
                     };
                     $.post(window.location.pathname, param, function (json) {
                         layer.msg(json.message);
+                        if(json.code === 0) {
+                            setTimeout(function () {
+                                window.location.href = '/backend/rbac/role';
+                            }, 2000);
+                        }
                     });
                 }catch (e) {
                     console.error(e);

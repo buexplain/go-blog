@@ -2,6 +2,7 @@ package c_official_user
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
+	c_util "github.com/buexplain/go-blog/app/http/controllers/util"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
@@ -42,7 +43,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入用户角色关系表
 	userID := r.ParamInt("id")
 	if userID <= 0 {
-		return w.Assign("code", 1).Assign("message", "参数错误").Assign("data", "").JSON(http.StatusOK)
+		return c_util.Error(w, "参数错误")
 	}
 
 	roleID := r.FormSliceInt("ids[]")
@@ -52,5 +53,5 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.Assign("code", 1).Assign("message", err.Error()).Assign("data", "").JSON(http.StatusOK)
 	}
 
-	return w.Assign("code", 0).Assign("message", "操作成功").Assign("data", "").JSON(http.StatusOK)
+	return c_util.Success(w)
 }
