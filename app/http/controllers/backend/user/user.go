@@ -161,6 +161,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//强制用户身份为普通用户
 	mod.Identity = m_user.IdentityCitizen
 
+	//强制只允许修改非管理员用户
 	if _, err := dao.Dao.ID(mod.ID).Where("Identity=?", m_user.IdentityCitizen).Update(mod); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}

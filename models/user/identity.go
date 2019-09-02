@@ -10,11 +10,3 @@ var IdentityText = map[int]string{
 	IdentityOfficial:  "管理人员",
 	IdentityCitizen: "普通用户",
 }
-
-func CheckIdentity(identity int) bool {
-	if identity != IdentityOfficial && identity != IdentityCitizen {
-		return false
-	}
-	return true
-}
-

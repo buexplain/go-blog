@@ -89,11 +89,11 @@
                         ids:ids
                     };
                     $.post(window.location.pathname, param, function (json) {
-                        layer.msg(json.message);
+                        var url = "/common/jump?message="+json.message;
                         if(json.code === 0) {
-                            setTimeout(function () {
-                                window.location.href = '/backend/rbac/role';
-                            }, 2000);
+                            window.location.href = url+"&url="+'/backend/rbac/role';
+                        }else {
+                            layer.alert(json.message, {icon: 2});
                         }
                     });
                 }catch (e) {

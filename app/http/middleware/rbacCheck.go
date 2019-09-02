@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
@@ -40,7 +39,6 @@ func rbacCheck(ctx *fool.Ctx) bool {
 
 	//得到当前命中的路由
 	route := ctx.Route()
-	fmt.Println("route path", route.GetPath())
 
 	//得到当前路由所在角色的列表
 	nodeRoleIDList, err := s_roleNodeRelation.GetRoleIDByNodeURL(route.GetPath(), ctx.Request().Raw().Method)
