@@ -6,4 +6,5 @@ type Config struct {
 	Session Session
 	CSRF    CSRF
 	Asset   Asset
+	Business Business
 }

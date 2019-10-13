@@ -1,5 +1,6 @@
 package config
 
+//日志配置
 type Log struct {
 	Async    bool
 	Capacity uint

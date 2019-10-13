@@ -19,7 +19,6 @@ var v *validator.Validator
 func init()  {
 	v = validator.New()
 	v.Rule("Name").Add("required", "请输入分类名")
-	v.Rule("URL").Add("required", "请输入访问路径")
 }
 
 //列表

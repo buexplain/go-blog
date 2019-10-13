@@ -2,6 +2,7 @@ package routers
 
 import (
 	c_category "github.com/buexplain/go-blog/app/http/controllers/backend/article/category"
+	c_content "github.com/buexplain/go-blog/app/http/controllers/backend/article/content"
 	c_tag "github.com/buexplain/go-blog/app/http/controllers/backend/article/tag"
 	c_home "github.com/buexplain/go-blog/app/http/controllers/backend/home"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
@@ -87,6 +88,16 @@ func backend(mux *fool.Mux) {
 			mux.Get("tag/edit/:id", c_tag.Edit)
 			mux.Put("tag/update/:id", c_tag.Update)
 			mux.Delete("tag/delete/:id", c_tag.Destroy)
+
+			//内容管理
+			mux.Get("content", c_content.Index)
+			mux.Get("content/create", c_content.Create)
+			mux.Post("content", c_content.Store)
+			mux.Get("content/edit/:id", c_content.Edit)
+			mux.Put("content/update/:id", c_content.Update)
+			mux.Delete("content/delete/:id", c_content.Destroy)
+			mux.Get("content/category/:pid", c_content.Category)
+			mux.Post("content/upload", c_content.Upload).AddLabel("json")
 		})
 
 	}).Use(middleware.RbacCheck)

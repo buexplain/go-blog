@@ -2,6 +2,7 @@ package config
 
 import "net/http"
 
+//session 配置
 type Session struct {
 	Store   string
 	Key     string

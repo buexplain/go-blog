@@ -15,5 +15,7 @@ layui.config({
     //表格树组件
     treeTable:'layext/treeTable/treeTable',
     //树组件
-    dtree:'layext/dtree/dtree'
+    dtree:'layext/dtree/dtree',
+    //select下拉选项卡
+    formSelects:'layext/formSelects/formSelects-v4',
 });

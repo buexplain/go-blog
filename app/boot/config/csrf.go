@@ -1,5 +1,6 @@
 package config
 
+//csrf防御配置
 type CSRF struct {
 	Enable  bool
 	Key     string

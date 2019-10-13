@@ -59,3 +59,6 @@ HttpOnly = true
 
 [Asset]
 Dir = ["resources/..."]
+
+[Business.Upload]
+Ext = [".jpg", ".gif", ".png", ".jpeg"]

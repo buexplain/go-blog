@@ -1,0 +1,300 @@
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}标签
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/resources/asset/layext/formSelects/formSelects-v4.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.classic.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.min.js"></script>
+{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="{{if .result}}/backend/article/content/update/{{.result.ID}}{{else}}/backend/article/content{{end}}" method="post">
+        <div class="layui-form-item">
+            <div class="layui-inline" style="width: 30%;">
+                <input type="text" name="title" value="{{.result.Title}}" lay-verify="required" placeholder="请填写标题" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-inline">
+                <select name="category" xm-select="j-category" xm-select-skin="default" xm-select-radio="" lay-verify="required">
+                    <option value="">请选择分类</option>
+                </select>
+            </div>
+
+            <div class="layui-inline" style="width: 20%">
+                <select name="tags" xm-select="j-tags" xm-select-search="" xm-select-max="3" xm-select-create="" xm-select-skin="default" lay-verify="required">
+                    <option value="">请选择标签</option>
+                    {{range $_, $v := .tagList}}
+                        {{if $.contentTagList.HasTagID $v.ID }}
+                            <option value="{{$v.ID}}" selected>{{$v.Name}}</option>
+                        {{else}}
+                            <option value="{{$v.ID}}">{{$v.Name}}</option>
+                        {{end}}
+                    {{end}}
+                </select>
+            </div>
+
+            <div class="layui-inline" style="width: 10%;">
+                <select name="status" lay-verify="required">
+                    <option value="">请选择上下线</option>
+                    <option value="1"{{if .result}}{{if eq .result.Online 1}} selected {{end}}{{end}}>上线</option>
+                    <option value="2"{{if .result}}{{if eq .result.Online 2}} selected {{end}}{{end}}>下线</option>
+                </select>
+            </div>
+
+            <div class="layui-inline">
+                {{._token}}
+                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal layui-icon layui-icon-down" id="j-more-btn">
+                    更多
+                </button>
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="listen">
+                    提交
+                </button>
+                <a href="/backend/article/content" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+
+        <div class="layui-form-item" id="j-more">
+            <div class="layui-inline" style="width: 30%;">
+                <input type="text" name="coverPC" value="{{.result.CoverPC}}" placeholder="PC封面图片路径" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-inline" style="width: 30%;">
+                <input type="text" name="coverWap" value="{{.result.coverWap}}" placeholder="WAP封面图片路径" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-inline" style="width: 30%;">
+                <input type="text" name="origin" value="{{.result.Origin}}" placeholder="文章来源地址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline" id="j-content">{{.result.Content}}</div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use(['form', 'layer', 'formSelects'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            var formSelects = layui.formSelects;
+
+            //初始化编辑器
+            const vEditor = new Vditor('j-content', {
+                counter: 65535,
+                height: $(window).height() - 93,
+                tab: '\t',
+                upload: {
+                    linkToImgUrl: '/backend/article/content/upload',
+                    handler (file) {
+                        var formData = new FormData();
+                        formData.append('_token', document.querySelector("input[name=_token]").value);
+                        for(var i in file) {
+                            formData.append('file[]', file[i]);
+                        }
+                        var request = new XMLHttpRequest();
+                        request.open("POST", "/backend/article/content/upload");
+                        request.onload = function(oEvent) {
+                            let currentTarget = oEvent.currentTarget;
+                            if(currentTarget.status !== 200) {
+                                layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
+                                return '';
+                            }
+                            let json = JSON.parse(currentTarget.response);
+                            if(json.code === 0) {
+                                var show = [".jpg", ".png", ".gif", ".jpeg", ".bmp"];
+                                for(var i in json.data) {
+                                    var tmp = '['+json.data[i].name+']('+json.data[i].path+')';
+                                    for(var j in show) {
+                                        if(json.data[i].path.substr(0 - show[j].length).toLocaleLowerCase() === show[j]) {
+                                            tmp = '!'+tmp;
+                                            break;
+                                        }
+                                    }
+                                    vEditor.insertValue(tmp);
+                                }
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        };
+                        request.send(formData);
+                    },
+                },
+                preview: {
+                    mode: 'both',
+                    parse: () => {
+                        LazyLoadImage()
+                    },
+                },
+            });
+
+            const LazyLoadImage = () => {
+                const loadImg = (it) => {
+                    const testImage = document.createElement('img')
+                    testImage.src = it.getAttribute('data-src')
+                    testImage.addEventListener('load', () => {
+                        it.src = testImage.src
+                        it.style.backgroundImage = 'none'
+                        it.style.backgroundColor = 'transparent'
+                    });
+                    it.removeAttribute('data-src')
+                };
+
+                if (!('IntersectionObserver' in window)) {
+                    document.querySelectorAll('img').forEach((data) => {
+                        if (data.getAttribute('data-src')) {
+                            loadImg(data)
+                        }
+                    });
+                    return false
+                }
+
+                if (window.imageIntersectionObserver) {
+                    window.imageIntersectionObserver.disconnect()
+                    document.querySelectorAll('img').forEach(function (data) {
+                        window.imageIntersectionObserver.observe(data)
+                    });
+                } else {
+                    window.imageIntersectionObserver = new IntersectionObserver((entries) => {
+                        entries.forEach((entrie) => {
+                            if ((typeof entrie.isIntersecting === 'undefined'
+                                ? entrie.intersectionRatio !== 0
+                                : entrie.isIntersecting) && entrie.target.getAttribute('data-src')) {
+                                loadImg(entrie.target)
+                            }
+                        })
+                    });
+                    document.querySelectorAll('img').forEach(function (data) {
+                        window.imageIntersectionObserver.observe(data)
+                    });
+                }
+            };
+
+            //提交表单
+            form.on('submit(listen)', function(data) {
+                var formData = new FormData();
+                for(var i in data.field) {
+                    if(i === 'tags') {
+                        continue;
+                    }
+                    formData.append(i, data.field[i]);
+                }
+                var tags = formSelects.value('j-tags');
+                for(var i in tags) {
+                    if(tags[i].value < 0) {
+                        formData.append('tagsName[]', tags[i].name);
+                    }else {
+                        formData.append('tagsVal[]', tags[i].value);
+                    }
+                }
+
+                formData.append('body', vEditor.getValue());
+                var request = new XMLHttpRequest();
+                request.open("POST", "/backend/article/content");
+                request.onload = function(oEvent) {
+                    let currentTarget = oEvent.currentTarget;
+                    if(currentTarget.status !== 200) {
+                        layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
+                        return '';
+                    }
+                    let json = JSON.parse(currentTarget.response);
+                    if(json.code === 0) {
+                        layer.alert(json.message, {icon: 1});
+                    }else {
+                        layer.alert(json.message, {icon: 2});
+                    }
+                };
+                request.send(formData);
+                return false;
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        //更多操作
+        layui.use(['jquery'], function () {
+            var $ = layui.jquery;
+            var more = $("#j-more");
+            more.hide();
+            var moreBtn = $("#j-more-btn");
+            moreBtn.on('click', function () {
+                if(more.css('display') === 'none') {
+                    more.show();
+                    moreBtn.removeClass('layui-icon-down').addClass('layui-icon-up');
+                }else{
+                    more.hide();
+                    moreBtn.removeClass('layui-icon-up').addClass('layui-icon-down');
+                }
+            });
+        });
+
+        //分类操作
+        var categoryID = parseInt({{.result.Category}});
+        layui.use(['jquery', 'form', 'layer', 'formSelects', 'treeHelper'], function() {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var treeHelper = layui.treeHelper;
+            $.get('/backend/article/content/category/-1', {}, function (json) {
+                if(json.code !== 0) {
+                    layer.alert(json.msg, {icon: 2});
+                    return;
+                }
+                var data = [];
+                for(var i in json.data) {
+                    data.push({
+                        id: json.data[i].ID,
+                        pid: json.data[i].Pid,
+                        name:json.data[i].Name,
+                        value:json.data[i].ID,
+                        selected:categoryID === json.data[i].ID
+                    });
+                }
+                var arr = treeHelper.tree(data, 'id', 'pid', 'children');
+                layui.formSelects.data('j-category', 'local', {
+                    arr: arr,
+                    tree: {
+                        nextClick: function(id, item, callback) {}
+                    }
+                });
+            });
+        });
+
+        //标签操作
+        layui.use(['formSelects', 'jquery', 'layer'], function() {
+            var formSelects = layui.formSelects;
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var key = 0;
+            formSelects.render('j-tags', {
+                create: function(id, name) {
+                    // console.log(name);
+                    // return Date.now();
+                    // var key = 0;
+                    // $.ajax({
+                    //     url:'/backend/article/content/addTag',
+                    //     type:'post',
+                    //     async: false,
+                    //     data:{name:name},
+                    //     success:function(json) {
+                    //         if(json.code === 0) {
+                    //             key = json.data;
+                    //         }else {
+                    //             layer.alert(json.message, {icon: 2});
+                    //         }
+                    //     },
+                    //     error:function(error) {
+                    //         layer.alert(error.toString(), {icon: 2});
+                    //     }
+                    // });
+                    --key;
+                    return key;
+                },
+            });
+        });
+    </script>
+{{end}}

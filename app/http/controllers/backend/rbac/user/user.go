@@ -29,7 +29,7 @@ func init()  {
 	v.Rule("Status").Add("in:in=1,2", "请选择状态")
 	v.Rule("Identity").Add("in:in=1,2", "请选择身份")
 	//校验账号是否存在
-	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule) (s string, e error) {
+	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
 		if !ok {
 			str = fmt.Sprintf("%v", v)
@@ -133,12 +133,12 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod.ID = r.ParamInt("id", 0)
 
 	vClone := v.Clone()
-	vClone.Custom("password", func(field string, value interface{}, rule *validator.Rule) (s string, e error) {
+	vClone.Custom("password", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, _ := value.(string)
 		if str == "" {
 			return "", nil
 		}
-		return validator.Pool("password")(field, value, rule)
+		return validator.Pool("password")(field, value, rule, structVar)
 	})
 	vClone.Rule("ID").Add("required", "ID错误")
 	vClone.Rule("Account").Add("CheckUnique:id="+strconv.Itoa(mod.ID), "该账号已存在")

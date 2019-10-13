@@ -8,7 +8,7 @@ layui.define(['layer', 'element', 'skeletonMenu', 'skeletonTab'], function(expor
     var layer = layui.layer;
 
     function height() {
-        return $(window).height() - 60 - 41 - 3;
+        return $(window).height() - 60 - 41 - 5;
     }
 
     /**
