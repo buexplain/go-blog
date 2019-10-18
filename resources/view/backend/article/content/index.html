@@ -4,58 +4,26 @@
 
 {{define "content"}}
     <a class="layui-btn layui-btn-sm" href="/backend/article/content/create">新增</a>
-    <table class="layui-table">
-        <colgroup>
-            <col width="150">
-            <col width="200">
-        </colgroup>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>标题</th>
-            <th>状态</th>
-            <th>创建时间</th>
-            <th>更新时间</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{range $_, $v := .result}}
-            <tr>
-                <td>{{$v.ID}}</td>
-                <td>{{$v.Title}}</td>
-                <td>{{$v.OnlineText}}</td>
-                <td>{{$v.CreatedAtText}}
-                <td>{{$v.UpdatedAtText}}</td>
-                <td>
-                    <a class="layui-btn layui-btn-sm" href="javascript:preview({{$v.ID}}, '{{$v.Title}}');">预览</a>
-                    <a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/{{$v.ID}}">编辑</a>
-                    <a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/content/delete{{$v.ID}}?_method=delete&csrf={{$.csrf}}">删除</a>
-                </td>
-            </tr>
-        {{end}}
-        </tbody>
-    </table>
-    <div id="j-laypage"></div>
+    <table id="j-table" lay-filter="j-table"></table>
 {{end}}
 
 {{define "js"}}
     <script>
-        var limit = {{.limit}};
-        var page = {{.page}};
-        var count = {{.count}};
-        layui.use(['laypage', 'myUtil'], function() {
-            var laypage = layui.laypage;
-            laypage.render({
-                elem: 'j-laypage',
-                limit: limit,
-                curr: page,
-                count: count,
-                jump: function (obj, first) {
-                    if(!first) {
-                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
-                    }
-                }
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#j-table'
+                ,url: '/backend/article/content' //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field: 'ID', title: 'ID', sort: true, fixed: 'left'}
+                    ,{field: 'Title', title: '标题'}
+                    ,{field: 'Online', title: '上下线', sort: true}
+                    ,{field: 'CreatedAt', title: '创建时间', templet:function (data) {
+                        console.log(data);
+                    }}
+                    ,{field: 'UpdatedAt', title: '更新时间'}
+                ]]
             });
         });
     </script>

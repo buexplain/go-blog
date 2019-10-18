@@ -1,5 +1,5 @@
 {{define "title"}}
-    {{if .result}}新增{{else}}编辑{{end}}标签
+    {{if .result}}新增{{else}}编辑{{end}}内容
 {{end}}
 
 {{define "css"}}
@@ -9,7 +9,7 @@
 {{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="{{if .result}}/backend/article/content/update/{{.result.ID}}{{else}}/backend/article/content{{end}}" method="post">
+    <form class="layui-form" id="j-form" action="{{if .result}}/backend/article/content/update/{{.result.ID}}{{else}}/backend/article/content{{end}}" method="{{if .result}}put{{else}}post{{end}}">
         <div class="layui-form-item">
             <div class="layui-inline" style="width: 30%;">
                 <input type="text" name="title" value="{{.result.Title}}" lay-verify="required" placeholder="请填写标题" autocomplete="off" class="layui-input">
@@ -35,7 +35,7 @@
             </div>
 
             <div class="layui-inline" style="width: 10%;">
-                <select name="status" lay-verify="required">
+                <select name="online" lay-verify="required">
                     <option value="">请选择上下线</option>
                     <option value="1"{{if .result}}{{if eq .result.Online 1}} selected {{end}}{{end}}>上线</option>
                     <option value="2"{{if .result}}{{if eq .result.Online 2}} selected {{end}}{{end}}>下线</option>
@@ -44,7 +44,6 @@
 
             <div class="layui-inline">
                 {{._token}}
-                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal layui-icon layui-icon-down" id="j-more-btn">
                     更多
                 </button>
@@ -63,7 +62,7 @@
             </div>
 
             <div class="layui-inline" style="width: 30%;">
-                <input type="text" name="coverWap" value="{{.result.coverWap}}" placeholder="WAP封面图片路径" autocomplete="off" class="layui-input">
+                <input type="text" name="coverWap" value="{{.result.CoverWAP}}" placeholder="WAP封面图片路径" autocomplete="off" class="layui-input">
             </div>
 
             <div class="layui-inline" style="width: 30%;">
@@ -72,7 +71,7 @@
         </div>
 
         <div class="layui-form-item">
-            <div class="layui-inline" id="j-content">{{.result.Content}}</div>
+            <div class="layui-inline" id="j-content">{{.result.Body}}</div>
         </div>
     </form>
 {{end}}
@@ -177,6 +176,7 @@
 
             //提交表单
             form.on('submit(listen)', function(data) {
+
                 var formData = new FormData();
                 for(var i in data.field) {
                     if(i === 'tags') {
@@ -189,13 +189,14 @@
                     if(tags[i].value < 0) {
                         formData.append('tagsName[]', tags[i].name);
                     }else {
-                        formData.append('tagsVal[]', tags[i].value);
+                        formData.append('tagsID[]', tags[i].value);
                     }
                 }
 
                 formData.append('body', vEditor.getValue());
                 var request = new XMLHttpRequest();
-                request.open("POST", "/backend/article/content");
+                var f = $("#j-form");
+                request.open(f.attr('method'), f.attr('action'));
                 request.onload = function(oEvent) {
                     let currentTarget = oEvent.currentTarget;
                     if(currentTarget.status !== 200) {

@@ -62,3 +62,4 @@ Dir = ["resources/..."]
 
 [Business.Upload]
 Ext = [".jpg", ".gif", ".png", ".jpeg"]
+Save = "/uploads"

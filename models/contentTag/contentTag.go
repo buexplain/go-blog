@@ -3,7 +3,7 @@ package m_contentTag
 import "github.com/buexplain/go-blog/models"
 
 type ContentTag struct {
-	models.Field `xorm:"extends"`
+	models.IDField `xorm:"extends"`
 	ContentID    int `xorm:"index(ContentID_TagID) INTEGER"`
 	TagID        int `xorm:"index(ContentID_TagID) INTEGER"`
 }

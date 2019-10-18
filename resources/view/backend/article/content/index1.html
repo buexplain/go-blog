@@ -1,0 +1,88 @@
+{{define "title"}}内容{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <a class="layui-btn layui-btn-sm" href="/backend/article/content/create">新增</a>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $_, $v := .result}}
+            <tr>
+                <td>{{$v.ID}}</td>
+                <td>{{$v.Title}}</td>
+                <td>{{$v.OnlineText}}</td>
+                <td>{{$v.CreatedAtText}}
+                <td>{{$v.UpdatedAtText}}</td>
+                <td>
+                    <a class="layui-btn layui-btn-sm" href="javascript:preview({{$v.ID}}, '{{$v.Title}}');">预览</a>
+                    <a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/{{$v.ID}}">编辑</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/content/delete/{{$v.ID}}?_method=delete">删除</a>
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+    <div id="j-laypage"></div>
+
+    <table id="j-table" lay-filter="j-table"></table>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('table', function(){
+            var table = layui.table;
+            //第一个实例
+            table.render({
+                elem: '#j-table'
+                ,height: 312
+                ,url: '/backend/article/content' //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field: 'id', title: 'ID', width:80, sort: true, fixed: 'left'}
+                    ,{field: 'username', title: '用户名', width:80}
+                    ,{field: 'sex', title: '性别', width:80, sort: true}
+                    ,{field: 'city', title: '城市', width:80}
+                    ,{field: 'sign', title: '签名', width: 177}
+                    ,{field: 'experience', title: '积分', width: 80, sort: true}
+                    ,{field: 'score', title: '评分', width: 80, sort: true}
+                    ,{field: 'classify', title: '职业', width: 80}
+                    ,{field: 'wealth', title: '财富', width: 135, sort: true}
+                ]]
+            });
+        });
+    </script>
+
+    <script>
+        var limit = {{.limit}};
+        var page = {{.page}};
+        var count = {{.count}};
+        layui.use(['laypage', 'myUtil'], function() {
+            var laypage = layui.laypage;
+            laypage.render({
+                elem: 'j-laypage',
+                limit: limit,
+                curr: page,
+                count: count,
+                jump: function (obj, first) {
+                    if(!first) {
+                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
+                    }
+                }
+            });
+        });
+    </script>
+{{end}}
