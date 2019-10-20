@@ -5,12 +5,15 @@
 {{define "content"}}
     <a class="layui-btn layui-btn-sm" href="/backend/article/content/create">新增</a>
     <table id="j-table" lay-filter="j-table"></table>
+    {{._token}}
 {{end}}
 
 {{define "js"}}
     <script>
-        layui.use('table', function(){
+        layui.use(['table', 'jquery', 'form'], function(){
             var table = layui.table;
+            var $ = layui.jquery;
+            var form = layui.form;
             table.render({
                 elem: '#j-table'
                 ,url: '/backend/article/content' //数据接口
@@ -18,12 +21,56 @@
                 ,cols: [[ //表头
                     {field: 'ID', title: 'ID', sort: true, fixed: 'left'}
                     ,{field: 'Title', title: '标题'}
-                    ,{field: 'Online', title: '上下线', sort: true}
                     ,{field: 'CreatedAt', title: '创建时间', templet:function (data) {
-                        console.log(data);
+                        return moment(data['CreatedAt']).format('YYYY-MM-DD HH:mm:ss');
                     }}
-                    ,{field: 'UpdatedAt', title: '更新时间'}
+                    ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
+                        return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
+                    }}
+                    ,{field: 'Online', title: '上下线', templet: function (data) {
+                        let btn = '<input type="checkbox" name="sex" value="'+data['Online']+'" data-id="'+data['ID']+'" lay-skin="switch" lay-text="上线|下线" lay-filter="online" '+(data['Online'] === 1 ? 'checked' : '')+'>';
+                        return btn;
+                    }}
+                    ,{fixed: 'right', title:'操作', templet:function (data) {
+                        let btn = '<a class="layui-btn layui-btn-sm" href="javascript:preview('+data['ID']+', "'+data['Title']+'");">预览</a>';
+                        btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/'+data['ID']+'">编辑</a>';
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" hxref="/backend/article/content/delete/'+data['ID']+'?_method=delete">删除</a>';
+                        return btn;
+                    }}
                 ]]
+            });
+
+            //监听行工具事件
+            table.on('tool(j-table)', function(obj){
+                var data = obj.data;
+                if(obj.event === 'del'){
+                    layer.confirm('确定删除吗？', function(index) {
+                        $.get('/backend/article/content/delete/'+data['ID']+'?_method=delete', function (json) {
+                            if(json.code === 0) {
+                                obj.del();
+                                layer.close(index);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                    return;
+                }
+            });
+
+            form.on('switch(online)', function(obj) {
+                var formData = {};
+                formData['_method'] = 'put';
+                formData['online'] = obj.value;
+                formData['_token'] = document.querySelector("input[name=_token]").value;
+                var input = $(obj.elem);
+                $.post('/backend/article/content/online/'+input.data('id'), formData, function (json) {
+                    if(json.code === 0) {
+                        input.val(json.data);
+                    }else {
+                        layer.alert(json.message, {icon: 2});
+                    }
+                });
             });
         });
     </script>

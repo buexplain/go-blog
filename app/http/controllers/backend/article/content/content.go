@@ -31,7 +31,10 @@ func init() {
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r.IsAjax() == false {
-		return w.Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/index.html")
+		return w.
+			Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+			Layout("backend/layout/layout.html").
+			View(http.StatusOK, "backend/article/content/index.html")
 	}
 
 	query := m_util.NewQuery("Content", ctx).Limit()
@@ -47,12 +50,12 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
 
-	return w.Assign("code", code.SUCCESS).Assign("msg", "").Assign("count", count).Assign("data", result).JSON(http.StatusOK)
-
-	return w.Assign("count", count).
-		Assign("result", result).
-		Layout("backend/layout/layout.html").
-		View(http.StatusOK, "backend/article/content/index.html")
+	return w.
+		Assign("code", code.SUCCESS).
+		Assign("message", "操作成功").
+		Assign("count", count).
+		Assign("data", result).
+		JSON(http.StatusOK)
 }
 
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -186,7 +189,37 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
-	return w.Jump("/backend/article/content", "操作成功")
+	return w.
+		Assign("code", code.SUCCESS).
+		Assign("message", "操作成功").
+		Assign("data", "").
+		JSON(http.StatusOK)
+}
+
+func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	result := new(m_content.Content)
+
+	result.ID = r.ParamInt("id", 0)
+	if result.ID <= 0 {
+		return w.JumpBack("参数错误")
+	}
+	result.Online = r.FormInt("online", 0)
+
+	if result.Online == m_content.OnlineYes {
+		result.Online = m_content.OnlineNo
+	}else {
+		result.Online = m_content.OnlineYes
+	}
+	fmt.Println("result.Online", result.Online)
+	if _, err := dao.Dao.ID(result.ID).Update(result); err != nil {
+		return ctx.Error().WrapServer(err).Location()
+	}
+
+	return w.
+		Assign("code", code.SUCCESS).
+		Assign("message", "操作成功").
+		Assign("data", result.Online).
+		JSON(http.StatusOK)
 }
 
 //返回分类

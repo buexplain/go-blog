@@ -84,15 +84,13 @@ func (this *Query) Count() int64 {
 }
 
 //分页大小
-func (this *Query) Limit(size ...int) *Query {
-	if len(size) == 0 {
-		size = append(size, 10)
-	}
+func (this *Query) Limit() *Query {
 	page := this.ctx.Request().QueryInt("page", 1)
-	this.ctx.Response().Assign("limit", size)
+	limit := this.ctx.Request().QueryInt("limit", 10)
+	this.ctx.Response().Assign("limit", limit)
 	this.ctx.Response().Assign("page", page)
-	offset := (page - 1) * size[0]
-	this.Finder.Limit(size[0], offset)
+	offset := (page - 1) * limit
+	this.Finder.Limit(limit, offset)
 	return this
 }
 
