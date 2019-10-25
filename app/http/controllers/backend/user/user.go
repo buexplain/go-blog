@@ -5,7 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/user"
-	"github.com/buexplain/go-blog/models/util"
+	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
@@ -33,7 +33,7 @@ func init()  {
 		if !ok {
 			str = fmt.Sprintf("%v", v)
 		}
-		if !m_util.CheckUnique("User", field, str, rule.GetInt("id")) {
+		if !s_services.CheckUnique("User", field, str, rule.GetInt("id")) {
 			return rule.Message(0), nil
 		}
 		return "", nil
@@ -41,21 +41,17 @@ func init()  {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := m_util.NewQuery("User", ctx).Limit()
+	query := s_services.NewQuery("User", ctx).Limit()
 	//此处只展示普通用户
 	query.Finder.Where("Identity=?", m_user.IdentityCitizen)
 	query.Finder.Desc("ID")
 	query.Screen()
-
 	var result m_user.List
-	query.Find(&result)
-
-	count := query.Count()
-
+	var count int64
+	query.FindAndCount(&result, &count)
 	if query.Error != nil {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
-
 	return w.
 		Assign("count", count).
 		Assign("result", result).

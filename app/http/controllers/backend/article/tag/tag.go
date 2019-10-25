@@ -5,7 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/tag"
-	"github.com/buexplain/go-blog/models/util"
+	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
@@ -25,7 +25,7 @@ func init()  {
 		if !ok {
 			str = fmt.Sprintf("%v", v)
 		}
-		if !m_util.CheckUnique("Tag", field, str, rule.GetInt("id")) {
+		if !s_services.CheckUnique("Tag", field, str, rule.GetInt("id")) {
 			return rule.Message(0), nil
 		}
 		return "", nil
@@ -33,19 +33,14 @@ func init()  {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := m_util.NewQuery("Tag", ctx).Limit()
-
+	query := s_services.NewQuery("Tag", ctx).Limit()
 	query.Finder.Desc("ID")
-
 	var result m_tag.List
-	query.Find(&result)
-
-	count := query.Count()
-
+	var count int64
+	query.FindAndCount(&result, &count)
 	if query.Error != nil {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
-
 	return w.Assign("count", count).
 		Assign("result", result).
 		Layout("backend/layout/layout.html").

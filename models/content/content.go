@@ -2,7 +2,6 @@ package m_content
 
 import "github.com/buexplain/go-blog/models"
 
-
 type Content struct {
 	models.Field `xorm:"extends"`
 	Title        string `xorm:"TEXT"`
@@ -19,7 +18,7 @@ func (this Content) OnlineText() string {
 	return OnlineText[this.Online]
 }
 
-type List []Content
+type List []*Content
 
 const (
 	OnlineYes = iota + 1

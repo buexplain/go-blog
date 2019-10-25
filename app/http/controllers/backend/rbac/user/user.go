@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	m_user "github.com/buexplain/go-blog/models/user"
-	m_util "github.com/buexplain/go-blog/models/util"
-	s_user "github.com/buexplain/go-blog/services/user"
+	"github.com/buexplain/go-blog/models/user"
+	"github.com/buexplain/go-blog/services"
+	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
@@ -34,7 +34,7 @@ func init()  {
 		if !ok {
 			str = fmt.Sprintf("%v", v)
 		}
-		if !m_util.CheckUnique("User", field, str, rule.GetInt("id")) {
+		if !s_services.CheckUnique("User", field, str, rule.GetInt("id")) {
 			return rule.Message(0), nil
 		}
 		return "", nil
@@ -42,7 +42,7 @@ func init()  {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := m_util.NewQuery("User", ctx).Screen().Limit()
+	query := s_services.NewQuery("User", ctx).Screen().Limit()
 	query.Finder.Desc("ID")
 	//设置查询条件后，先进行分页统计，//然后再进行连表查询，获取用户所有角色，避免跨表count
 	count := query.Count()

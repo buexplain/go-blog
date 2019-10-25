@@ -3,27 +3,86 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <a class="layui-btn layui-btn-sm" href="/backend/article/content/create">新增</a>
+    <blockquote class="layui-elem-quote">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <input type="hidden" name="likeField[]" value="Title">
+                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的标题" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="hidden" name="geField[]" value="CreatedAt">
+                    <input type="text" name="geValue[]" value="{{if .geValue}}{{0 | .geValue.Get}}{{end}}" placeholder="请选择开始时间" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="hidden" name="leField[]" value="CreatedAt">
+                    <input type="text" name="leValue[]" value="{{if .leValue}}{{0 | .leValue.Get}}{{end}}" placeholder="请选择结束时间" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-inline" style="width: 170px;">
+                <input type="hidden" name="eqField[]" value="Online">
+                <select name="eqValue[]" lay-verify="">
+                    <option value="">请选择上下线</option>
+                    <option value="1" {{if .eqValue}}{{if eq (0 | .eqValue.Get) "1"}}selected{{end}}{{end}}>上线</option>
+                    <option value="2" {{if .eqValue}}{{if eq (0 | .eqValue.Get) "2"}}selected{{end}}{{end}}>下线</option>
+                </select>
+            </div>
+
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="search">
+                    搜索
+                </button>
+            </div>
+        </form>
+    </blockquote>
+    <script type="text/html" id="j-toolbar">
+        <div class="layui-btn-container">
+            <a class="layui-btn layui-btn-sm" href="/backend/article/content/create">新增</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
+        </div>
+    </script>
     <table id="j-table" lay-filter="j-table"></table>
     {{._token}}
 {{end}}
 
 {{define "js"}}
     <script>
+        layui.use(['laydate'], function(){
+            var layDate = layui.laydate;
+            layDate.render({
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                elem: "input[name='geValue[]']"
+            });
+            layDate.render({
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                elem: "input[name='leValue[]']"
+            });
+        });
+
         layui.use(['table', 'jquery', 'form'], function(){
             var table = layui.table;
             var $ = layui.jquery;
             var form = layui.form;
-            table.render({
+
+            //渲染表格
+            var tableOption = {
                 elem: '#j-table'
                 ,url: '/backend/article/content' //数据接口
-                ,page: true //开启分页
+                ,toolbar: '#j-toolbar' //开启头部工具栏，并为其绑定左侧模板
+                ,page: {
+                    curr: 1,
+                    where:{},
+                } //开启分页
                 ,cols: [[ //表头
-                    {field: 'ID', title: 'ID', sort: true, fixed: 'left'}
+                    {field: 'ID', type: 'checkbox', fixed: 'left'}
+                    ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
                     ,{field: 'Title', title: '标题'}
-                    ,{field: 'CreatedAt', title: '创建时间', templet:function (data) {
-                        return moment(data['CreatedAt']).format('YYYY-MM-DD HH:mm:ss');
-                    }}
+                    ,{field: 'Hits', title: '点击量',sort: true, width:100}
+                    ,{field: 'Origin', title: '来源'}
                     ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
                         return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
                     }}
@@ -38,13 +97,41 @@
                         return btn;
                     }}
                 ]]
+            };
+            var tableIns = table.render(tableOption);
+
+            //监听表格头部操作按钮
+            table.on('toolbar(j-table)', function(obj) {
+                //批量删除
+                if(obj.event === 'del-batch') {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    if(checkStatus.data.length === 0) {
+                        layer.alert('请勾选数据', {icon: 2});
+                        return '';
+                    }
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        var param = {ids:[], _method:'put', _token:document.querySelector("input[name=_token]").value};
+                        checkStatus.data.forEach(function (v) {
+                            param.ids.push(v['ID']);
+                        });
+                        $.post('/backend/article/content/delete-batch', param, function (json) {
+                            if(json.code === 0) {
+                                layer.close(index);
+                                table.reload(obj.config.id, obj.config);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
             });
 
-            //监听行工具事件
-            table.on('tool(j-table)', function(obj){
+            //监听表格右侧操作按钮
+            table.on('tool(j-table)', function(obj) {
                 var data = obj.data;
-                if(obj.event === 'del'){
-                    layer.confirm('确定删除吗？', function(index) {
+                //单个删除
+                if(obj.event === 'del') {
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
                         $.get('/backend/article/content/delete/'+data['ID']+'?_method=delete', function (json) {
                             if(json.code === 0) {
                                 obj.del();
@@ -54,10 +141,10 @@
                             }
                         });
                     });
-                    return;
                 }
             });
 
+            //监听上下线
             form.on('switch(online)', function(obj) {
                 var formData = {};
                 formData['_method'] = 'put';
@@ -71,6 +158,17 @@
                         layer.alert(json.message, {icon: 2});
                     }
                 });
+            });
+
+            //搜索
+            layui.form.on('submit(search)', function(data) {
+                tableIns.reload({
+                    where: data.field
+                    ,page: {
+                        curr: 1
+                    }
+                });
+                return false;
             });
         });
     </script>

@@ -3,9 +3,9 @@ package db
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
-	m_user "github.com/buexplain/go-blog/models/user"
-	m_util "github.com/buexplain/go-blog/models/util"
-	s_user "github.com/buexplain/go-blog/services/user"
+	"github.com/buexplain/go-blog/models/user"
+	"github.com/buexplain/go-blog/services"
+	"github.com/buexplain/go-blog/services/user"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -41,7 +41,7 @@ func init() {
 			user.Identity = m_user.IdentityOfficial
 			user.Nickname = account
 
-			if !m_util.CheckUnique("User", "Account", "account") {
+			if !s_services.CheckUnique("User", "Account", "account") {
 				boot.Logger.ErrorF("该用户已存在: %s", account)
 				os.Exit(1)
 			}

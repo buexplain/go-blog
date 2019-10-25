@@ -1,8 +1,9 @@
-package m_util
+package s_services
 
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
+	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
 	"github.com/go-xorm/xorm"
 	"time"
@@ -12,13 +13,13 @@ import (
 type where []string
 
 func (this where) Get(index int) string {
-	if index+1 <= len(this) {
+	if index+1 <= len(this) && index >= 0 {
 		return this[index]
 	}
 	return ""
 }
 
-//列表查询
+//查询构造器
 type Query struct {
 	//请求上下文
 	ctx               *fool.Ctx
@@ -37,7 +38,7 @@ type Query struct {
 //返回表信息
 func (this *Query) TableInfo() *core.Table {
 	if this.Error == nil && this.tableInfo == nil {
-		this.tableInfo, this.Error = GetTableInfo(dao.Dao, this.tableName)
+		this.tableInfo, this.Error = m_util.GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
 			this.tableName = this.tableInfo.Name
 		}
@@ -81,6 +82,18 @@ func (this *Query) Count() int64 {
 		}
 	}
 	return total
+}
+
+//查询并且统计行数
+func (this *Query) FindAndCount(rowsSlicePtr interface{}, counter *int64, condiBean ...interface{}) {
+	if this.Error == nil {
+		c, err := this.Finder.FindAndCount(rowsSlicePtr, condiBean...)
+		if err != nil {
+			this.Error = err
+		}else {
+			*counter = c
+		}
+	}
 }
 
 //分页大小

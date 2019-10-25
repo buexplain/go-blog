@@ -71,7 +71,9 @@
         </div>
 
         <div class="layui-form-item">
-            <div class="layui-inline" id="j-content">{{.result.Body}}</div>
+            <div class="layui-inline" >
+                <div class="vditor-reset" id="j-content">{{.body}}</div>
+            </div>
         </div>
     </form>
 {{end}}
@@ -85,6 +87,8 @@
 
             //初始化编辑器
             const vEditor = new Vditor('j-content', {
+                placeholder:'请输入文章内容',
+                cache:false,
                 counter: 65535,
                 height: $(window).height() - 93,
                 tab: '\t',
@@ -176,23 +180,26 @@
 
             //提交表单
             form.on('submit(listen)', function(data) {
-
+                //构造表单参数
                 var formData = new FormData();
                 for(var i in data.field) {
                     if(i === 'tags') {
+                        //跳过标签参数
                         continue;
                     }
                     formData.append(i, data.field[i]);
                 }
+                //收集标签参数
                 var tags = formSelects.value('j-tags');
                 for(var i in tags) {
                     if(tags[i].value < 0) {
+                        //新增的标签
                         formData.append('tagsName[]', tags[i].name);
                     }else {
+                        //旧的标签
                         formData.append('tagsID[]', tags[i].value);
                     }
                 }
-
                 formData.append('body', vEditor.getValue());
                 var request = new XMLHttpRequest();
                 var f = $("#j-form");
@@ -205,6 +212,7 @@
                     }
                     let json = JSON.parse(currentTarget.response);
                     if(json.code === 0) {
+                        vEditor.clearCache();
                         layer.alert(json.message, {icon: 1});
                     }else {
                         layer.alert(json.message, {icon: 2});
@@ -268,30 +276,10 @@
         //标签操作
         layui.use(['formSelects', 'jquery', 'layer'], function() {
             var formSelects = layui.formSelects;
-            var $ = layui.jquery;
-            var layer = layui.layer;
             var key = 0;
             formSelects.render('j-tags', {
                 create: function(id, name) {
-                    // console.log(name);
-                    // return Date.now();
-                    // var key = 0;
-                    // $.ajax({
-                    //     url:'/backend/article/content/addTag',
-                    //     type:'post',
-                    //     async: false,
-                    //     data:{name:name},
-                    //     success:function(json) {
-                    //         if(json.code === 0) {
-                    //             key = json.data;
-                    //         }else {
-                    //             layer.alert(json.message, {icon: 2});
-                    //         }
-                    //     },
-                    //     error:function(error) {
-                    //         layer.alert(error.toString(), {icon: 2});
-                    //     }
-                    // });
+                    //新增标签的key默认改为负数
                     --key;
                     return key;
                 },

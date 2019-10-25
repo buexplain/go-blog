@@ -9,11 +9,12 @@ import (
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
 	"github.com/buexplain/go-blog/models/tag"
-	"github.com/buexplain/go-blog/models/util"
+	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/content"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
+	"html/template"
 	"net/http"
 	"path/filepath"
 )
@@ -21,6 +22,7 @@ import (
 //表单校验器
 var v *validator.Validator
 
+//初始化表单校验器
 func init() {
 	v = validator.New()
 	v.Rule("Title").Add("required", "请填写标题")
@@ -29,27 +31,22 @@ func init() {
 	v.Rule("Body").Add("required", "请填写内容")
 }
 
+//列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	if r.IsAjax() == false {
+	if !r.IsAjax() {
 		return w.
 			Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/article/content/index.html")
 	}
-
-	query := m_util.NewQuery("Content", ctx).Limit()
-
+	query := s_services.NewQuery("Content", ctx).Limit().Screen()
 	query.Finder.Desc("ID")
-
 	var result m_content.List
-	query.Find(&result)
-
-	count := query.Count()
-
+	var count int64
+	query.FindAndCount(&result, &count)
 	if query.Error != nil {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
-
 	return w.
 		Assign("code", code.SUCCESS).
 		Assign("message", "操作成功").
@@ -58,6 +55,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+//新增
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	tagList := new(m_tag.List)
 	if err := dao.Dao.Find(tagList); err != nil {
@@ -70,6 +68,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
 }
 
+//保存
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := new(m_content.Content)
 	if err := r.FormToStruct(mod); err != nil {
@@ -105,6 +104,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+//编辑
 func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//标签列表
 	tagList := new(m_tag.List)
@@ -132,12 +132,14 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.
 	    Assign("tagList", tagList).
+		Assign("body", template.HTML(result.Body)).
 		Assign("result", result).
 		Assign("contentTagList", contentTagList).
 		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
 }
 
+//更新
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := new(m_content.Content)
 	if err := r.FormToStruct(mod); err != nil {
@@ -177,6 +179,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+//单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_content.Content)
 
@@ -196,6 +199,25 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+//批量删除
+func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	ids := r.FormSliceInt("ids[]")
+	if len(ids) == 0 {
+		return w.JumpBack("参数错误")
+	}
+
+	if _, err := s_services.DestroyBatch("Content", ids); err != nil {
+		return ctx.Error().WrapServer(err).Location()
+	}
+
+	return w.
+		Assign("code", code.SUCCESS).
+		Assign("message", "操作成功").
+		Assign("data", "").
+		JSON(http.StatusOK)
+}
+
+//设置上下线
 func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_content.Content)
 

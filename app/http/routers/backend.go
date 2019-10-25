@@ -96,6 +96,7 @@ func backend(mux *fool.Mux) {
 			mux.Get("content/edit/:id", c_content.Edit)
 			mux.Put("content/update/:id", c_content.Update)
 			mux.Delete("content/delete/:id", c_content.Destroy)
+			mux.Put("content/delete-batch", c_content.DestroyBatch)
 			mux.Put("content/online/:id", c_content.Online)
 			mux.Get("content/category/:pid", c_content.Category)
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
