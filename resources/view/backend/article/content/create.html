@@ -69,13 +69,11 @@
                 <input type="text" name="origin" value="{{.result.Origin}}" placeholder="文章来源地址" autocomplete="off" class="layui-input">
             </div>
         </div>
-
-        <div class="layui-form-item">
-            <div class="layui-inline" >
-                <div class="vditor-reset" id="j-content">{{.body}}</div>
-            </div>
-        </div>
     </form>
+    <div id="j-editor"></div>
+    <script type="text/html" id="j-content">
+        {{.body}}
+    </script>
 {{end}}
 
 {{define "js"}}
@@ -86,11 +84,12 @@
             var formSelects = layui.formSelects;
 
             //初始化编辑器
-            const vEditor = new Vditor('j-content', {
+            const vEditor = new Vditor('j-editor', {
                 placeholder:'请输入文章内容',
                 cache:false,
                 counter: 65535,
                 height: $(window).height() - 93,
+                width:"100%",
                 tab: '\t',
                 upload: {
                     linkToImgUrl: '/backend/article/content/upload',
@@ -135,15 +134,16 @@
                     },
                 },
             });
-
+            //设置编辑器内容
+            vEditor.setValue(document.getElementById('j-content').innerHTML);
             const LazyLoadImage = () => {
                 const loadImg = (it) => {
                     const testImage = document.createElement('img')
                     testImage.src = it.getAttribute('data-src')
                     testImage.addEventListener('load', () => {
-                        it.src = testImage.src
-                        it.style.backgroundImage = 'none'
-                        it.style.backgroundColor = 'transparent'
+                        it.src = testImage.src;
+                        it.style.backgroundImage = 'none';
+                        it.style.backgroundColor = 'transparent';
                     });
                     it.removeAttribute('data-src')
                 };
