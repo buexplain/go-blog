@@ -2,6 +2,7 @@ package m_category
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models"
 )
@@ -17,7 +18,36 @@ type Category struct {
 	SortID       int    `xorm:"INTEGER"`
 }
 
-type List []Category
+func (this Category) Parent() (*Category, error) {
+	if this.Pid == 0 {
+		return nil, nil
+	}
+	tmp := &Category{}
+	if b, err := dao.Dao.ID(this.Pid).Get(tmp); err != nil {
+		return nil, err
+	}else if !b {
+		return nil, fmt.Errorf("not found parent category %d", this.Pid)
+	}
+	return tmp, nil
+}
+
+func (this Category) Parents() (List, error) {
+	l := make(List, 0)
+	tmp := &this
+	for {
+		if c, err := tmp.Parent(); err != nil {
+			return nil, err
+		}else if c == nil {
+			break
+		}else {
+			l = append(l, c)
+			tmp = c
+		}
+	}
+	return l, nil
+}
+
+type List []*Category
 
 func (this List) String() string {
 	b, err := json.Marshal(this)

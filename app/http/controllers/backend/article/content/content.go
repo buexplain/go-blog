@@ -219,32 +219,12 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //查看
 func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	//内容
-	result := new(m_content.Content)
-	result.ID = r.ParamInt("id", 0)
-	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+	d, err := s_content.GetDetails(r.ParamInt("id"))
+	if err != nil {
+		return w.Assign("data", d).Assign("code", 1).Assign("message", err.Error()).JSON(http.StatusOK)
 	}
-	if ok, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
-	} else if !ok {
-		return w.JumpBack("参数错误")
-	}
-
-	//内容的标签
-	contentTagList := make(m_contentTag.List, 0)
-	if err := dao.Dao.Where("ContentID=?", result.ID).Find(&contentTagList); err != nil {
-		return ctx.Error().WrapServer(err)
-	}
-
-	return w.
-		Assign("tagList", tagList).
-		Assign("result", result).
-		Assign("contentTagList", contentTagList).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
+	return w.Assign("data", d).Assign("code", code.SUCCESS).Assign("message", code.Text(code.SUCCESS)).JSON(http.StatusOK)
 }
-
 
 //设置上下线
 func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {

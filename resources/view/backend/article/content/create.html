@@ -71,17 +71,15 @@
         </div>
     </form>
     <div id="j-editor"></div>
-    <script type="text/html" id="j-content">
-        {{.body}}
-    </script>
 {{end}}
 
 {{define "js"}}
     <script>
-        layui.use(['form', 'layer', 'formSelects'], function() {
+        layui.use(['form', 'layer', 'formSelects', 'jquery'], function() {
             var form = layui.form;
             var layer = layui.layer;
             var formSelects = layui.formSelects;
+            var $ = layui.jquery;
 
             //初始化编辑器
             const vEditor = new Vditor('j-editor', {
@@ -134,8 +132,16 @@
                     },
                 },
             });
+
             //设置编辑器内容
-            vEditor.setValue(document.getElementById('j-content').innerHTML);
+            $.get('/backend/article/content/show/28', function (json) {
+                if(json.code === 0) {
+                    vEditor.setValue(json.data.Content.Body);
+                }else {
+                    layer.alert(json.message, {icon: 2});
+                }
+            });
+
             const LazyLoadImage = () => {
                 const loadImg = (it) => {
                     const testImage = document.createElement('img')
