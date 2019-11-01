@@ -270,6 +270,18 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+//返回标签
+func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	result := new(m_tag.List)
+	if err := dao.Dao.Find(result); err != nil {
+		return ctx.Error().WrapServer(err).Location()
+	}
+	return w.Assign("data", result).
+		Assign("message", code.Text(code.SUCCESS)).
+		Assign("code", code.SUCCESS).
+		JSON(http.StatusOK)
+}
+
 //上传附件
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	uploads, err := r.FileSlice("file[]")

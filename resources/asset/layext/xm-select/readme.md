@@ -1,0 +1,1 @@
+https://gitee.com/maplemei/xm-select/releases

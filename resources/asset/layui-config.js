@@ -18,4 +18,6 @@ layui.config({
     dtree:'layext/dtree/dtree',
     //select下拉选项卡
     formSelects:'layext/formSelects/formSelects-v4',
+    //select下拉选项卡
+    xmSelect:'layext/xm-select/xm-select',
 });

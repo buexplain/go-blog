@@ -3,6 +3,8 @@
 {{end}}
 
 {{define "css"}}
+    <link rel="stylesheet" href="/resources/asset/layext/dtree/dtree.css">
+    <link rel="stylesheet" href="/resources/asset/layext/dtree/font/dtreefont.css">
     <link rel="stylesheet" href="/resources/asset/layext/formSelects/formSelects-v4.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.classic.css" />
     <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.min.js"></script>
@@ -16,30 +18,15 @@
             </div>
 
             <div class="layui-inline">
-                <select name="category" xm-select="j-category" xm-select-skin="default" xm-select-radio="" lay-verify="required">
-                    <option value="">请选择分类</option>
-                </select>
+                <ul id="j-category" class="dtree" data-id="0"></ul>
             </div>
 
             <div class="layui-inline" style="width: 20%">
-                <select name="tags" xm-select="j-tags" xm-select-search="" xm-select-max="3" xm-select-create="" xm-select-skin="default" lay-verify="required">
-                    <option value="">请选择标签</option>
-                    {{range $_, $v := .tagList}}
-                        {{if $.contentTagList.HasTagID $v.ID }}
-                            <option value="{{$v.ID}}" selected>{{$v.Name}}</option>
-                        {{else}}
-                            <option value="{{$v.ID}}">{{$v.Name}}</option>
-                        {{end}}
-                    {{end}}
-                </select>
+                <div class="xm-select-demo" id="j-tags"></div>
             </div>
 
             <div class="layui-inline" style="width: 10%;">
-                <select name="online" lay-verify="required">
-                    <option value="">请选择上下线</option>
-                    <option value="1"{{if .result}}{{if eq .result.Online 1}} selected {{end}}{{end}}>上线</option>
-                    <option value="2"{{if .result}}{{if eq .result.Online 2}} selected {{end}}{{end}}>下线</option>
-                </select>
+                <div class="xm-select-demo" id="j-online"></div>
             </div>
 
             <div class="layui-inline">
@@ -75,77 +62,295 @@
 
 {{define "js"}}
     <script>
-        layui.use(['form', 'layer', 'formSelects', 'jquery'], function() {
+        var contentID = 28;
+
+        layui.use(['form', 'layer', 'formSelects', 'jquery', 'xmSelect', 'dtree'], function() {
             var form = layui.form;
             var layer = layui.layer;
             var formSelects = layui.formSelects;
             var $ = layui.jquery;
+            var xmSelect = layui.xmSelect;
+            var dtree = layui.dtree;
 
-            //初始化编辑器
-            const vEditor = new Vditor('j-editor', {
-                placeholder:'请输入文章内容',
-                cache:false,
-                counter: 65535,
-                height: $(window).height() - 93,
-                width:"100%",
-                tab: '\t',
-                upload: {
-                    linkToImgUrl: '/backend/article/content/upload',
-                    handler (file) {
-                        var formData = new FormData();
-                        formData.append('_token', document.querySelector("input[name=_token]").value);
-                        for(var i in file) {
-                            formData.append('file[]', file[i]);
+            //获取内容
+            var getContent = function () {
+                return new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: "/backend/article/content/show/"+contentID,
+                        async:true,
+                        data: {},
+                        type: "get",
+                        success: function (json) {
+                            if (json.code !== 0) {
+                                reject(json.message);
+                            } else {
+                                resolve(json.data);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            reject(textStatus+errorThrown);
                         }
-                        var request = new XMLHttpRequest();
-                        request.open("POST", "/backend/article/content/upload");
-                        request.onload = function(oEvent) {
-                            let currentTarget = oEvent.currentTarget;
-                            if(currentTarget.status !== 200) {
-                                layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
-                                return '';
-                            }
-                            let json = JSON.parse(currentTarget.response);
-                            if(json.code === 0) {
-                                var show = [".jpg", ".png", ".gif", ".jpeg", ".bmp"];
-                                for(var i in json.data) {
-                                    var tmp = '['+json.data[i].name+']('+json.data[i].path+')';
-                                    for(var j in show) {
-                                        if(json.data[i].path.substr(0 - show[j].length).toLocaleLowerCase() === show[j]) {
-                                            tmp = '!'+tmp;
-                                            break;
-                                        }
-                                    }
-                                    vEditor.insertValue(tmp);
-                                }
-                            }else {
-                                layer.alert(json.message, {icon: 2});
-                            }
-                        };
-                        request.send(formData);
-                    },
-                },
-                preview: {
-                    mode: 'both',
-                    parse: () => {
-                        LazyLoadImage()
-                    },
-                },
-            });
+                    });
+                });
+            };
 
-            //设置编辑器内容
-            $.get('/backend/article/content/show/28', function (json) {
-                if(json.code === 0) {
-                    vEditor.setValue(json.data.Content.Body);
-                }else {
-                    layer.alert(json.message, {icon: 2});
-                }
+            //获取标签列表
+            var getTagList = function () {
+                return new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: "/backend/article/content/tag",
+                        async:true,
+                        data: {},
+                        type: "get",
+                        success: function (json) {
+                            if (json.code !== 0) {
+                                reject(json.message);
+                            } else {
+                                resolve(json.data);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            reject(textStatus+errorThrown);
+                        }
+                    });
+                });
+            };
+
+            //获取分类列表
+            var getCategoryList = function () {
+                return new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: "/backend/article/content/category/-1",
+                        async:true,
+                        data: {},
+                        type: "get",
+                        success: function (json) {
+                            if (json.code !== 0) {
+                                reject(json.message);
+                            } else {
+                                resolve(json.data);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            reject(textStatus+errorThrown);
+                        }
+                    });
+                });
+            };
+
+            Promise.all([getContent(), getCategoryList(), getTagList()]).then(function([content, categoryList, tagList]) {
+
+                content.hasCategory = function(id) {
+                    if(this.Category === null) {
+                        return false;
+                    }
+                    return this.Category.some(function (v, k) {
+                        return v.ID === id
+                    });
+                };
+
+                content.hasTag = function(id) {
+                    if(this.Tag === null) {
+                        return false;
+                    }
+                    return this.Tag.some(function (v, k) {
+                        return v.ID === id
+                    });
+                };
+
+                categoryList.process = function() {
+                    var result = [];
+                    this.forEach(function (v, k) {
+                        result.push({
+                            "id":v.ID,
+                            "title": v.Name,
+                            "checkArr": [{
+                                "type": "0", //type表示当前节点的第几个复选框
+                                "checked": content.hasCategory(v.ID) ? '1' : '0' //0-未选中，1-选中，2-半选
+                            }],
+                            "parentId": v.Pid
+                        });
+                    });
+                    return result;
+                };
+
+                tagList.process = function () {
+                    var result = [];
+                    this.forEach(function (v, k) {
+                        result.push({name: v.Name, value: v.ID, selected: content.hasTag(v.ID)});
+                    });
+                    return result;
+                };
+
+                var online = [{ID:1, Name:'上线'}, {ID:2, Name:'下线'}];
+                online.process = function () {
+                    var result = [];
+                    this.forEach(function (v, k) {
+                        result.push({name: v.Name, value: v.ID, selected: content.Content.Online === v.ID});
+                    });
+                    return result;
+                };
+
+                return new Promise(function(resolve, reject) {
+                    resolve({
+                        content:content
+                        ,categoryList:categoryList.process()
+                        ,tagList:tagList.process()
+                        ,online:online.process()
+                    });
+                });
+            }).then(function (result) {
+                console.log(result);
+
+                //渲染分类
+                dtree.render({
+                    elem: "#j-category",
+                    selectInputName:{nodeId: "category",  context: "categoryTitle"},
+                    selectTips: "请选择分类",
+                    accordion: true,  // 开启手风琴
+                    select: true, //指定下拉树模式
+                    width: "100%",
+                    initLevel:2, //默认展开层级，当该值大于level时，则会展开树的节点，直到不大于当前待展开节点的level
+                    dataFormat: "list", // 用于用户配置的data的数据格式,list:数组格式，levelRelationship：层级关系格式。
+                    skin: "layui",  // laySimple主题风格
+                    data: result.categoryList
+                });
+
+                //渲染标签
+                const tag = xmSelect.render({
+                    el: '#j-tags',
+                    toolbar: {
+                        show: true,
+                    },
+                    tips:'请选择标签',
+                    filterable: true,
+                    paging: true,
+                    size: 'small',
+                    pageSize: 10,
+                    max: 3,
+                    data: result.tagList,
+                    create: function(val) {
+                        console.log(val);
+                        //返回一个创建成功的对象, val是搜索的数据
+                        return {
+                            name: '创建-' + val,
+                            value: val
+                        }
+                    }
+                });
+
+                //渲染上下线
+                const online = xmSelect.render({
+                    el: '#j-online',
+                    tips:'请选择上下线',
+                    size: 'small',
+                    radio: true,
+                    clickClose: true,
+                    data: result.online
+                });
+
+                //渲染编辑器
+                const vEditor = new Vditor('j-editor', {
+                    placeholder:'请输入文章内容',
+                    cache:false,
+                    counter: 65535,
+                    height: $(window).height() - 93,
+                    width:"100%",
+                    tab: '\t',
+                    upload: {
+                        handler (file) {
+                            var formData = new FormData();
+                            formData.append('_token', document.querySelector("input[name=_token]").value);
+                            for(var i in file) {
+                                formData.append('file[]', file[i]);
+                            }
+                            var request = new XMLHttpRequest();
+                            request.open("POST", "/backend/article/content/upload");
+                            request.onload = function(oEvent) {
+                                let currentTarget = oEvent.currentTarget;
+                                if(currentTarget.status !== 200) {
+                                    layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
+                                    return '';
+                                }
+                                let json = JSON.parse(currentTarget.response);
+                                if(json.code === 0) {
+                                    var show = [".jpg", ".png", ".gif", ".jpeg", ".bmp"];
+                                    for(var i in json.data) {
+                                        var tmp = '['+json.data[i].name+']('+json.data[i].path+')';
+                                        for(var j in show) {
+                                            if(json.data[i].path.substr(0 - show[j].length).toLocaleLowerCase() === show[j]) {
+                                                tmp = '!'+tmp;
+                                                break;
+                                            }
+                                        }
+                                        vEditor.insertValue(tmp);
+                                    }
+                                }else {
+                                    layer.alert(json.message, {icon: 2});
+                                }
+                            };
+                            request.send(formData);
+                        },
+                    },
+                    preview: {
+                        mode: 'both',
+                        parse: (element) => {
+                            LazyLoadImage()
+                        },
+                    },
+                });
+                vEditor.setValue(result.content.Content.Body);
+
+                //提交表单
+                form.on('submit(listen)', function(data) {
+                    console.log(data.field);
+                    return false;
+                    //构造表单参数
+                    var formData = new FormData();
+                    for(var i in data.field) {
+                        formData.append(i, data.field[i]);
+                    }
+                    formData.append('tags', )
+                    //收集标签参数
+                    var tags = formSelects.value('j-tags');
+                    for(var i in tags) {
+                        if(tags[i].value < 0) {
+                            //新增的标签
+                            formData.append('tagsName[]', tags[i].name);
+                        }else {
+                            //旧的标签
+                            formData.append('tagsID[]', tags[i].value);
+                        }
+                    }
+                    formData.append('body', vEditor.getValue());
+                    var request = new XMLHttpRequest();
+                    var f = $("#j-form");
+                    request.open(f.attr('method'), f.attr('action'));
+                    request.onload = function(oEvent) {
+                        let currentTarget = oEvent.currentTarget;
+                        if(currentTarget.status !== 200) {
+                            layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
+                            return '';
+                        }
+                        let json = JSON.parse(currentTarget.response);
+                        if(json.code === 0) {
+                            vEditor.clearCache();
+                            layer.alert(json.message, {icon: 1});
+                        }else {
+                            layer.alert(json.message, {icon: 2});
+                        }
+                    };
+                    request.send(formData);
+                    return false;
+                });
+            }).catch(function (rej) {
+                layer.alert(rej, {icon: 2});
             });
 
             const LazyLoadImage = () => {
                 const loadImg = (it) => {
-                    const testImage = document.createElement('img')
-                    testImage.src = it.getAttribute('data-src')
+                    const testImage = document.createElement('img');
+                    testImage.src = it.getAttribute('data-src');
                     testImage.addEventListener('load', () => {
                         it.src = testImage.src;
                         it.style.backgroundImage = 'none';
@@ -164,7 +369,7 @@
                 }
 
                 if (window.imageIntersectionObserver) {
-                    window.imageIntersectionObserver.disconnect()
+                    window.imageIntersectionObserver.disconnect();
                     document.querySelectorAll('img').forEach(function (data) {
                         window.imageIntersectionObserver.observe(data)
                     });
@@ -183,50 +388,6 @@
                     });
                 }
             };
-
-            //提交表单
-            form.on('submit(listen)', function(data) {
-                //构造表单参数
-                var formData = new FormData();
-                for(var i in data.field) {
-                    if(i === 'tags') {
-                        //跳过标签参数
-                        continue;
-                    }
-                    formData.append(i, data.field[i]);
-                }
-                //收集标签参数
-                var tags = formSelects.value('j-tags');
-                for(var i in tags) {
-                    if(tags[i].value < 0) {
-                        //新增的标签
-                        formData.append('tagsName[]', tags[i].name);
-                    }else {
-                        //旧的标签
-                        formData.append('tagsID[]', tags[i].value);
-                    }
-                }
-                formData.append('body', vEditor.getValue());
-                var request = new XMLHttpRequest();
-                var f = $("#j-form");
-                request.open(f.attr('method'), f.attr('action'));
-                request.onload = function(oEvent) {
-                    let currentTarget = oEvent.currentTarget;
-                    if(currentTarget.status !== 200) {
-                        layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
-                        return '';
-                    }
-                    let json = JSON.parse(currentTarget.response);
-                    if(json.code === 0) {
-                        vEditor.clearCache();
-                        layer.alert(json.message, {icon: 1});
-                    }else {
-                        layer.alert(json.message, {icon: 2});
-                    }
-                };
-                request.send(formData);
-                return false;
-            });
         });
     </script>
 
@@ -245,50 +406,6 @@
                     more.hide();
                     moreBtn.removeClass('layui-icon-up').addClass('layui-icon-down');
                 }
-            });
-        });
-
-        //分类操作
-        var categoryID = parseInt({{.result.Category}});
-        layui.use(['jquery', 'form', 'layer', 'formSelects', 'treeHelper'], function() {
-            var $ = layui.jquery;
-            var layer = layui.layer;
-            var treeHelper = layui.treeHelper;
-            $.get('/backend/article/content/category/-1', {}, function (json) {
-                if(json.code !== 0) {
-                    layer.alert(json.msg, {icon: 2});
-                    return;
-                }
-                var data = [];
-                for(var i in json.data) {
-                    data.push({
-                        id: json.data[i].ID,
-                        pid: json.data[i].Pid,
-                        name:json.data[i].Name,
-                        value:json.data[i].ID,
-                        selected:categoryID === json.data[i].ID
-                    });
-                }
-                var arr = treeHelper.tree(data, 'id', 'pid', 'children');
-                layui.formSelects.data('j-category', 'local', {
-                    arr: arr,
-                    tree: {
-                        nextClick: function(id, item, callback) {}
-                    }
-                });
-            });
-        });
-
-        //标签操作
-        layui.use(['formSelects', 'jquery', 'layer'], function() {
-            var formSelects = layui.formSelects;
-            var key = 0;
-            formSelects.render('j-tags', {
-                create: function(id, name) {
-                    //新增标签的key默认改为负数
-                    --key;
-                    return key;
-                },
             });
         });
     </script>
