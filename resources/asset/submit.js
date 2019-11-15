@@ -27,43 +27,70 @@ var submit = {
      * @private
      */
     _callUserFunc: function(callback) {
-        //新增 window window.parent 兼容 支持debug 调试
         if(typeof callback != 'string') {
             throw 'submit._callUserFunc param error: callback is must string';
         }
-        var key = callback.split('.');
-        var that = window;
-        var func = null;
-        var obj = window;
-        var l = key.length;
-        for(var i=0; i<l; i++) {
-            if(!(key[i] in obj)) {
-                break;
-            }
-            obj = obj[key[i]];
-            if(i === (l - 2)) {
-                that = obj;
-            }
-            if(i === (l - 1)) {
-                func = obj;
-            }
-        }
-        var result = undefined;
-        if(func !== null && typeof func == 'function') {
-            if(func.length === 0) {
-                result = func.apply(that);
-            }else{
-                var args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
-                if(args.length > 1) {
-                    result = func.apply(that, args.slice(1, args.length));
-                }else {
-                    result = func.apply(that);
+        var scanCtx = function(rootObj, funcChain) {
+            var key = funcChain.split('.');
+            var lastParent = rootObj;
+            var func = null;
+            var obj = rootObj;
+            var l = key.length;
+            for(var i=0; i<l; i++) {
+                if(i === 0 && key[0] === 'window') {
+                    continue;
+                }
+                if(i === 1 && key[0] === 'window' && key[1] === 'parent') {
+                    continue;
+                }
+                if(!(key[i] in obj)) {
+                    break;
+                }
+                obj = obj[key[i]];
+                if(i === (l - 2)) {
+                    lastParent = obj;
+                }
+                if(i === (l - 1)) {
+                    func = obj;
                 }
             }
-        }else {
-            throw 'submit._callUserFunc not found function: window.'+callback;
+            return [lastParent, func];
+        };
+        var ctx = scanCtx(window, callback);
+        if(ctx[1] === null) {
+            ctx = scanCtx(window.parent, callback);
         }
-        return result;
+        if(ctx[1] === null || typeof ctx[1] !== 'function') {
+            throw 'submit._callUserFunc not found function: '+callback;
+        }
+        var args = Array.apply(null, arguments);
+        args.shift();
+        return ctx[1].apply(ctx[0], args);
+    },
+
+    /**
+     * 弹出信息
+     * @private
+     */
+    _alert: function() {
+        var args = arguments;
+        if(args.length === 0) {
+            return;
+        }
+        try {
+            if(window.layui !== undefined) {
+                layui.use(['layer'], function() {
+                    var layer = layui.layer;
+                    layer.alert(...args);
+                });
+            }else if(window.layer !== undefined) {
+                layer.alert(...args);
+            }else {
+                alert(args[0]);
+            }
+        }catch (e) {
+            console.log(e);
+        }
     },
 
     /**
@@ -75,37 +102,61 @@ var submit = {
 
         var data = that._getAttrData(DOMObject);
 
+        var debug = data['debug'];
+        delete data['debug'];
+        if(debug === undefined || debug === "" || debug === "false") {
+            debug = false;
+        }else {
+            debug = true;
+        }
+
         var url = data['url'];
         delete data['url'];
+        if(url === undefined || url === "") {
+            throw 'submit.form: invalid url';
+        }
 
-        var _method = data['_method'];
-        delete data['_method'];
-        if(_method === undefined || _method === "") {
-            _method = 'get';
+        var method = data['method'];
+        delete data['method'];
+        if(method === undefined || method === "") {
+            method = 'get';
         }
 
         var target = data['target'];
         delete data['target'];
 
         var form = document.createElement('form');
-
         form.id = 'form-' + (new Date()).getTime();
-
         form.action = url;
 
-        if(_method === 'put' || _method === 'patch') {
+        if(method === 'put' || method === 'patch') {
+            //改为post请求
             form.method = 'post';
-        }else if(_method === 'delete') {
+        }else if(method === 'delete') {
+            //改为get请求
             form.method = 'get';
         }else {
-            form.method = _method;
+            form.method = method;
         }
-        if(_method !== 'get' && _method !== 'post') {
-            data['_method'] = _method;
+        //模拟请求
+        if(method !== 'get' && method !== 'post') {
+            data['_method'] = method;
         }
 
         if(target) {
             form.target = target;
+        }
+
+        //请求之前预处理数据回调
+        var prepare = data['call-prepare-data'];
+        delete data['call-prepare-data'];
+        if(prepare !== undefined && prepare.length > 0) {
+            try {
+                data = that._callUserFunc(prepare, data);
+            }catch (e) {
+                that._alert(e.toString(), {icon:0});
+                return;
+            }
         }
 
         for(var i in data) {
@@ -114,6 +165,11 @@ var submit = {
             input.setAttribute('type', 'hidden');
             input.setAttribute('value', data[i]);
             form.appendChild(input);
+        }
+
+        if(debug) {
+            console.log(debug);
+            return;
         }
 
         var body = document.getElementsByTagName('body')[0];
@@ -137,23 +193,24 @@ var submit = {
 
         var data = that._getAttrData(DOMObject);
 
+        var debug = data['debug'];
+        delete data['debug'];
+        if(debug === undefined || debug === "" || debug === "false") {
+            debug = false;
+        }else {
+            debug = true;
+        }
+
         var url = data['url'];
         delete data['url'];
-
-        var _method = data['_method'];
-        delete data['_method'];
-        if(_method === undefined || _method === "") {
-            _method = 'get';
+        if(url === undefined || url === "") {
+            throw 'submit.ajax: invalid url';
         }
 
-        var method = _method;
-        if(_method !== 'get' && _method !== 'post') {
-            data['_method'] = _method;
-        }
-        if(_method === 'put' || _method === 'patch') {
-            method = 'post';
-        }else if(_method === 'delete') {
-            method = 'get';
+        var method = data['method'];
+        delete data['method'];
+        if(method === undefined || method === "") {
+            method = 'GET';
         }
 
         var content_type = data['content_type']; //注意 dom 树的属性不支持大小写
@@ -162,15 +219,33 @@ var submit = {
             content_type = 'application/x-www-form-urlencoded';
         }
 
-        var success = data['success'];
-        delete data['success'];
+        //成功回调
+        var success = data['call-success'];
+        delete data['call-success'];
 
-        var error = data['error'];
-        delete data['error'];
+        //错误回调
+        var error = data['call-error'];
+        delete data['call-error'];
 
-        layui.use(['jquery'], function() {
-            var $ = layui.jquery;
-            $.ajax({
+        //请求之前预处理数据回调
+        var prepare = data['call-prepare-data'];
+        delete data['call-prepare-data'];
+        if(prepare !== undefined && prepare.length > 0) {
+            try {
+                data = that._callUserFunc(prepare, data);
+            }catch (e) {
+                that._alert(e.toString(), {icon:0});
+                return;
+            }
+        }
+
+        if(debug) {
+            console.log(data);
+            return;
+        }
+
+        var request = function(jQuery) {
+            jQuery.ajax({
                 type: method,
                 url: url,
                 data: data,
@@ -179,7 +254,33 @@ var submit = {
                     if(success !== undefined && success.length > 0) {
                         that._callUserFunc(success, DOMObject, data);
                     }else {
-                        console.log(data);
+                        //默认的回调逻辑
+                        if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
+                            //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
+                            var message = '';
+                            if(data.msg !== undefined) {
+                                message = data.msg;
+                            }else {
+                                message = data.message;
+                            }
+                            if(message !== '') {
+                                if(data.code === 0) {
+                                    //操作成功
+                                    that._alert(message, {icon: 1});
+                                }else {
+                                    //操作失败
+                                    that._alert(message, {icon: 2});
+                                }
+                            }
+                        }else if(typeof data === 'string') {
+                            //返回的是字符串，不为空字符串则弹出
+                            if(data !== '') {
+                                that._alert(data);
+                            }
+                        }else {
+                            //未知返回，直接弹出
+                            that._alert(data);
+                        }
                     }
                 },
                 error: function (jqXHR) {
@@ -190,7 +291,16 @@ var submit = {
                     }
                 }
             });
-        });
+        };
+
+        if(window.layui !== undefined) {
+            layui.use(['jquery'], function() {
+                var $ = layui.jquery;
+                request($);
+            });
+        }else {
+            request(window.$);
+        }
     },
 
     /**
@@ -202,25 +312,45 @@ var submit = {
     confirm: function (DOMObject, type, tips) {
         var that = this;
 
+        if(!type) {
+            type = 'ajax';
+        }
+
         if(!tips) {
             tips = '此操作不可撤销，你确定执行吗？';
         }
 
-        layui.use(['layer'], function() {
-            var layer = layui.layer;
+        var request = function () {
+            if(type === 'form') {
+                that.form(DOMObject);
+            }else if(type === 'ajax') {
+                that.ajax(DOMObject);
+            }else {
+                throw 'submit.confirm param error';
+            }
+        };
+
+        var layerConfirm = function (layer) {
             layer.confirm(tips, {icon: 3, title:'提示'}, function(index) {
                     layer.close(index);
-                    if(type === 'form') {
-                        that.form(DOMObject);
-                    }else if(type === 'ajax') {
-                        that.ajax(DOMObject);
-                    }else {
-                        throw 'submit.confirm param error';
-                    }
+                    request();
                 },function (index) {
                     layer.close(index);
                 }
             );
-        });
+        };
+
+        if(window.layui !== undefined) {
+            layui.use(['layer'], function() {
+                var layer = layui.layer;
+                layerConfirm(layer);
+            });
+        }else if(window.layer !== undefined) {
+            layerConfirm(window.layer);
+        }else {
+            if(window.confirm(tips)) {
+                request();
+            }
+        }
     }
 };
