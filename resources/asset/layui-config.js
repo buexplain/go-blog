@@ -10,8 +10,6 @@ layui.config({
     skeletonTab: 'backend/skeleton/skeletonTab',
     //本项目自定义工具集
     myUtil:'layext/myUtil/myUtil',
-    //树形数据迭代帮助类
-    treeHelper: 'backend/skeleton/treeHelper',
     //表格树组件
     treeTable:'layext/treeTable/treeTable',
     //树组件
