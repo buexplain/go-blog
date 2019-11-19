@@ -5,7 +5,7 @@ $(function () {
         try {
             skeleton = layui.skeleton('left-nav', 'top-tab');
             //初始化菜单栏
-            skeleton.menu.init(myMenu, 0, 'ID', 'Pid', 'Name', 'URL');
+            skeleton.menu.init(myMenu, 'ID', 'Pid', 'Name', 'URL');
             //打开第一个节点
             skeleton.menu.open(myMenu[0].ID);
         }catch (e) {
