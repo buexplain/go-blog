@@ -92,5 +92,15 @@
                 }
             });
         });
+
+        function updateQueryStringParameter(uri, key, value) {
+            var reg = new RegExp("([?&])" + key.replace(']', '\\]').replace('[', '\\[') + "=.*?(&|$)", "i");
+            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            if (uri.match(reg)) {
+                return uri.replace(reg, '$1' + key + "=" + value + '$2');
+            }else {
+                return uri + separator + key + "=" + value;
+            }
+        }
     </script>
 {{end}}
