@@ -4,9 +4,8 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/buexplain/go-fool v0.0.0-20190711015905-60563b7c2efa
-	github.com/buexplain/go-gracehttp v0.0.0-20190711071312-a7a06ca8bb65
-	github.com/buexplain/go-validator v0.0.0-20190825100648-8b2f4149bd95
+	github.com/buexplain/go-fool v0.0.0-20191025094934-4163035cb978
+	github.com/buexplain/go-validator v0.0.0-20191015100257-27698e3e8ee6
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.4
 	github.com/gorilla/csrf v1.6.0
@@ -21,7 +20,3 @@ require (
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
 	xorm.io/core v0.6.3
 )
-
-replace github.com/buexplain/go-fool => F:\go-fool
-
-replace github.com/buexplain/go-validator => F:\go-validator
