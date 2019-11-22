@@ -20,8 +20,8 @@ var submit = {
     },
 
     /**
-     *  从window对象中找到 callback 字符串描述的函数，然后进行调用
-     *  示例：_callUserFunc('location.reload') 等价于 window.location.reload()
+     * 从window对象中找到 callback 字符串描述的函数，然后进行调用
+     * 示例：_callUserFunc('location.reload') 等价于 window.location.reload()
      * @param callback string
      * @returns {undefined}
      * @private
@@ -73,24 +73,60 @@ var submit = {
      * @private
      */
     _alert: function() {
-        var args = arguments;
+        var args = Array.apply(null, arguments);
         if(args.length === 0) {
             return;
         }
         try {
+            var message = args[0];
+            if((typeof message) === 'object') {
+                message = JSON.stringify(message);
+            }
             if(window.layui !== undefined) {
                 layui.use(['layer'], function() {
                     var layer = layui.layer;
-                    layer.alert(...args);
+                    var option = {};
+                    if(args.length >1 && args[args.length-1]['icon'] !== undefined) {
+                        option = args.pop();
+                    }
+                    layer.alert(message, option);
                 });
             }else if(window.layer !== undefined) {
-                layer.alert(...args);
+                var option = {};
+                if(args.length >1 && args[args.length-1]['icon'] !== undefined) {
+                    option = args.pop();
+                }
+                layer.alert(message, option);
             }else {
-                alert(args[0]);
+                alert(message);
             }
         }catch (e) {
-            console.log(e);
+            console.log(...args);
         }
+    },
+
+    /**
+     * 警告
+     * @param message
+     */
+    alertWarning: function(message) {
+        this._alert(message, {icon: 0});
+    },
+
+    /**
+     * 成功
+     * @param message
+     */
+    alertSuccess: function(message) {
+        this._alert(message, {icon: 1});
+    },
+
+    /**
+     * 错误
+     * @param message
+     */
+    alertError: function(message) {
+        this._alert(message, {icon: 2});
     },
 
     /**
@@ -154,7 +190,7 @@ var submit = {
             try {
                 data = that._callUserFunc(prepare, data);
             }catch (e) {
-                that._alert(e.toString(), {icon:0});
+                that.alertWarning(e.toString());
                 return;
             }
         }
@@ -175,9 +211,22 @@ var submit = {
         var body = document.getElementsByTagName('body')[0];
 
         body.append(form);
+
+        //判断是否锁定
+        var disabled = DOMObject.getAttribute('disabled');
+        if(disabled === 'true' || disabled === 'disabled') {
+            return;
+        }
+        //锁定
+        DOMObject.setAttribute('disabled', 'disabled');
+
+        //提交表单
         form.submit();
 
         try {
+            //解锁
+            DOMObject.removeAttribute('disabled');
+            //移除表单元素
             body.removeChild(form);
         }catch (e) {
             console.log(e);
@@ -234,7 +283,7 @@ var submit = {
             try {
                 data = that._callUserFunc(prepare, data);
             }catch (e) {
-                that._alert(e.toString(), {icon:0});
+                that.alertWarning(e.toString());
                 return;
             }
         }
@@ -245,12 +294,21 @@ var submit = {
         }
 
         var request = function(jQuery) {
+            //判断是否锁定
+            var disabled = DOMObject.getAttribute('disabled');
+            if(disabled === 'true' || disabled === 'disabled') {
+                return;
+            }
+            //锁定
+            DOMObject.setAttribute('disabled', 'disabled');
             jQuery.ajax({
                 type: method,
                 url: url,
                 data: data,
                 contentType:content_type,
                 success: function (data) {
+                    //解锁
+                    DOMObject.removeAttribute('disabled');
                     if(success !== undefined && success.length > 0) {
                         that._callUserFunc(success, DOMObject, data);
                     }else {
@@ -263,19 +321,15 @@ var submit = {
                             }else {
                                 message = data.message;
                             }
+                            //如果没有任何消息提示，则不做弹出
                             if(message !== '') {
                                 if(data.code === 0) {
                                     //操作成功
-                                    that._alert(message, {icon: 1});
+                                    that.alertSuccess(message);
                                 }else {
                                     //操作失败
-                                    that._alert(message, {icon: 2});
+                                    that.alertError(message);
                                 }
-                            }
-                        }else if(typeof data === 'string') {
-                            //返回的是字符串，不为空字符串则弹出
-                            if(data !== '') {
-                                that._alert(data);
                             }
                         }else {
                             //未知返回，直接弹出
@@ -284,6 +338,8 @@ var submit = {
                     }
                 },
                 error: function (jqXHR) {
+                    //解锁
+                    DOMObject.removeAttribute('disabled');
                     if(error !== undefined) {
                         that._callUserFunc(error, DOMObject, jqXHR);
                     }else {
@@ -320,6 +376,12 @@ var submit = {
             tips = '此操作不可撤销，你确定执行吗？';
         }
 
+        //判断是否锁定
+        var disabled = DOMObject.getAttribute('disabled');
+        if(disabled === 'true' || disabled === 'disabled') {
+            return;
+        }
+
         var request = function () {
             if(type === 'form') {
                 that.form(DOMObject);
@@ -331,7 +393,7 @@ var submit = {
         };
 
         var layerConfirm = function (layer) {
-            layer.confirm(tips, {icon: 3, title:'提示'}, function(index) {
+            layer.confirm(tips, {icon: 3, title:'询问'}, function(index) {
                     layer.close(index);
                     request();
                 },function (index) {
