@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
@@ -19,11 +20,17 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 		if rbacCheck(ctx) {
 			ctx.Next()
 		} else {
+			var message string
+			if ctx.App().Debug() && ctx.Route() !=nil {
+				message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())
+			}else {
+				message = code.Text(code.INVALID_AUTH)
+			}
 			if ctx.Route() != nil && ctx.Route().HasLabel("json") {
 				//存在路由，并且路由有json标签，则响应json格式
-				ctx.Throw(ctx.Response().Assign("code", code.INVALID_AUTH).Assign("message", code.Text(code.INVALID_AUTH)).Assign("data", "").JSON(http.StatusOK))
+				ctx.Throw(ctx.Response().Assign("code", code.INVALID_AUTH).Assign("message", message).Assign("data", "").JSON(http.StatusOK))
 			} else {
-				ctx.Throw(ctx.Response().JumpBack(code.Text(code.INVALID_AUTH)))
+				ctx.Throw(ctx.Response().JumpBack(message))
 			}
 		}
 	}

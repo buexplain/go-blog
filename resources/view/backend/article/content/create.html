@@ -61,9 +61,9 @@
 {{end}}
 
 {{define "js"}}
+    <script type="text/javascript" src="/resources/asset/backend/article/content/common.js"></script>
     <script>
-        var contentID = 28;
-
+        var contentID = {{.result.ID}};
         layui.use(['form', 'layer', 'formSelects', 'jquery', 'xmSelect', 'dtree'], function() {
             var form = layui.form;
             var layer = layui.layer;
@@ -72,136 +72,16 @@
             var xmSelect = layui.xmSelect;
             var dtree = layui.dtree;
 
-            //获取内容
-            var getContent = function () {
-                return new Promise(function(resolve, reject) {
-                    $.ajax({
-                        url: "/backend/article/content/show/"+contentID,
-                        async:true,
-                        data: {},
-                        type: "get",
-                        success: function (json) {
-                            if (json.code !== 0) {
-                                reject(json.message);
-                            } else {
-                                resolve(json.data);
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            reject(textStatus+errorThrown);
-                        }
-                    });
-                });
-            };
-
-            //获取标签列表
-            var getTagList = function () {
-                return new Promise(function(resolve, reject) {
-                    $.ajax({
-                        url: "/backend/article/content/tag",
-                        async:true,
-                        data: {},
-                        type: "get",
-                        success: function (json) {
-                            if (json.code !== 0) {
-                                reject(json.message);
-                            } else {
-                                resolve(json.data);
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            reject(textStatus+errorThrown);
-                        }
-                    });
-                });
-            };
-
-            //获取分类列表
-            var getCategoryList = function () {
-                return new Promise(function(resolve, reject) {
-                    $.ajax({
-                        url: "/backend/article/content/category/-1",
-                        async:true,
-                        data: {},
-                        type: "get",
-                        success: function (json) {
-                            if (json.code !== 0) {
-                                reject(json.message);
-                            } else {
-                                resolve(json.data);
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            reject(textStatus+errorThrown);
-                        }
-                    });
-                });
-            };
-
-            Promise.all([getContent(), getCategoryList(), getTagList()]).then(function([content, categoryList, tagList]) {
-
-                content.hasCategory = function(id) {
-                    if(this.Category === null) {
-                        return false;
-                    }
-                    return this.Category.some(function (v, k) {
-                        return v.ID === id
-                    });
-                };
-
-                content.hasTag = function(id) {
-                    if(this.Tag === null) {
-                        return false;
-                    }
-                    return this.Tag.some(function (v, k) {
-                        return v.ID === id
-                    });
-                };
-
-                categoryList.process = function() {
-                    var result = [];
-                    this.forEach(function (v, k) {
-                        result.push({
-                            "id":v.ID,
-                            "title": v.Name,
-                            "checkArr": [{
-                                "type": "0", //type表示当前节点的第几个复选框
-                                "checked": content.hasCategory(v.ID) ? '1' : '0' //0-未选中，1-选中，2-半选
-                            }],
-                            "parentId": v.Pid
-                        });
-                    });
-                    return result;
-                };
-
-                tagList.process = function () {
-                    var result = [];
-                    this.forEach(function (v, k) {
-                        result.push({name: v.Name, value: v.ID, selected: content.hasTag(v.ID)});
-                    });
-                    return result;
-                };
-
-                var online = [{ID:1, Name:'上线'}, {ID:2, Name:'下线'}];
-                online.process = function () {
-                    var result = [];
-                    this.forEach(function (v, k) {
-                        result.push({name: v.Name, value: v.ID, selected: content.Content.Online === v.ID});
-                    });
-                    return result;
-                };
-
+            Promise.all([Content.getInstance(contentID), CategoryList.getInstance(), TagList.getInstance(), Online.getInstance()]).then(function([content, categoryList, tagList, online]) {
                 return new Promise(function(resolve, reject) {
                     resolve({
                         content:content
-                        ,categoryList:categoryList.process()
-                        ,tagList:tagList.process()
-                        ,online:online.process()
+                        ,categoryList:categoryList.process(content)
+                        ,tagList:tagList.process(content)
+                        ,online:online.process(content)
                     });
                 });
             }).then(function (result) {
-                console.log(result);
-
                 //渲染分类
                 dtree.render({
                     elem: "#j-category",
@@ -299,7 +179,7 @@
                         },
                     },
                 });
-                vEditor.setValue(result.content.Content.Body);
+                vEditor.setValue(result.content.getBody());
 
                 //提交表单
                 form.on('submit(listen)', function(data) {
@@ -310,7 +190,7 @@
                     for(var i in data.field) {
                         formData.append(i, data.field[i]);
                     }
-                    formData.append('tags', )
+                    formData.append('tags', );
                     //收集标签参数
                     var tags = formSelects.value('j-tags');
                     for(var i in tags) {
@@ -344,68 +224,7 @@
                     return false;
                 });
             }).catch(function (rej) {
-                layer.alert(rej, {icon: 2});
-            });
-
-            const LazyLoadImage = () => {
-                const loadImg = (it) => {
-                    const testImage = document.createElement('img');
-                    testImage.src = it.getAttribute('data-src');
-                    testImage.addEventListener('load', () => {
-                        it.src = testImage.src;
-                        it.style.backgroundImage = 'none';
-                        it.style.backgroundColor = 'transparent';
-                    });
-                    it.removeAttribute('data-src')
-                };
-
-                if (!('IntersectionObserver' in window)) {
-                    document.querySelectorAll('img').forEach((data) => {
-                        if (data.getAttribute('data-src')) {
-                            loadImg(data)
-                        }
-                    });
-                    return false
-                }
-
-                if (window.imageIntersectionObserver) {
-                    window.imageIntersectionObserver.disconnect();
-                    document.querySelectorAll('img').forEach(function (data) {
-                        window.imageIntersectionObserver.observe(data)
-                    });
-                } else {
-                    window.imageIntersectionObserver = new IntersectionObserver((entries) => {
-                        entries.forEach((entrie) => {
-                            if ((typeof entrie.isIntersecting === 'undefined'
-                                ? entrie.intersectionRatio !== 0
-                                : entrie.isIntersecting) && entrie.target.getAttribute('data-src')) {
-                                loadImg(entrie.target)
-                            }
-                        })
-                    });
-                    document.querySelectorAll('img').forEach(function (data) {
-                        window.imageIntersectionObserver.observe(data)
-                    });
-                }
-            };
-        });
-    </script>
-
-    <script type="text/javascript">
-        //更多操作
-        layui.use(['jquery'], function () {
-            var $ = layui.jquery;
-            var more = $("#j-more");
-            more.hide();
-            var moreBtn = $("#j-more-btn");
-            moreBtn.on('click', function () {
-                if(more.css('display') === 'none') {
-                    more.show();
-                    moreBtn.removeClass('layui-icon-down').addClass('layui-icon-up');
-                }else{
-                    more.hide();
-                    moreBtn.removeClass('layui-icon-up').addClass('layui-icon-down');
-                }
+                layer.alert(rej.toString(), {icon: 2});
             });
         });
     </script>
