@@ -38,3 +38,5 @@ func NewDao(path string) (*xorm.Engine, error) {
 	dao.SetMapper(core.SameMapper{})
 	return dao, nil
 }
+
+type CallBack func(session *xorm.Session) *xorm.Session

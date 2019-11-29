@@ -34,7 +34,7 @@
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal layui-icon layui-icon-down" id="j-more-btn">
                     更多
                 </button>
-                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="listen">
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="listen" id="j-listen">
                     提交
                 </button>
                 <a href="/backend/article/content" class="layui-btn layui-btn-sm layui-btn-primary">
@@ -64,10 +64,9 @@
     <script type="text/javascript" src="/resources/asset/backend/article/content/common.js"></script>
     <script>
         var contentID = {{.result.ID}};
-        layui.use(['form', 'layer', 'formSelects', 'jquery', 'xmSelect', 'dtree'], function() {
+        layui.use(['form', 'layer', 'jquery', 'xmSelect', 'dtree'], function() {
             var form = layui.form;
             var layer = layui.layer;
-            var formSelects = layui.formSelects;
             var $ = layui.jquery;
             var xmSelect = layui.xmSelect;
             var dtree = layui.dtree;
@@ -83,7 +82,7 @@
                 });
             }).then(function (result) {
                 //渲染分类
-                dtree.render({
+                const categoryObj = dtree.render({
                     elem: "#j-category",
                     selectInputName:{nodeId: "category",  context: "categoryTitle"},
                     selectTips: "请选择分类",
@@ -93,11 +92,12 @@
                     initLevel:2, //默认展开层级，当该值大于level时，则会展开树的节点，直到不大于当前待展开节点的level
                     dataFormat: "list", // 用于用户配置的data的数据格式,list:数组格式，levelRelationship：层级关系格式。
                     skin: "layui",  // laySimple主题风格
+                    selectInitVal:''+result.content.getCategory(), //这里要转成string类型，否则出错
                     data: result.categoryList
                 });
 
                 //渲染标签
-                const tag = xmSelect.render({
+                const tagObj = xmSelect.render({
                     el: '#j-tags',
                     toolbar: {
                         show: true,
@@ -109,18 +109,34 @@
                     pageSize: 10,
                     max: 3,
                     data: result.tagList,
-                    create: function(val) {
-                        console.log(val);
-                        //返回一个创建成功的对象, val是搜索的数据
+                    create: function(name) {
+                        var value = name;
+                        $.ajax({
+                            url: "/backend/article/content/tag",
+                            async:false,
+                            data: {name: name, _token: document.querySelector("input[name=_token]").value},
+                            type: "post",
+                            success: function (json) {
+                                if (json.code !== 0) {
+                                    submit.alertError(json.message);
+                                } else {
+                                    value = json.data;
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                reject();
+                                submit.alertError(textStatus+errorThrown);
+                            }
+                        });
                         return {
-                            name: '创建-' + val,
-                            value: val
+                            name: name,
+                            value: value
                         }
                     }
                 });
 
                 //渲染上下线
-                const online = xmSelect.render({
+                const onlineObj = xmSelect.render({
                     el: '#j-online',
                     tips:'请选择上下线',
                     size: 'small',
@@ -130,7 +146,7 @@
                 });
 
                 //渲染编辑器
-                const vEditor = new Vditor('j-editor', {
+                const vEditorObj = new Vditor('j-editor', {
                     placeholder:'请输入文章内容',
                     cache:false,
                     counter: 65535,
@@ -156,14 +172,15 @@
                                 if(json.code === 0) {
                                     var show = [".jpg", ".png", ".gif", ".jpeg", ".bmp"];
                                     for(var i in json.data) {
-                                        var tmp = '['+json.data[i].name+']('+json.data[i].path+')';
+                                        var tmp = '['+json.data[i].name+']('+json.data[i].path+' "'+json.data[i].name+'")';
                                         for(var j in show) {
                                             if(json.data[i].path.substr(0 - show[j].length).toLocaleLowerCase() === show[j]) {
                                                 tmp = '!'+tmp;
                                                 break;
                                             }
                                         }
-                                        vEditor.insertValue(tmp);
+                                        //压入上传结果
+                                        vEditorObj.insertValue(tmp);
                                     }
                                 }else {
                                     layer.alert(json.message, {icon: 2});
@@ -179,30 +196,30 @@
                         },
                     },
                 });
-                vEditor.setValue(result.content.getBody());
+                //压入文章内容
+                vEditorObj.setValue(result.content.getBody());
 
                 //提交表单
                 form.on('submit(listen)', function(data) {
-                    console.log(data.field);
-                    return false;
                     //构造表单参数
                     var formData = new FormData();
                     for(var i in data.field) {
                         formData.append(i, data.field[i]);
                     }
-                    formData.append('tags', );
+
                     //收集标签参数
-                    var tags = formSelects.value('j-tags');
-                    for(var i in tags) {
-                        if(tags[i].value < 0) {
-                            //新增的标签
-                            formData.append('tagsName[]', tags[i].name);
-                        }else {
-                            //旧的标签
-                            formData.append('tagsID[]', tags[i].value);
-                        }
-                    }
-                    formData.append('body', vEditor.getValue());
+                    tagObj.getValue('value').forEach(function (v, k) {
+                        formData.append('tagsID[]', v);
+                    });
+                    //收集上下线参数
+                    onlineObj.getValue('value').forEach(function (v, k) {
+                        formData.append('online', v);
+                    });
+
+                    //收集文章内容
+                    formData.append('body', vEditorObj.getValue());
+
+                    //发送请求
                     var request = new XMLHttpRequest();
                     var f = $("#j-form");
                     request.open(f.attr('method'), f.attr('action'));
@@ -214,8 +231,16 @@
                         }
                         let json = JSON.parse(currentTarget.response);
                         if(json.code === 0) {
-                            vEditor.clearCache();
-                            layer.alert(json.message, {icon: 1});
+                            vEditorObj.clearCache();
+                            layer.tips(json.message, '#j-listen', {
+                                tips: [1, '#FFB800'],
+                                time:1000,
+                                end: function () {
+                                    if(!contentID) {
+                                        window.location.href = '/backend/article/content/edit/'+json.data;
+                                    }
+                                }
+                            });
                         }else {
                             layer.alert(json.message, {icon: 2});
                         }

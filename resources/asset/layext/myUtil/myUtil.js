@@ -1,20 +1,43 @@
 layui.define([], function(exports) {
     var MOD_NAME = 'myUtil';
     var myUtil = {
-        /**
-         * 替换querystring中的参数
-         * @param uri
-         * @param key
-         * @param value
-         * @returns {*}
-         */
-        updateQueryStringParameter: function(uri, key, value) {
-            var reg = new RegExp("([?&])" + key.replace(']', '\\]').replace('[', '\\[') + "=.*?(&|$)", "i");
-            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-            if (uri.match(reg)) {
-                return uri.replace(reg, '$1' + key + "=" + value + '$2');
-            }else {
-                return uri + separator + key + "=" + value;
+        queryString: {
+            /**
+             * 替换querystring中的参数
+             */
+            update: function(key, value, uri) {
+                if(uri === undefined) {
+                    uri = window.location.href;
+                }
+                var reg = new RegExp("([?&])" + key.replace(']', '\\]').replace('[', '\\[') + "=.*?(&|$)", "i");
+                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(reg)) {
+                    return uri.replace(reg, '$1' + key + "=" + value + '$2');
+                }else {
+                    return uri + separator + key + "=" + value;
+                }
+            },
+            /**
+             * 获取uri中的参数
+             */
+            get: function (key, def, uri) {
+                if(def === undefined) {
+                    def = null;
+                }
+                if(uri === undefined) {
+                    uri = window.location.href;
+                }
+                key += '=';
+                var index = uri.indexOf(key);
+                if(index === -1) {
+                    return def;
+                }
+                uri = uri.substr(index + key.length, uri.length);
+                index = uri.indexOf('&');
+                if(index === -1) {
+                    return uri;
+                }
+                return uri.substr(0, index);
             }
         },
         /**
@@ -24,9 +47,8 @@ layui.define([], function(exports) {
          * @returns {string}
          */
         createPageUrl: function (targetPage, limit) {
-            var url = window.location.href;
-            url = this.updateQueryStringParameter(url, 'page', targetPage);
-            url = this.updateQueryStringParameter(url, 'limit', limit);
+            var url = this.queryString.update('page', targetPage);
+            url = this.queryString.update('limit', limit);
             return url;
         }
     };

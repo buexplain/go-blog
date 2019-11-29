@@ -35,18 +35,11 @@ func GetDetails(id int) (*Details, error) {
 	}
 
 	tmp := new(m_category.Category)
-	if b, err := dao.Dao.ID(details.Content.Category).Get(tmp); err != nil {
-		return nil, err
-	}else if !b {
-		return nil, fmt.Errorf("content %d not found category %d",details.Content.ID, details.Content.Category)
-	}else {
+	if b, err := dao.Dao.ID(details.Content.Category).Get(tmp); err == nil && b {
 		details.Category = append(details.Category, tmp)
-	}
-
-	if l, err := tmp.Parents(); err != nil {
-		return nil, err
-	}else {
-		details.Category = append(details.Category, l...)
+		if p, err := tmp.Parents(); err == nil {
+			details.Category = append(details.Category, p...)
+		}
 	}
 
 	return details, nil

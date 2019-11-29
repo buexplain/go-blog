@@ -18,6 +18,7 @@ type Category struct {
 	SortID       int    `xorm:"INTEGER"`
 }
 
+//返回当前分类的父级分类
 func (this Category) Parent() (*Category, error) {
 	if this.Pid == 0 {
 		return nil, nil
@@ -31,6 +32,7 @@ func (this Category) Parent() (*Category, error) {
 	return tmp, nil
 }
 
+//返回当前分类的所有父级别分类
 func (this Category) Parents() (List, error) {
 	l := make(List, 0)
 	tmp := &this

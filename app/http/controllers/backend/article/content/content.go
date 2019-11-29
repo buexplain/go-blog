@@ -7,14 +7,14 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
-	"github.com/buexplain/go-blog/models/contentTag"
 	"github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/content"
+	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
+	"github.com/go-xorm/xorm"
 	"github.com/gorilla/csrf"
-	"html/template"
 	"net/http"
 	"path/filepath"
 )
@@ -85,16 +85,15 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	tagsID := r.FormSliceInt("tagsID[]")
-	tagsName := r.FormSlice("tagsName[]")
 
-	if len(tagsID) == 0 && len(tagsName) == 0 {
+	if len(tagsID) == 0 {
 		return w.Assign("data", "").
 			Assign("message", "请选择标签").
 			Assign("code", 1).
 			JSON(http.StatusOK)
 	}
 
-	if err := s_content.Save(mod, tagsID, 0, tagsName); err != nil {
+	if err := s_content.Save(mod, tagsID, 0); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
@@ -106,12 +105,6 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //编辑
 func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	//标签列表
-	tagList := new(m_tag.List)
-	if err := dao.Dao.Find(tagList); err != nil {
-		return err
-	}
-
 	//内容
 	result := new(m_content.Content)
 	result.ID = r.ParamInt("id", 0)
@@ -124,17 +117,8 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack("参数错误")
 	}
 
-	//内容的标签
-	contentTagList := make(m_contentTag.List, 0)
-	if err := dao.Dao.Where("ContentID=?", result.ID).Find(&contentTagList); err != nil {
-		return ctx.Error().WrapServer(err)
-	}
-
 	return w.
-	    Assign("tagList", tagList).
-		Assign("body", template.HTML(result.Body)).
 		Assign("result", result).
-		Assign("contentTagList", contentTagList).
 		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
 }
@@ -146,7 +130,6 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	mod.ID = r.ParamInt("id", 0)
-
 	vClone := v.Clone()
 	vClone.Rule("ID").Add("required", "ID错误")
 
@@ -160,16 +143,15 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	tagsID := r.FormSliceInt("tagsID[]")
-	tagsName := r.FormSlice("tagsName[]")
 
-	if len(tagsID) == 0 && len(tagsName) == 0 {
+	if len(tagsID) == 0 {
 		return w.Assign("data", "").
 			Assign("message", "请选择标签").
 			Assign("code", 1).
 			JSON(http.StatusOK)
 	}
 
-	if err := s_content.Save(mod, tagsID, mod.ID, tagsName); err != nil {
+	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
@@ -188,13 +170,19 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack("参数错误")
 	}
 
-	if _, err := dao.Dao.Delete(result); err != nil {
+	if affected, err := dao.Dao.Where("Online=?", m_content.OnlineNo).Delete(result); err != nil {
 		return ctx.Error().WrapServer(err).Location()
+	}else if affected > 0 {
+		return w.
+			Assign("code", code.SUCCESS).
+			Assign("message", "操作成功").
+			Assign("data", "").
+			JSON(http.StatusOK)
 	}
 
 	return w.
-		Assign("code", code.SUCCESS).
-		Assign("message", "操作成功").
+		Assign("code", 1).
+		Assign("message", "操作失败").
 		Assign("data", "").
 		JSON(http.StatusOK)
 }
@@ -206,13 +194,21 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack("参数错误")
 	}
 
-	if _, err := s_services.DestroyBatch("Content", ids); err != nil {
+	if affected, err := s_services.DestroyBatch("Content", ids, func(session *xorm.Session) *xorm.Session {
+		return  session.Where("Online=?", m_content.OnlineNo)
+	}); err != nil {
 		return ctx.Error().WrapServer(err).Location()
+	}else if affected > 0 {
+		return w.
+			Assign("code", code.SUCCESS).
+			Assign("message", "操作成功").
+			Assign("data", "").
+			JSON(http.StatusOK)
 	}
 
 	return w.
-		Assign("code", code.SUCCESS).
-		Assign("message", "操作成功").
+		Assign("code", 1).
+		Assign("message", "操作失败").
 		Assign("data", "").
 		JSON(http.StatusOK)
 }
@@ -241,7 +237,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}else {
 		result.Online = m_content.OnlineYes
 	}
-	fmt.Println("result.Online", result.Online)
+
 	if _, err := dao.Dao.ID(result.ID).Update(result); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
@@ -277,6 +273,22 @@ func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(err).Location()
 	}
 	return w.Assign("data", result).
+		Assign("message", code.Text(code.SUCCESS)).
+		Assign("code", code.SUCCESS).
+		JSON(http.StatusOK)
+}
+
+//新增tag
+func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	name := r.Form("name", "")
+	id, err := s_tag.Store(name)
+	if err != nil {
+		return w.Assign("data", "").
+			Assign("message", err.Error()).
+			Assign("code", code.SUCCESS).
+			JSON(http.StatusOK)
+	}
+	return w.Assign("data", id).
 		Assign("message", code.Text(code.SUCCESS)).
 		Assign("code", code.SUCCESS).
 		JSON(http.StatusOK)

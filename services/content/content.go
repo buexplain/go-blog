@@ -4,20 +4,10 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
-	"github.com/buexplain/go-blog/services/tag"
 )
 
 //保存内容
-func Save(content *m_content.Content, tagsID []int, id int, tagsName[]string) error {
-	//先处理标签
-	for _, v := range tagsName {
-		if id, err := s_tag.Store(v); err != nil {
-			return err
-		}else {
-			tagsID = append(tagsID, id)
-		}
-	}
-
+func Save(content *m_content.Content, tagsID []int, id int) error {
 	session := dao.Dao.NewSession()
 	defer session.Close()
 

@@ -11,13 +11,11 @@ class Content {
         return  this.data.Content.Online === id;
     }
 
-    hasCategory(id) {
-        if(this.data === null || this.data.Category === null) {
+    getCategory() {
+        if(this.data === null || this.data.Category === null || this.data.Category.length === 0) {
             return false;
         }
-        return this.data.Category.some(function (v, k) {
-            return v.ID === id
-        });
+        return this.data.Category[0].ID;
     }
 
     hasTag(id) {
@@ -103,16 +101,12 @@ class CategoryList {
         this.data = data;
     }
 
-    process (content) {
+    process () {
         var result = [];
         this.data.forEach(function (v, k) {
             result.push({
                 "id":v.ID,
                 "title": v.Name,
-                "checkArr": [{
-                    "type": "0", //type表示当前节点的第几个复选框
-                    "checked": content.hasCategory(v.ID) ? '1' : '0' //0-未选中，1-选中，2-半选
-                }],
                 "parentId": v.Pid
             });
         });

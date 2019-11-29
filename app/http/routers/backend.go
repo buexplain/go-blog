@@ -101,6 +101,7 @@ func backend(mux *fool.Mux) {
 			mux.Put("content/online/:id", c_content.Online)
 			mux.Get("content/category/:pid", c_content.Category)
 			mux.Get("content/tag", c_content.Tag)
+			mux.Post("content/tag", c_content.AddTag).AddLabel("json")
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
 		})
 
