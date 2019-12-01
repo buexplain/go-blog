@@ -1,4 +1,4 @@
-package boot
+package h_boot
 
 import (
 	"encoding/json"

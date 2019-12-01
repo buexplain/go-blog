@@ -20,11 +20,11 @@ func init() {
 func main() {
 	defer func() {
 		if a := recover(); a != nil {
-			boot.Logger.ErrorF("console run failed: %s", a)
+			a_boot.Logger.ErrorF("console run failed: %s", a)
 			os.Exit(1)
 		}
 	}()
 	if err := console.RootCmd.Execute(); err != nil {
-		boot.Logger.ErrorF("console start failed: %s", err)
+		a_boot.Logger.ErrorF("console start failed: %s", err)
 	}
 }

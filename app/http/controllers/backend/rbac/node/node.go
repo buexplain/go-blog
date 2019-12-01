@@ -2,6 +2,7 @@ package c_node
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
+	e_syncRbacNode "github.com/buexplain/go-blog/app/http/events/syncRbacNode"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/node"
 	"github.com/buexplain/go-blog/services/node"
@@ -41,7 +42,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	pid := r.ParamInt("pid", 0)
 	return ctx.Response().
 		Assign("pid", pid).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/rbac/node/create.html")
 }
@@ -140,7 +141,8 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := session.Commit(); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
-
+	//触发超级角色的节点同步
+	ctx.Event().Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
 	return w.JumpBack("操作成功")
 }
 
@@ -161,7 +163,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.
 		Assign("result", result).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/rbac/node/create.html")
 }
@@ -202,5 +204,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if _, err := s_node.Destroy(ids); err != nil {
 		return w.JumpBack(err)
 	}
+	//触发超级角色的节点同步
+	ctx.Event().Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
 	return w.Jump("/backend/rbac/node", "操作成功")
 }

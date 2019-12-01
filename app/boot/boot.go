@@ -1,4 +1,4 @@
-package boot
+package a_boot
 
 import (
 	"github.com/BurntSushi/toml"

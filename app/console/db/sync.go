@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
+	m_attachment "github.com/buexplain/go-blog/models/attachment"
 	m_category "github.com/buexplain/go-blog/models/category"
 	m_content "github.com/buexplain/go-blog/models/content"
 	m_contentTag "github.com/buexplain/go-blog/models/contentTag"
@@ -23,7 +24,7 @@ func init() {
 		Use:  "sync",
 		Long: "同步models到数据库",
 		Run: func(cmd *cobra.Command, args []string) {
-			boot.Logger.Info("开始同步models到数据库")
+			a_boot.Logger.Info("开始同步models到数据库")
 			err := dao.Dao.Sync2(
 				new(m_node.Node),
 				new(m_user.User),
@@ -31,14 +32,15 @@ func init() {
 				new(m_role.Role),
 				new(m_roleNodeRelation.RoleNodeRelation),
 				new(m_category.Category),
+				new(m_attachment.Attachment),
 				new(m_tag.Tag),
 				new(m_content.Content),
 				new(m_contentTag.ContentTag),
 			)
 			if err != nil {
-				boot.Logger.ErrorF("同步models到数据库失败: %s", err)
+				a_boot.Logger.ErrorF("同步models到数据库失败: %s", err)
 			} else {
-				boot.Logger.Info("同步models到数据库成功")
+				a_boot.Logger.Info("同步models到数据库成功")
 			}
 		},
 	}

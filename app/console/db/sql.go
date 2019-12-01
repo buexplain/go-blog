@@ -22,7 +22,7 @@ func init() {
 			if len(sql) > 6 && strings.EqualFold(sql[0:6], "select") == true {
 				result, err := dao.Dao.Query(sql)
 				if err != nil {
-					boot.Logger.ErrorF("执行sql失败: %s", err)
+					a_boot.Logger.ErrorF("执行sql失败: %s", err)
 					os.Exit(1)
 				}
 				fmt.Println("********************************** result start **********************************")
@@ -38,17 +38,17 @@ func init() {
 			} else {
 				result, err := dao.Dao.Exec(sql)
 				if err != nil {
-					boot.Logger.ErrorF("执行sql失败: %s", err)
+					a_boot.Logger.ErrorF("执行sql失败: %s", err)
 					os.Exit(1)
 				}
 				lastInsertId, err := result.LastInsertId()
 				if err != nil {
-					boot.Logger.ErrorF("执行sql失败: %s", err)
+					a_boot.Logger.ErrorF("执行sql失败: %s", err)
 					os.Exit(1)
 				}
 				rowsAffected, err := result.RowsAffected()
 				if err != nil {
-					boot.Logger.ErrorF("执行sql失败: %s", err)
+					a_boot.Logger.ErrorF("执行sql失败: %s", err)
 					os.Exit(1)
 				}
 				fmt.Printf("lastInsertId %d rowsAffected %d\n", lastInsertId, rowsAffected)

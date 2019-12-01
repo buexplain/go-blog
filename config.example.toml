@@ -60,6 +60,10 @@ HttpOnly = true
 [Asset]
 Dir = ["resources/..."]
 
+
+[Business]
+SuperRoleID = 1
+
 [Business.Upload]
 Ext = [".jpg", ".gif", ".png", ".jpeg"]
 Save = "/uploads"

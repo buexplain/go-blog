@@ -13,14 +13,14 @@ import (
 var Dao *xorm.Engine
 
 func init() {
-	db := filepath.Join(boot.ROOT_PATH, "database/database.db")
+	db := filepath.Join(a_boot.ROOT_PATH, "database/database.db")
 	var err error
 	Dao, err = NewDao(db)
 	if err != nil {
-		boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
+		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
 		os.Exit(1)
 	}
-	if boot.Config.App.Debug {
+	if a_boot.Config.App.Debug {
 		Dao.ShowSQL(true)
 		Dao.Logger().SetLevel(core.LOG_DEBUG)
 	}

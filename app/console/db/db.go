@@ -10,7 +10,7 @@ var dbCmd *cobra.Command = &cobra.Command{
 	Use:  "db",
 	Long: "数据库操作相关命令",
 	Run: func(cmd *cobra.Command, args []string) {
-		boot.Logger.Info("数据库操作相关命令")
+		a_boot.Logger.Info("数据库操作相关命令")
 	},
 }
 

@@ -2,8 +2,9 @@ package main
 
 import (
 	"github.com/buexplain/go-blog/app/http/boot"
+	_ "github.com/buexplain/go-blog/app/http/events"
 	_ "github.com/buexplain/go-blog/app/http/routers"
-	_ "golang.org/x/crypto/bcrypt"
+	//_ "golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -16,5 +17,5 @@ func init() {
 }
 
 func main() {
-	boot.Run()
+	h_boot.Run()
 }

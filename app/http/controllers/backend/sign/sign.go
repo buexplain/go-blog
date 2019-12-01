@@ -18,7 +18,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if s_user.IsSignIn(r.Session()) != nil {
 		return w.Redirect(http.StatusFound, "/backend/skeleton")
 	}
-	return w.Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
+	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
 }
 
 //登录

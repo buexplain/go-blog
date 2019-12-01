@@ -1,4 +1,4 @@
-package boot
+package h_boot
 
 import (
 	"fmt"
@@ -12,13 +12,13 @@ import (
 
 //启动http服务器
 func Run() {
-	addr := boot.Config.App.Server.IP + ":" + strconv.Itoa(int(boot.Config.App.Server.Port))
+	addr := a_boot.Config.App.Server.IP + ":" + strconv.Itoa(int(a_boot.Config.App.Server.Port))
 	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr)
 	server := http.Server{
 		Addr:         addr,
 		Handler:      Server,
-		ReadTimeout:  time.Duration(boot.Config.App.Server.ReadTimeout.Nanoseconds()),
-		WriteTimeout: time.Duration(boot.Config.App.Server.WriteTimeout.Nanoseconds()),
+		ReadTimeout:  time.Duration(a_boot.Config.App.Server.ReadTimeout.Nanoseconds()),
+		WriteTimeout: time.Duration(a_boot.Config.App.Server.WriteTimeout.Nanoseconds()),
 	}
 	go func() {
 		time.Sleep(time.Second * 2)

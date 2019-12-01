@@ -71,7 +71,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
@@ -119,7 +119,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.
 		Assign("result", result).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/rbac/user/create.html")
 }

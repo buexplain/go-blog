@@ -12,7 +12,7 @@ func init() {
 	RootCmd = &cobra.Command{
 		Long: "go-blog framework version 0.1.0",
 		Run: func(cmd *cobra.Command, args []string) {
-			boot.Logger.InfoF("命令行工具，使用帮助: %s --help", os.Args[0])
+			a_boot.Logger.InfoF("命令行工具，使用帮助: %s --help", os.Args[0])
 		},
 	}
 }

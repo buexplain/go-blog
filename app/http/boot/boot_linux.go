@@ -1,9 +1,8 @@
-package boot
+package h_boot
 
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-gracehttp"
 	"log"
 	"net/http"
 	"os"
@@ -13,13 +12,13 @@ import (
 
 //启动http服务器
 func Run() {
-	addr := boot.Config.App.Server.IP + ":" + strconv.Itoa(int(boot.Config.App.Server.Port))
+	addr := a_boot.Config.App.Server.IP + ":" + strconv.Itoa(int(a_boot.Config.App.Server.Port))
 	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr)
 	server := gracehttp.NewServer(
 		addr,
 		Server,
-		time.Duration(boot.Config.App.Server.ReadTimeout.Nanoseconds()),
-		time.Duration(boot.Config.App.Server.WriteTimeout.Nanoseconds()),
+		time.Duration(a_boot.Config.App.Server.ReadTimeout.Nanoseconds()),
+		time.Duration(a_boot.Config.App.Server.WriteTimeout.Nanoseconds()),
 	)
 	server.SetErrorLogCallback(func(format string, args ...interface{}) {
 		pid := strconv.Itoa(os.Getpid())

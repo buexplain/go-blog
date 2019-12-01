@@ -30,11 +30,11 @@ func init() {
 		Use:  "dump",
 		Long: "导出数据",
 		Run: func(cmd *cobra.Command, args []string) {
-			boot.Logger.InfoF("开始导出数据库到文件: %s", fpath)
+			a_boot.Logger.InfoF("开始导出数据库到文件: %s", fpath)
 			//获取表信息
 			tables, err := dao.Dao.DBMetas()
 			if err != nil {
-				boot.Logger.ErrorF("获取表信息失败: %s", err.Error())
+				a_boot.Logger.ErrorF("获取表信息失败: %s", err.Error())
 				os.Exit(1)
 			}
 			var dumpTables []*core.Table
@@ -49,7 +49,7 @@ func init() {
 				dumpTables = tables
 			}
 			if len(dumpTables) == 0 {
-				boot.Logger.ErrorF("数据库中没有找到表: %s", table)
+				a_boot.Logger.ErrorF("数据库中没有找到表: %s", table)
 				os.Exit(1)
 			}
 			var f *os.File
@@ -59,7 +59,7 @@ func init() {
 				f, err = os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 			}
 			if err != nil {
-				boot.Logger.ErrorF("打开导出到的目标文件失败: %s", err)
+				a_boot.Logger.ErrorF("打开导出到的目标文件失败: %s", err)
 				os.Exit(1)
 			}
 			defer func() {
@@ -67,10 +67,10 @@ func init() {
 			}()
 			err = m_util.Dump(dao.Dao, dumpTables, parseMode(mode), f)
 			if err != nil {
-				boot.Logger.ErrorF("导出数据库到文件失败: %s", err)
+				a_boot.Logger.ErrorF("导出数据库到文件失败: %s", err)
 				os.Exit(1)
 			}
-			boot.Logger.InfoF("导出数据库到文件成功: %s", fpath)
+			a_boot.Logger.InfoF("导出数据库到文件成功: %s", fpath)
 		},
 	}
 
@@ -80,7 +80,7 @@ func init() {
 		"m",
 		"1|2|64",
 		fmt.Sprintf("需要导出的数据: %d 表结构、%d 表索引、%d 表数据，默认导出全部", m_util.DUMP_STRUCTURE, m_util.DUMP_INDEX, m_util.DUMP_DATA))
-	dumpCmd.Flags().StringVarP(&fpath, "fpath", "f", time.Now().Format(filepath.Join(boot.ROOT_PATH, "database/2006-01-02-15-04-05.sql")), "导出数据到的文件")
+	dumpCmd.Flags().StringVarP(&fpath, "fpath", "f", time.Now().Format(filepath.Join(a_boot.ROOT_PATH, "database/2006-01-02-15-04-05.sql")), "导出数据到的文件")
 	dumpCmd.Flags().BoolVarP(&isAppend, "append", "a", false, "是否追加写入")
 	dbCmd.AddCommand(dumpCmd)
 }

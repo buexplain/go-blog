@@ -11,11 +11,11 @@ import (
 func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	if r.Raw().Method == http.MethodGet {
 		//get 请求切换成 delete 请求
-		if m := r.Query(boot.Config.App.Method.Field); strings.EqualFold(http.MethodDelete, m) {
+		if m := r.Query(a_boot.Config.App.Method.Field); strings.EqualFold(http.MethodDelete, m) {
 			r.Raw().Method = http.MethodDelete
 		}
 	} else if r.Raw().Method == http.MethodPost {
-		m := r.Form(boot.Config.App.Method.Field)
+		m := r.Form(a_boot.Config.App.Method.Field)
 		if strings.EqualFold(http.MethodPut, m) {
 			//post 请求切换成 put 请求
 			r.Raw().Method = http.MethodPut

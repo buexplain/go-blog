@@ -38,7 +38,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	pid := r.ParamInt("pid", 0)
 	return ctx.Response().
 		Assign("pid", pid).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/article/category/create.html")
 }
@@ -80,7 +80,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.
 		Assign("result", result).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/article/category/create.html")
 }

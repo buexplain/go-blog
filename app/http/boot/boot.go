@@ -1,4 +1,4 @@
-package boot
+package h_boot
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
@@ -22,7 +22,7 @@ var APP *fool.App
 
 //初始化app
 func init() {
-	APP = fool.New(boot.Config.App.Debug)
+	APP = fool.New(a_boot.Config.App.Debug)
 }
 
 //设置相关默认函数
@@ -39,18 +39,18 @@ func init() {
 var Logger *flog.Logger
 
 func init() {
-	file := handler.NewFile(flog.GetLevelByName(boot.Config.Log.Level), formatter.NewLine(), filepath.Join(boot.ROOT_PATH, boot.Config.Log.Path))
+	file := handler.NewFile(flog.GetLevelByName(a_boot.Config.Log.Level), formatter.NewLine(), filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Log.Path))
 	//设置文件日志缓冲
-	if boot.Config.Log.Buffer > 0 {
-		file.SetBuffer(boot.Config.Log.Buffer, time.Duration(boot.Config.Log.Flush.Nanoseconds()))
+	if a_boot.Config.Log.Buffer > 0 {
+		file.SetBuffer(a_boot.Config.Log.Buffer, time.Duration(a_boot.Config.Log.Flush.Nanoseconds()))
 	}
-	Logger = flog.New(boot.Config.Log.Name, file).PushExtra(extra.NewFuncCaller())
+	Logger = flog.New(a_boot.Config.Log.Name, file).PushExtra(extra.NewFuncCaller())
 	//debug模式下，打印日志到控制台
-	if boot.Config.App.Debug {
+	if a_boot.Config.App.Debug {
 		Logger.PushHandler(handler.NewSTD(flog.LEVEL_DEBUG, formatter.NewLine(), flog.LEVEL_WARNING))
 	}
-	if boot.Config.Log.Async {
-		Logger.Async(int(boot.Config.Log.Capacity))
+	if a_boot.Config.Log.Async {
+		Logger.Async(int(a_boot.Config.Log.Capacity))
 	}
 	APP.SetLoggerHandler(Logger)
 }
@@ -58,7 +58,7 @@ func init() {
 //设置模板引擎
 func init() {
 	//设置模板路径
-	APP.View().SetPath(filepath.Join(boot.ROOT_PATH, "resources/view"))
+	APP.View().SetPath(filepath.Join(a_boot.ROOT_PATH, "resources/view"))
 	//设置模板是否缓存
 	APP.View().SetCache(!APP.Debug())
 	//设置模板函数
@@ -67,25 +67,25 @@ func init() {
 
 //设置事件监听者
 func init() {
-	if boot.Config.App.Event.Async {
+	if a_boot.Config.App.Event.Async {
 		//开启事件异步处理
-		APP.EventHandler().Async(int(boot.Config.App.Event.Worker), int(boot.Config.App.Event.Capacity))
+		APP.EventHandler().Async(int(a_boot.Config.App.Event.Worker), int(a_boot.Config.App.Event.Capacity))
 	}
 }
 
 //设置session
 func init() {
-	switch boot.Config.Session.Store {
+	switch a_boot.Config.Session.Store {
 	case "cookie":
-		h := session.NewCookieStoreManager(boot.Config.Session.Key)
-		h.Options = boot.Config.Session.Options
-		h.Name = boot.Config.Session.Name
+		h := session.NewCookieStoreManager(a_boot.Config.Session.Key)
+		h.Options = a_boot.Config.Session.Options
+		h.Name = a_boot.Config.Session.Name
 		APP.SetSessionHandler(h)
 		break
 	case "file":
-		h := session.NewFilesystemStoreManager(filepath.Join(boot.ROOT_PATH, "storage/session"), boot.Config.Session.Key)
-		h.Options = boot.Config.Session.Options
-		h.Name = boot.Config.Session.Name
+		h := session.NewFilesystemStoreManager(filepath.Join(a_boot.ROOT_PATH, "storage/session"), a_boot.Config.Session.Key)
+		h.Options = a_boot.Config.Session.Options
+		h.Name = a_boot.Config.Session.Name
 		APP.SetSessionHandler(h)
 		break
 	default:
@@ -96,12 +96,12 @@ func init() {
 //设置全局中间件
 func init() {
 	//设置静态文件中间件
-	if boot.Config.App.StaticFile.Enable {
+	if a_boot.Config.App.StaticFile.Enable {
 		APP.Use(staticFile.Filter, http.MethodGet)
 	}
 
 	//设置方法欺骗中间件
-	if boot.Config.App.Method.Enable {
+	if a_boot.Config.App.Method.Enable {
 		APP.Use(method.Filter, http.MethodGet, http.MethodPost)
 	}
 }
@@ -110,17 +110,17 @@ func init() {
 var Server http.Handler
 
 func init() {
-	if boot.Config.CSRF.Enable {
-		Server = csrf.Protect([]byte(boot.Config.CSRF.Key),
+	if a_boot.Config.CSRF.Enable {
+		Server = csrf.Protect([]byte(a_boot.Config.CSRF.Key),
 			csrf.ErrorHandler(defaultCSRFErrorHandler),
-			csrf.CookieName(boot.Config.CSRF.Name),
-			csrf.Path(boot.Config.CSRF.Options.Path),
-			csrf.Domain(boot.Config.CSRF.Options.Domain),
-			csrf.MaxAge(boot.Config.CSRF.Options.MaxAge),
-			csrf.Secure(boot.Config.CSRF.Options.Secure),
-			csrf.HttpOnly(boot.Config.CSRF.Options.HttpOnly),
-			csrf.RequestHeader(boot.Config.CSRF.Header),
-			csrf.FieldName(boot.Config.CSRF.Field))(APP)
+			csrf.CookieName(a_boot.Config.CSRF.Name),
+			csrf.Path(a_boot.Config.CSRF.Options.Path),
+			csrf.Domain(a_boot.Config.CSRF.Options.Domain),
+			csrf.MaxAge(a_boot.Config.CSRF.Options.MaxAge),
+			csrf.Secure(a_boot.Config.CSRF.Options.Secure),
+			csrf.HttpOnly(a_boot.Config.CSRF.Options.HttpOnly),
+			csrf.RequestHeader(a_boot.Config.CSRF.Header),
+			csrf.FieldName(a_boot.Config.CSRF.Field))(APP)
 	} else {
 		Server = APP
 	}

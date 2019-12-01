@@ -48,7 +48,7 @@ func GetRoleNode(roleID int) (RoleNodeList, error) {
 	return allNode, nil
 }
 
-//设置角色节点
+//设置角色的节点
 func SetRoleNode(roleID int, nodeID []int) error {
 	//开启事务
 	session := dao.Dao.NewSession()

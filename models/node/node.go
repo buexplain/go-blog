@@ -69,12 +69,6 @@ func GetALL() (List, error) {
 	return result, err
 }
 
-func GetMenu() (List, error) {
-	result := make(List, 0)
-	err := dao.Dao.Table("Node").Where("IsMenu=?", IsMenuYes).Desc("SortID").Find(&result)
-	return result, err
-}
-
 func GetMenuByUserID(userID int) (List, error) {
 	result := make(List, 0)
 	mod := dao.Dao.Table("Node").

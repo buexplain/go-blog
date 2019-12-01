@@ -35,7 +35,7 @@ func init() {
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if !r.IsAjax() {
 		return w.
-			Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/article/content/index.html")
 	}
@@ -64,7 +64,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	w.Assign("tagList", tagList)
 
 	return w.
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
 }
 
@@ -119,7 +119,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.
 		Assign("result", result).
-		Assign(boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
 }
 
@@ -303,8 +303,8 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	defer func() {
 		_ = uploads.Close()
 	}()
-	uploads.SetValidateExt(boot.Config.Business.Upload.Ext...)
-	_, err = uploads.SaveToPath(filepath.Join(boot.ROOT_PATH, boot.Config.Business.Upload.Save))
+	uploads.SetValidateExt(a_boot.Config.Business.Upload.Ext...)
+	_, err = uploads.SaveToPath(filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Business.Upload.Save))
 	if err != nil {
 		return ctx.Error().WrapClient(err)
 	}
