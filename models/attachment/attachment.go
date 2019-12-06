@@ -7,5 +7,9 @@ type Attachment struct {
 	models.Field `xorm:"extends"`
 	Name         string `xorm:"TEXT"`
 	Path         string `xorm:"TEXT"`
+	Ext          string `xorm:"TEXT"`
 	MD5          string `xorm:"index TEXT"`
 }
+
+
+type List []Attachment

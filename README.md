@@ -49,3 +49,8 @@ go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init
 ```bash
 go build -o artisan.exe artisan.go && artisan.exe asset pack
 ```
+
+### 引用本地包
+```bash
+go mod edit -replace=github.com/buexplain/go-fool=F:/go-fool
+```

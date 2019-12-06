@@ -65,5 +65,5 @@ Dir = ["resources/..."]
 SuperRoleID = 1
 
 [Business.Upload]
-Ext = [".jpg", ".gif", ".png", ".jpeg"]
+Ext = ["jpg", "gif", "png", "jpeg"]
 Save = "/uploads"

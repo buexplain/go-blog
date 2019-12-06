@@ -19,6 +19,7 @@ type EventListener struct {
 func (this *EventListener) Handle(e *events.Event) {
 	superRoleID, ok := e.Data.(int)
 	if !ok || superRoleID == 0 {
+		h_boot.Logger.ErrorF("同步超级角色节点失败，超级角色ID错误：%+v", e.Data)
 		return
 	}
 	result := new(m_role.Role)

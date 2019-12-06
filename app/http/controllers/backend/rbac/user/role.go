@@ -46,7 +46,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return c_util.Error(w, "参数错误")
 	}
 
-	roleID := r.FormSliceInt("ids[]")
+	roleID := r.FormSliceInt("ids")
 
 	err := s_userRoleRelation.SetUserRole(userID, roleID)
 	if err != nil {

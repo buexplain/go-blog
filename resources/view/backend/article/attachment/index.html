@@ -1,0 +1,190 @@
+{{define "title"}}附件{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <blockquote class="layui-elem-quote">
+        <div class="layui-inline" style="width: 255px;">
+            <input type="text" value="" id="j-folder" placeholder="自定义文件夹规则：{{.folderRegexp}}" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" id="j-upload"> <i class="layui-icon layui-icon-upload"></i>上传</button>
+        </div>
+        <div class="layui-inline">
+            <form class="layui-form" method="get" action="/backend/article/attachment">
+                <div class="layui-inline">
+                    <input type="hidden" name="likeField[]" value="Name">
+                    <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的文件名" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-inline" style="width: 170px;">
+                    <input type="hidden" name="eqField[]" value="Ext">
+                    <select name="eqValue[]">
+                        <option value="">请选择文件后缀</option>
+                        {{range $_, $v := .extList}}
+                            <option value="{{$v}}">{{$v}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="search">
+                        搜索
+                    </button>
+                </div>
+            </form>
+        </div>
+    </blockquote>
+    <script type="text/html" id="j-toolbar">
+        <div class="layui-btn-container">
+            <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
+        </div>
+    </script>
+    <table id="j-table" lay-filter="j-table"></table>
+    {{._token}}
+{{end}}
+
+{{define "js"}}
+    <script>
+        //列表
+        layui.use(['table', 'jquery', 'form'], function() {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var form = layui.form;
+            //渲染表格
+            var tableOption = {
+                elem: '#j-table'
+                ,url: '/backend/article/attachment' //数据接口
+                ,toolbar: '#j-toolbar' //开启头部工具栏，并为其绑定左侧模板
+                ,page: {
+                    curr: 1,
+                    where:{},
+                } //开启分页
+                ,cols: [[ //表头
+                    {field: 'ID', type: 'checkbox', fixed: 'left'}
+                    ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
+                    ,{field: 'Name', title: '文件名', edit: 'text'}
+                    ,{field: 'Path', title: '存储地址'}
+                    ,{field: 'MD5', title: '哈希值'}
+                    ,{field: 'UpdatedAt', width:200, title: '更新时间', templet: function (data) {
+                            return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
+                        }}
+                    ,{fixed: 'right', title:'操作', width:200, templet:function (data) {
+                            let btn = '';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
+                            return btn;
+                        }}
+                ]]
+            };
+            var tableIns = table.render(tableOption);
+
+            //监听表格头部操作按钮
+            table.on('toolbar(j-table)', function(obj) {
+                //批量删除
+                if(obj.event === 'del-batch') {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    if(checkStatus.data.length === 0) {
+                        layer.alert('请勾选数据', {icon: 2});
+                        return '';
+                    }
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        var param = {ids:[], _method:'put', _token:document.querySelector("input[name=_token]").value};
+                        checkStatus.data.forEach(function (v) {
+                            param.ids.push(v['ID']);
+                        });
+                        $.post('/backend/article/attachment/delete-batch', param, function (json) {
+                            if(json.code === 0) {
+                                layer.close(index);
+                                table.reload(obj.config.id, obj.config);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
+            });
+
+            //监听表格右侧操作按钮
+            table.on('tool(j-table)', function(obj) {
+                var data = obj.data;
+                //单个删除
+                if(obj.event === 'del') {
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        $.get('/backend/article/attachment/delete/'+data['ID']+'?_method=delete', function (json) {
+                            if(json.code === 0) {
+                                obj.del();
+                                layer.close(index);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
+            });
+
+            //监听单元格编辑
+            table.on('edit(j-table)', function(obj) {
+                $.ajax({
+                    type: "POST",
+                    url: "/backend/article/attachment/update/"+obj.data.ID,
+                    data:{
+                        id: obj.data.ID,
+                        name: obj.data.Name,
+                        _method:'put',
+                        _token:document.querySelector("input[name=_token]").value
+                    },
+                    success: function(json) {
+                        if(json.code !== 0) {
+                            layer.alert(json.message, {icon: 2});
+                        }
+                    }
+                });
+            });
+
+            //搜索
+            layui.form.on('submit(search)', function(data) {
+                tableIns.reload({
+                    where: data.field
+                    ,page: {
+                        curr: 1
+                    }
+                });
+                return false;
+            });
+        });
+
+        //上传
+        layui.use(['upload', 'layer', 'jquery'], function () {
+            var upload = layui.upload;
+            var up = upload.render({
+                elem: '#j-upload'
+                ,url: '/backend/article/attachment/upload'
+                ,field: 'file'
+                ,accept: 'file'
+                ,multiple: true
+                ,auto: true
+                ,data:{
+                    _token:$("input[name='_token']").val(),
+                    folder: function () {
+                        return layui.jquery("#j-folder").val();
+                    }
+                }
+                ,before: function (obj) {
+
+                }
+                ,done: function(json) {
+                    if(json.code === 0) {
+                        layer.alert(json.message, {icon: 1, yes: function () {
+                            window.location.reload();
+                        }, cancel: function () {
+                            window.location.reload();
+                        }});
+                    }else{
+                        layer.alert(json.message, {icon: 2});
+                    }
+                }
+                ,error: function() {
+                    layer.alert('请求异常', {icon: 2});
+                }
+            });
+        });
+    </script>
+{{end}}

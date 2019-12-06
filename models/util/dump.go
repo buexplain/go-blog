@@ -3,7 +3,7 @@ package m_util
 import (
 	"errors"
 	"fmt"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"io"
 	"os"
 	"reflect"

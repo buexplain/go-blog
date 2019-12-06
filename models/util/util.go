@@ -2,7 +2,7 @@ package m_util
 
 import (
 	"fmt"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"strings"
 	"xorm.io/core"
 )

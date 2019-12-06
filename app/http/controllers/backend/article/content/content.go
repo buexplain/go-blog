@@ -13,7 +13,7 @@ import (
 	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"path/filepath"
@@ -84,7 +84,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			JSON(http.StatusOK)
 	}
 
-	tagsID := r.FormSliceInt("tagsID[]")
+	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
 		return w.Assign("data", "").
@@ -142,7 +142,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			JSON(http.StatusOK)
 	}
 
-	tagsID := r.FormSliceInt("tagsID[]")
+	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
 		return w.Assign("data", "").
@@ -189,7 +189,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //批量删除
 func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	ids := r.FormSliceInt("ids[]")
+	ids := r.FormSliceInt("ids")
 	if len(ids) == 0 {
 		return w.JumpBack("参数错误")
 	}
@@ -296,7 +296,7 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //上传附件
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	uploads, err := r.FileSlice("file[]")
+	uploads, err := r.FileSlice("file")
 	if err != nil {
 		return ctx.Error().WrapClient(err)
 	}

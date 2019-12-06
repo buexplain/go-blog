@@ -6,8 +6,6 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/buexplain/go-fool v0.0.0-20191025094934-4163035cb978
 	github.com/buexplain/go-validator v0.0.0-20191015100257-27698e3e8ee6
-	github.com/go-sql-driver/mysql v1.4.1
-	github.com/go-xorm/xorm v0.7.4
 	github.com/gorilla/csrf v1.6.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
@@ -16,7 +14,9 @@ require (
 	github.com/mojocn/base64Captcha v0.0.0-20190715093106-6d468d3c5b2a
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/cobra v0.0.5
-	github.com/thedevsaddam/govalidator v1.9.8
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
-	xorm.io/core v0.6.3
+	xorm.io/core v0.7.2
+	xorm.io/xorm v0.8.0
 )
+
+replace github.com/buexplain/go-fool => F:/go-fool

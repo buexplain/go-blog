@@ -46,7 +46,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return c_util.Error(w, "参数错误")
 	}
 
-	nodeID := r.FormSliceInt("ids[]")
+	nodeID := r.FormSliceInt("ids")
 
 	err := s_roleNodeRelation.SetRoleNode(roleID, nodeID)
 	if err != nil {

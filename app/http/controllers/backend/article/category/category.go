@@ -111,7 +111,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	ids := r.QuerySliceInt("ids[]")
+	ids := r.QuerySliceInt("ids")
 	if len(ids) == 0 {
 		return w.Jump("/backend/article/category", "入参错误")
 	}

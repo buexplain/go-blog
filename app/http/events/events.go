@@ -1,8 +1,8 @@
 package e_events
 
 import (
-	h_boot "github.com/buexplain/go-blog/app/http/boot"
-	e_syncRbacNode "github.com/buexplain/go-blog/app/http/events/syncRbacNode"
+	"github.com/buexplain/go-blog/app/http/boot"
+	"github.com/buexplain/go-blog/app/http/events/syncRbacNode"
 )
 
 func init() {

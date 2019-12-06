@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
 	"path/filepath"

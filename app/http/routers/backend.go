@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/buexplain/go-blog/app/http/controllers/backend/article/attachment"
 	c_category "github.com/buexplain/go-blog/app/http/controllers/backend/article/category"
 	c_content "github.com/buexplain/go-blog/app/http/controllers/backend/article/content"
 	c_tag "github.com/buexplain/go-blog/app/http/controllers/backend/article/tag"
@@ -30,7 +31,6 @@ func backend(mux *fool.Mux) {
 		mux.Get("skeleton", c_skeleton.Index)
 
 		//我的桌面
-
 		mux.Group("home", func() {
 			mux.Get("/", c_home.Index)
 			mux.Any("user/forget", c_home.ForgetPassword, http.MethodGet, http.MethodPost)
@@ -103,6 +103,13 @@ func backend(mux *fool.Mux) {
 			mux.Get("content/tag", c_content.Tag)
 			mux.Post("content/tag", c_content.AddTag).AddLabel("json")
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
+
+			//附件管理
+			mux.Get("attachment", c_attachment.Index)
+			mux.Post("attachment/upload", c_attachment.Upload)
+			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")
+			mux.Delete("attachment/delete/:id", c_attachment.Destroy)
+			mux.Put("attachment/delete-batch", c_attachment.DestroyBatch)
 		})
 
 	}).Use(middleware.RbacCheck)

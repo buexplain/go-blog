@@ -5,7 +5,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"time"
 	"xorm.io/core"
 )

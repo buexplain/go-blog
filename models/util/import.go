@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"database/sql"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"io"
 	"os"
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 //导入数据
 //有此方法是因为 DB.Import() 有 bug
-//@link https://github.com/go-xorm/xorm/issues/1231#issue-410613530
+//@link https://xorm.io/xorm/issues/1231#issue-410613530
 func Import(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 	var results []sql.Result
 	var lastError error
