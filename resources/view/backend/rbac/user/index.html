@@ -6,16 +6,14 @@
     <blockquote class="layui-elem-quote">
         <form class="layui-form" method="get" action="/backend/rbac/user">
             <div class="layui-inline">
-                <input type="hidden" name="likeField[]" value="Account">
-                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
+                <input type="text" name="whereLike[Account]" value="{{.Account}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
             </div>
 
             <div class="layui-inline" style="width: 170px;">
-                <input type="hidden" name="eqField[]" value="Identity">
-                <select name="eqValue[]" lay-verify="">
+                <select name="whereEq[Identity]" lay-verify="">
                     <option value="">请选择用户身份</option>
-                    <option value="1" {{if .eqValue}}{{if eq (1 | .eqValue.Get) "1"}}selected{{end}}{{end}}>管理人员</option>
-                    <option value="2" {{if .eqValue}}{{if eq (1 | .eqValue.Get) "2"}}selected{{end}}{{end}}>普通用户</option>
+                    <option value="1" {{if .Identity}}{{if eq .Identity "1"}}selected{{end}}{{end}}>管理人员</option>
+                    <option value="2" {{if .Identity}}{{if eq .Identity "2"}}selected{{end}}{{end}}>普通用户</option>
                 </select>
             </div>
 

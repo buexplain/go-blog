@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
+	"strings"
 	"xorm.io/xorm"
 	"time"
 	"xorm.io/core"
@@ -107,101 +108,84 @@ func (this *Query) Limit() *Query {
 	return this
 }
 
-//筛选，这些条件都是 and 的
-func (this *Query) Screen() *Query {
-	//等于查询的参数
-	eqFieldSlice := where(this.ctx.Request().QuerySlice("eqField[]"))
-	eqValueSlice := where(this.ctx.Request().QuerySlice("eqValue[]"))
-	this.ctx.Response().Assign("eqField", eqFieldSlice)
-	this.ctx.Response().Assign("eqValue", eqValueSlice)
-
-	//大于等于查询的参数
-	geFieldSlice := where(this.ctx.Request().QuerySlice("geField[]"))
-	geValueSlice := where(this.ctx.Request().QuerySlice("geValue[]"))
-	this.ctx.Response().Assign("geField", geFieldSlice)
-	this.ctx.Response().Assign("geValue", geValueSlice)
-
-	//小于等于查询的参数
-	leFieldSlice := where(this.ctx.Request().QuerySlice("leField[]"))
-	leValueSlice := where(this.ctx.Request().QuerySlice("leValue[]"))
-	this.ctx.Response().Assign("leField", leFieldSlice)
-	this.ctx.Response().Assign("leValue", leValueSlice)
-
-	//like查询
-	likeFieldSlice := where(this.ctx.Request().QuerySlice("likeField[]"))
-	likeValueSlice := where(this.ctx.Request().QuerySlice("likeValue[]"))
-	this.ctx.Response().Assign("likeField", likeFieldSlice)
-	this.ctx.Response().Assign("likeValue", likeValueSlice)
-
+func (this *Query) Where() *Query {
 	tableInfo := this.TableInfo()
 	if tableInfo == nil {
 		return this
 	}
 
 	//等于查询
-	if len(eqFieldSlice) > 0 && (len(eqFieldSlice) == len(eqValueSlice)) {
-		for index, field := range eqFieldSlice {
+	whereEq := this.ctx.Request().QueryMap("whereEq")
+	if whereEq != nil {
+		for field, value := range whereEq {
 			//判断字段是否存在
 			column := tableInfo.GetColumn(field)
 			if column == nil {
 				continue
 			}
-			value := eqValueSlice[index]
 			if value == "" {
 				continue
+			}
+			if !this.ctx.Request().IsAjax() {
+				this.ctx.Response().Assign(field, value)
 			}
 			this.Finder.Where(fmt.Sprintf("`%s`.`%s`=?", this.tableName, column.Name), value)
 		}
 	}
-
-	//大于等于查询
-	if len(geFieldSlice) > 0 && (len(geFieldSlice) == len(geValueSlice)) {
-		for index, field := range geFieldSlice {
+	//大于等于查询的参数
+	whereGe := this.ctx.Request().QueryMap("whereGe")
+	if whereGe != nil {
+		for field, value := range whereGe {
+			if value == "" {
+				continue
+			}
 			//判断字段是否存在
-			column := tableInfo.GetColumn(field)
+			column := tableInfo.GetColumn(strings.TrimLeft(field, "Ge"))
 			if column == nil {
 				continue
 			}
-			value := geValueSlice[index]
-			if value == "" {
-				continue
+			if !this.ctx.Request().IsAjax() {
+				this.ctx.Response().Assign(field, value)
 			}
 			this.Finder.Where(fmt.Sprintf("`%s`.`%s`>=?", this.tableName, column.Name), value)
 		}
 	}
-
 	//小于等于查询
-	if len(leFieldSlice) > 0 && (len(leFieldSlice) == len(leValueSlice)) {
-		for index, field := range leFieldSlice {
+	whereLe := this.ctx.Request().QueryMap("whereLe")
+	if whereLe != nil {
+		for field, value := range whereLe {
+			if value == "" {
+				continue
+			}
 			//判断字段是否存在
-			column := tableInfo.GetColumn(field)
+			column := tableInfo.GetColumn(strings.TrimLeft(field, "Le"))
 			if column == nil {
 				continue
 			}
-			value := leValueSlice[index]
-			if value == "" {
-				continue
+			if !this.ctx.Request().IsAjax() {
+				this.ctx.Response().Assign(field, value)
 			}
 			this.Finder.Where(fmt.Sprintf("`%s`.`%s`<=?", this.tableName, column.Name), value)
 		}
 	}
-
-	//like查询
-	if len(likeFieldSlice) > 0 && (len(likeFieldSlice) == len(likeValueSlice)) {
-		for index, field := range likeFieldSlice {
+	//模糊查询
+	whereLike := this.ctx.Request().QueryMap("whereLike")
+	if whereLike != nil {
+		for field, value := range whereLike {
 			//判断字段是否存在
 			column := tableInfo.GetColumn(field)
 			if column == nil {
 				continue
 			}
-			value := likeValueSlice[index]
 			if value == "" {
 				continue
+			}
+			if !this.ctx.Request().IsAjax() {
+				this.ctx.Response().Assign(field, value)
 			}
 			this.Finder.Where(fmt.Sprintf("`%s`.`%s` LIKE ?", this.tableName, column.Name), fmt.Sprintf("%s%s%s", "%", value, "%"))
 		}
 	}
-
 	return this
 }
 

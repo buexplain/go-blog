@@ -42,7 +42,7 @@ func init()  {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := s_services.NewQuery("User", ctx).Screen().Limit()
+	query := s_services.NewQuery("User", ctx).Where().Limit()
 	query.Finder.Desc("ID")
 	//设置查询条件后，先进行分页统计，//然后再进行连表查询，获取用户所有角色，避免跨表count
 	count := query.Count()

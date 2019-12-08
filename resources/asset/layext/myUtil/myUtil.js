@@ -50,6 +50,16 @@ layui.define([], function(exports) {
             var url = this.queryString.update('page', targetPage);
             url = this.queryString.update('limit', limit);
             return url;
+        },
+        renderBytes: function (size){
+            if(size === undefined || size === null || size =='0') {
+                return "0 Bytes";
+            }
+            size = parseFloat(size);
+            var unitArr = ["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"];
+            var index = Math.floor(Math.log(size)/Math.log(1024));
+            var new_size = (size/Math.pow(1024,index)).toFixed(2);
+            return new_size +' '+ unitArr[index];
         }
     };
     exports(MOD_NAME, myUtil);

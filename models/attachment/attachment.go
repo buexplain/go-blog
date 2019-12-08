@@ -8,8 +8,9 @@ type Attachment struct {
 	Name         string `xorm:"TEXT"`
 	Path         string `xorm:"TEXT"`
 	Ext          string `xorm:"TEXT"`
+	Folder       string `xorm:"TEXT"`
+	Size         int    `xorm:"INTEGER"`
 	MD5          string `xorm:"index TEXT"`
 }
-
 
 type List []Attachment

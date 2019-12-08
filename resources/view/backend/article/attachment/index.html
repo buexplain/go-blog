@@ -13,15 +13,21 @@
         <div class="layui-inline">
             <form class="layui-form" method="get" action="/backend/article/attachment">
                 <div class="layui-inline">
-                    <input type="hidden" name="likeField[]" value="Name">
-                    <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的文件名" autocomplete="off" class="layui-input">
+                    <input type="text" name="whereLike[Name]" value="{{.Name}}" placeholder="请输入搜索的文件名" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline" style="width: 170px;">
-                    <input type="hidden" name="eqField[]" value="Ext">
-                    <select name="eqValue[]">
+                    <select name="whereEq[Folder]">
+                        <option value="">请选择自定义文件夹</option>
+                        {{range $_, $v := .folderList}}
+                            <option value="{{$v}}" {{if $.Folder}}{{if eq $.Folder $v}}selected{{end}}{{end}}>{{$v}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                <div class="layui-inline" style="width: 170px;">
+                    <select name="whereEq[Ext]">
                         <option value="">请选择文件后缀</option>
                         {{range $_, $v := .extList}}
-                            <option value="{{$v}}">{{$v}}</option>
+                            <option value="{{$v}}" {{if $.Ext}}{{if eq $.Ext $v}}selected{{end}}{{end}}>{{$v}}</option>
                         {{end}}
                     </select>
                 </div>
@@ -45,10 +51,11 @@
 {{define "js"}}
     <script>
         //列表
-        layui.use(['table', 'jquery', 'form'], function() {
+        layui.use(['table', 'jquery', 'form', 'myUtil'], function() {
             var table = layui.table;
             var $ = layui.jquery;
             var form = layui.form;
+            var myUtil = layui.myUtil;
             //渲染表格
             var tableOption = {
                 elem: '#j-table'
@@ -64,6 +71,9 @@
                     ,{field: 'Name', title: '文件名', edit: 'text'}
                     ,{field: 'Path', title: '存储地址'}
                     ,{field: 'MD5', title: '哈希值'}
+                    ,{field: 'Size', title: '文件大小', templet: function (data) {
+                            return myUtil.renderBytes(data['Size']);
+                        }}
                     ,{field: 'UpdatedAt', width:200, title: '更新时间', templet: function (data) {
                             return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
                         }}

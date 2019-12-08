@@ -45,7 +45,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//此处只展示普通用户
 	query.Finder.Where("Identity=?", m_user.IdentityCitizen)
 	query.Finder.Desc("ID")
-	query.Screen()
+	query.Where()
 	var result m_user.List
 	var count int64
 	query.FindAndCount(&result, &count)

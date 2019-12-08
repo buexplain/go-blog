@@ -4,11 +4,24 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/attachment"
 	"os"
+	"sort"
 )
 
 type ExtList []string
 func GetExtList() (result ExtList, err error) {
 	err = dao.Dao.Table("Attachment").Distinct("Ext").Select("Ext").OrderBy("ID DESC").Find(&result)
+	if err == nil && len(result) > 0 {
+		sort.Strings(result)
+	}
+	return result, err
+}
+
+type FolderList []string
+func GetFolderList() (result FolderList, err error) {
+	err = dao.Dao.Table("Attachment").Distinct("Folder").Select("Folder").OrderBy("ID DESC").Find(&result)
+	if err == nil && len(result) > 0 {
+		sort.Strings(result)
+	}
 	return result, err
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	_ "github.com/buexplain/go-blog/app/http/events"
 	_ "github.com/buexplain/go-blog/app/http/routers"
 	"time"

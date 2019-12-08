@@ -6,8 +6,7 @@
     <blockquote class="layui-elem-quote">
         <form class="layui-form" method="get" action="/backend/user">
             <div class="layui-inline">
-                <input type="hidden" name="likeField[]" value="Account">
-                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
+                <input type="text" name="whereLike[Account]" value="{{.Account}}" placeholder="请输入搜索的账号" autocomplete="off" class="layui-input">
             </div>
             <div class="layui-inline">
                 <button class="layui-btn layui-btn-sm layui-btn-normal">

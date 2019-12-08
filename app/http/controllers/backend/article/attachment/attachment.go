@@ -32,15 +32,19 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		if err != nil {
 			return err
 		}
+		folderList, err := s_attachment.GetFolderList()
+		if err != nil {
+			return err
+		}
 		w.Assign("extList", extList)
+		w.Assign("folderList", folderList)
 		w.Assign("folderRegexp", folderRegexp.String())
 		w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
 		return w.Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/article/attachment/index.html")
 	}
 
-	query := s_services.NewQuery("Attachment", ctx).Limit()
-	query.Screen()
+	query := s_services.NewQuery("Attachment", ctx).Limit().Where()
 	ext := r.Query("ext", "all")
 	if ext != "all" {
 		query.Finder.Where("Ext=?", ext)
@@ -121,6 +125,12 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result.Path = filePath
 	result.MD5, _ = file.MD5()
 	result.Ext = file.Ext()
+	if folder == "" {
+		result.Folder = "./"
+	}else {
+		result.Folder = folder
+	}
+	result.Size = int(file.Size())
 
 	if _, err := dao.Dao.Insert(result); err != nil {
 		//插入失败，移除已经保存的文件

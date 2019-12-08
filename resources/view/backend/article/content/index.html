@@ -6,27 +6,23 @@
     <blockquote class="layui-elem-quote">
         <form class="layui-form">
             <div class="layui-inline">
-                <input type="hidden" name="likeField[]" value="Title">
-                <input type="text" name="likeValue[]" value="{{if .likeValue}}{{0 | .likeValue.Get}}{{end}}" placeholder="请输入搜索的标题" autocomplete="off" class="layui-input">
+                <input type="text" name="whereLike[Title]" value="{{.Title}}" placeholder="请输入搜索的标题" autocomplete="off" class="layui-input">
             </div>
 
             <div class="layui-inline">
                 <div class="layui-input-inline">
-                    <input type="hidden" name="geField[]" value="CreatedAt">
-                    <input type="text" name="geValue[]" value="{{if .geValue}}{{0 | .geValue.Get}}{{end}}" placeholder="请选择开始时间" autocomplete="off" class="layui-input">
+                    <input type="text" name="whereGe[GeCreatedAt]" value="{{.GeCreatedAt}}" placeholder="请选择开始时间" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-input-inline">
-                    <input type="hidden" name="leField[]" value="CreatedAt">
-                    <input type="text" name="leValue[]" value="{{if .leValue}}{{0 | .leValue.Get}}{{end}}" placeholder="请选择结束时间" autocomplete="off" class="layui-input">
+                    <input type="text" name="whereLe[LeCreatedAt]" value="{{.LeCreatedAt}}" placeholder="请选择结束时间" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-inline" style="width: 170px;">
-                <input type="hidden" name="eqField[]" value="Online">
-                <select name="eqValue[]" lay-verify="">
+                <select name="whereEq[Online]" lay-verify="">
                     <option value="">请选择上下线</option>
-                    <option value="1" {{if .eqValue}}{{if eq (0 | .eqValue.Get) "1"}}selected{{end}}{{end}}>上线</option>
-                    <option value="2" {{if .eqValue}}{{if eq (0 | .eqValue.Get) "2"}}selected{{end}}{{end}}>下线</option>
+                    <option value="1" {{if .Online}}{{if eq .Online "1"}}selected{{end}}{{end}}>上线</option>
+                    <option value="2" {{if .Online}}{{if eq .Online "2"}}selected{{end}}{{end}}>下线</option>
                 </select>
             </div>
 
@@ -54,12 +50,12 @@
             layDate.render({
                 type: 'datetime',
                 format: 'yyyy-MM-dd HH:mm:ss',
-                elem: "input[name='geValue[]']"
+                elem: "input[name='whereGe[GeCreatedAt]']"
             });
             layDate.render({
                 type: 'datetime',
                 format: 'yyyy-MM-dd HH:mm:ss',
-                elem: "input[name='leValue[]']"
+                elem: "input[name='whereLe[LeCreatedAt]']"
             });
         });
 

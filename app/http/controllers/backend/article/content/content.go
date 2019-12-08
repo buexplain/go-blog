@@ -39,7 +39,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/article/content/index.html")
 	}
-	query := s_services.NewQuery("Content", ctx).Limit().Screen()
+	query := s_services.NewQuery("Content", ctx).Limit().Where()
 	query.Finder.Desc("ID")
 	var result m_content.List
 	var count int64
