@@ -11,13 +11,14 @@ import (
 	"github.com/buexplain/go-blog/services/attachment"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/upload"
-	"xorm.io/xorm"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
+	"xorm.io/xorm"
 )
 
 var folderRegexp *regexp.Regexp
@@ -64,7 +65,22 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		JSON(http.StatusOK)
 }
 
+func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	result := new(m_attachment.Attachment)
+	result.MD5 = r.Param("md5", "")
+	if result.MD5 == "" {
+		return w.Assign("data", "").Assign("message", code.Text(code.INVALID_ARGUMENT)).Assign("code", code.INVALID_ARGUMENT).JSON(http.StatusOK)
+	}
+	if has, err := dao.Dao.Get(result); err != nil {
+		return w.Assign("data", "").Assign("message", err.Error()).Assign("code", code.SERVER).JSON(http.StatusOK)
+	} else if !has {
+		return w.Assign("data", "").Assign("message", code.Text(code.NOT_FOUND_DATA)).Assign("code", code.NOT_FOUND_DATA).JSON(http.StatusOK)
+	}
+	return w.Assign("data", result).Assign("message", code.Text(code.SUCCESS)).Assign("code", code.SUCCESS).JSON(http.StatusOK)
+}
+
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	<- time.After(500*time.Second)
 	//获取上传的文件
 	file, err := r.File("file")
 	if err != nil {

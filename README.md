@@ -53,4 +53,5 @@ go build -o artisan.exe artisan.go && artisan.exe asset pack
 ### 引用本地包
 ```bash
 go mod edit -replace=github.com/buexplain/go-fool=F:/go-fool
+go mod edit -replace=github.com/buexplain/go-fool=C:\Edisk\code\go-fool
 ```

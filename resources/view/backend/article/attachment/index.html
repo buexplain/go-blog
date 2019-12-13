@@ -1,15 +1,19 @@
 {{define "title"}}附件{{end}}
 
-{{define "css"}}{{end}}
+{{define "css"}}
+{{end}}
 
 {{define "content"}}
     <blockquote class="layui-elem-quote">
-        <div class="layui-inline" style="width: 255px;">
+        <div class="layui-inline" style="float: left;width: 255px;">
             <input type="text" value="" id="j-folder" placeholder="自定义文件夹规则：{{.folderRegexp}}" autocomplete="off" class="layui-input">
         </div>
-        <div class="layui-inline">
-            <button class="layui-btn layui-btn-sm" id="j-upload"> <i class="layui-icon layui-icon-upload"></i>上传</button>
-        </div>
+        <div id="j-webUploader" style="float: left;margin-left: 10px;"></div>
+        <button id="j-send_btn" class="layui-btn" style="float: left; margin-left: 10px;">开始上传</button>
+        <div id="j-webUploader-table"  style="clear: both;"></div>
+    </blockquote>
+
+    <blockquote class="layui-elem-quote">
         <div class="layui-inline">
             <form class="layui-form" method="get" action="/backend/article/attachment">
                 <div class="layui-inline">
@@ -50,6 +54,81 @@
 
 {{define "js"}}
     <script>
+        //上传
+        layui.use(['layuploader', 'jquery'], function () {
+            var layUploader = layui.layuploader;
+            var $ = layui.jquery;
+            var fc = null;
+
+            layUploader.webUploader.Uploader.register({
+                'before-send-file':'checkMd5'
+            }, {
+                checkMd5: function (file) {
+                    //秒传md5校验
+                    var owner = this.owner;
+                    var deferred = layUploader.webUploader.Deferred();
+                    fc.lists.status(file.id, '正在校验md5');
+                    owner.md5File(file, 0 ,file.size).progress(function(percentage) {
+                        percentage = (percentage * 100).toFixed(0);
+                        if(percentage > 2) {
+                            percentage = percentage - 1;
+                        }
+                        fc.lists.progress(file.id, percentage);
+                    }).then(function(md5) {
+                        $.get('/backend/article/attachment/check/'+md5, function (json) {
+                            if(json.code === 0) {
+                                owner.skipFile(file);
+                                fc.lists.progress(file.id, 100);
+                                fc.lists.status(file.id, '秒传成功');
+                                deferred.reject();
+                            }else {
+                                fc.lists.progress(file.id, 0);
+                                fc.lists.status(file.id, '正在上传');
+                                deferred.resolve();
+                            }
+                        });
+                    });
+                    return deferred.promise();
+                }
+            });
+
+            fc = new layUploader.factory({
+                //开始上传按钮的id
+                send_btn:'#j-send_btn',
+                pick: {
+                    //选择文件按钮的id
+                    id: '#j-webUploader',
+                    label: '<i class="layui-icon layui-icon-upload"></i>选择文件'
+                },
+                //服务器地址
+                server: '/backend/article/attachment/upload',
+                //额外的表单信息
+                formData:{
+                    _token:$("input[name='_token']").val(),
+                    folder:$("#j-folder").val()
+                }
+            }, {
+                //上传列表的表格的id（数据表格）
+                elem: '#j-webUploader-table',
+            });
+
+            //当文件上传成功时触发
+            fc.upload.instance.on( 'uploadSuccess', function(file, response) {
+                if(response.code === 0) {
+                    fc.lists.progress(file.id, 100);
+                    fc.lists.status(file.id, '上传成功');
+                }else {
+                    fc.lists.progress(file.id, 0);
+                    fc.lists.status(file.id, response.message);
+                }
+            });
+
+            //全部上传完成时候触发
+            fc.upload.instance.on('uploadFinished', function() {
+                // window.location.reload();
+            });
+        });
+        
         //列表
         layui.use(['table', 'jquery', 'form', 'myUtil'], function() {
             var table = layui.table;
@@ -158,42 +237,6 @@
                     }
                 });
                 return false;
-            });
-        });
-
-        //上传
-        layui.use(['upload', 'layer', 'jquery'], function () {
-            var upload = layui.upload;
-            var up = upload.render({
-                elem: '#j-upload'
-                ,url: '/backend/article/attachment/upload'
-                ,field: 'file'
-                ,accept: 'file'
-                ,multiple: true
-                ,auto: true
-                ,data:{
-                    _token:$("input[name='_token']").val(),
-                    folder: function () {
-                        return layui.jquery("#j-folder").val();
-                    }
-                }
-                ,before: function (obj) {
-
-                }
-                ,done: function(json) {
-                    if(json.code === 0) {
-                        layer.alert(json.message, {icon: 1, yes: function () {
-                            window.location.reload();
-                        }, cancel: function () {
-                            window.location.reload();
-                        }});
-                    }else{
-                        layer.alert(json.message, {icon: 2});
-                    }
-                }
-                ,error: function() {
-                    layer.alert('请求异常', {icon: 2});
-                }
             });
         });
     </script>

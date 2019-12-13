@@ -20,24 +20,36 @@ layui.define([], function(exports) {
             /**
              * 获取uri中的参数
              */
-            get: function (key, def, uri) {
-                if(def === undefined) {
+            get: function (key, def, url) {
+                if (def === undefined) {
                     def = null;
                 }
-                if(uri === undefined) {
-                    uri = window.location.href;
-                }
                 key += '=';
-                var index = uri.indexOf(key);
-                if(index === -1) {
+                let index = url.indexOf(key);
+                if (index === -1) {
                     return def;
                 }
-                uri = uri.substr(index + key.length, uri.length);
-                index = uri.indexOf('&');
-                if(index === -1) {
-                    return uri;
+                url = url.substr(index + key.length, url.length);
+                let index_and = url.indexOf('&');
+                let index_jing = url.indexOf('#');
+                if (index_and !== -1 && index_jing !== -1) {
+                    if (index_jing < index_and) {
+                        index = index_jing;
+                    } else {
+                        index = index_and;
+                    }
+                } else if (index_and !== -1) {
+                    index = index_and;
+                } else if (index_jing !== -1) {
+                    index = index_jing;
+                } else {
+                    index = -1;
                 }
-                return uri.substr(0, index);
+
+                if (index === -1) {
+                    return url;
+                }
+                return url.substr(0, index);
             }
         },
         /**

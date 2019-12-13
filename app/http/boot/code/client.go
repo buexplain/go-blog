@@ -13,6 +13,7 @@ const (
 	INVALID_AUTH  = 102
 	INVALID_CSRF  = 103
 	INVALID_ARGUMENT = 104
+	NOT_FOUND_DATA = 105
 )
 
 func init() {
@@ -20,4 +21,5 @@ func init() {
 	text[INVALID_AUTH] = "权限校验失败"
 	text[INVALID_CSRF] = "csrf校验失败"
 	text[INVALID_ARGUMENT] = "错误的参数"
+	text[NOT_FOUND_DATA] = "没有找到相关数据"
 }

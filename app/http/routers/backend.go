@@ -106,6 +106,7 @@ func backend(mux *fool.Mux) {
 
 			//附件管理
 			mux.Get("attachment", c_attachment.Index)
+			mux.Get("attachment/check/:md5", c_attachment.CheckMD5)
 			mux.Post("attachment/upload", c_attachment.Upload)
 			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")
 			mux.Delete("attachment/delete/:id", c_attachment.Destroy)
