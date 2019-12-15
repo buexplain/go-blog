@@ -105,7 +105,9 @@
                 //额外的表单信息
                 formData:{
                     _token:$("input[name='_token']").val(),
-                    folder:$("#j-folder").val()
+                    folder:function () {
+                        return $("#j-folder").val();
+                    }
                 }
             }, {
                 //上传列表的表格的id（数据表格）

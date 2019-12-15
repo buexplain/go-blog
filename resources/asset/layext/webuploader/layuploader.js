@@ -52,16 +52,15 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             this.option.data = [];
             this.option.cols = [[
                 {field: 'name', title: '名称', fixed: 'left',style:'text-align:center;', templet: function (data) {
-                        if(data.src) {
-                            var html = '<span><img src="'+data.src+'" title="'+data.name+'">';
-                            html += '<br>'+data.name;
-                            html += '</span>';
-                            return html;
-                        }
-                        return data.name;
-                    }}
+                    if(data.src) {
+                        var html = '<span><img src="'+data.src+'" title="'+data.name+'">';
+                        html += '<br>'+data.name;
+                        html += '</span>';
+                        return html;
+                    }
+                    return data.name;
+                }}
                 ,{field: 'size', title: '大小'}
-
                 ,{field: 'progress', title: '进度',templet: function (data) {
                     var html = '';
                     html += '<div class="layui-progress layui-progress-big" lay-showPercent="true" lay-filter="j-progress'+that.lay_filter+data.id+'">';
@@ -77,7 +76,7 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
                 }}
                 ,{fixed: 'right', title:'操作', templet:function (data) {
                     var btn = '';
-                    btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" id="j-del'+that.lay_filter+data.id+'" lay-event="del">删除</a>';
+                    btn += '<button class="layui-btn layui-btn-sm layui-btn-danger" id="j-del'+that.lay_filter+data.id+'" lay-event="del">删除</button>';
                     return btn;
                 }}
             ]];
@@ -101,19 +100,16 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             this.instance = null;
             table.on('tool('+this.lay_filter+')', function(obj) {
                 var data = obj.data;
-                console.log('正在删除 '+data.name);
                 if(obj.event === 'del') {
-                    if(!data.lock.del) {
-                        var tmp = [];
-                        for(var i in that.option.data) {
-                            if(that.option.data[i].id !== data.id) {
-                                tmp.push(that.option.data[i]);
-                            }
+                    var tmp = [];
+                    for(var i in that.option.data) {
+                        if(that.option.data[i].id !== data.id) {
+                            tmp.push(that.option.data[i]);
                         }
-                        that.option.data = tmp;
-                        obj.del();
-                        that.upload._removeFile(data.id);
                     }
+                    that.option.data = tmp;
+                    obj.del();
+                    that.upload._removeFile(data.id);
                 }
             });
         }
@@ -123,7 +119,7 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
         }
 
         _addFile (id, name, src, size, status) {
-            this.option.data.push({id:id, name:name, src:src, size:webuploader.Base.formatSize(size), progress:0, status:status, lock:{del:false}});
+            this.option.data.push({id:id, name:name, src:src, size:webuploader.Base.formatSize(size), progress:0, status:status});
             if(this.instance === null) {
                 this.instance = table.render(this.option);
             }else {
@@ -131,41 +127,20 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             }
         }
 
-        delBtnLock(id) {
-            var ok = false;
-            for(var i in this.option.data) {
-                if(this.option.data[i].id === id) {
-                    this.option.data[i].lock.del = true;
-                    console.log('正在锁定'+this.option.data[i].name);
-                    ok = true;
-                    break;
-                }
-            }
-            if(!ok) {
-                return;
-            }
+        _delBtnLock(id) {
             var btn_id = '#j-del'+this.lay_filter+id;
             var o = $(btn_id);
             if(o.length > 0) {
+                o.attr('disabled', 'disabled');
                 o.addClass('layui-btn-disabled');
             }
         }
 
-        delBtnUnLock(id) {
-            var ok = false;
-            for(var i in this.option.data) {
-                if(this.option.data[i].id === id) {
-                    this.option.data[i].lock.del = false;
-                    ok = true;
-                    break;
-                }
-            }
-            if(!ok) {
-                return;
-            }
+        _delBtnUnLock(id) {
             var btn_id = '#j-del'+this.lay_filter+id;
             var o = $(btn_id);
             if(o.length > 0) {
+                o.removeAttr('disabled');
                 o.removeClass('layui-btn-disabled');
             }
         }
@@ -218,7 +193,9 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             }
             that.send_btn = $(that.option.send_btn);
             if(that.send_btn.length === 0) {
-                throw "not found send btn: " + that.option.send_btn;
+                throw "not found send button: " + that.option.send_btn;
+            }else if(that.send_btn[0].nodeName.toLocaleLowerCase() !== 'button') {
+                throw "send button must be button label: " + that.option.send_btn;
             }
             if(that.send_btn.length >1 ) {
                 that.send_btn = that.send_btn.eq(0);
@@ -261,13 +238,12 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             //某个文件开始上传前触发，一个文件只会触发一次。
             this.instance.on('uploadStart', function (file) {
                 //锁定删除按钮
-                that.lists.delBtnLock(file.id);
+                that.lists._delBtnLock(file.id);
             });
             //不管成功或者失败，文件上传完成时触发。
             this.instance.on('uploadComplete', function (file) {
                 //解锁删除按钮
-                console.log("uploadComplete "+file.name);
-                that.lists.delBtnUnLock(file.id);
+                that.lists._delBtnUnLock(file.id);
             });
             //更新上传进度条
             this.instance.on('uploadProgress', function(file, percentage) {
@@ -322,12 +298,14 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
             if(this.send_btn.attr('data-old-text') === undefined) {
                 this.send_btn.attr('data-old-text', this.send_btn.text());
             }
+            this.send_btn.attr('disabled', 'disabled');
             this.send_btn.text('正在上传');
             this.send_btn.addClass('layui-btn-disabled');
         }
 
         _sendBtnUnLock() {
             this.send_btn.text(this.send_btn.attr('data-old-text'));
+            this.send_btn.removeAttr('disabled');
             this.send_btn.removeClass('layui-btn-disabled');
         }
     }

@@ -31,8 +31,8 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	v := validator.New()
-	v.Rule("OldPassword").Add("required", "请输入旧密码")
-	v.Rule("NewPassword",).Add("password:min=8,max=16",
+	v.Field("OldPassword").Rule("required", "请输入旧密码")
+	v.Field("NewPassword",).Rule("password:min=8,max=16",
 		"请输入新密码",
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",

@@ -34,9 +34,9 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	v := validator.New()
-	v.Rule("Account").Add("required", "请输入账号")
-	v.Rule("Password").Add("required", "请输入密码")
-	v.Rule("CaptchaVal").Add("VerifyCaptcha", "请输入验证码", "验证码错误")
+	v.Field("Account").Rule("required", "请输入账号")
+	v.Field("Password").Rule("required", "请输入密码")
+	v.Field("CaptchaVal").Rule("VerifyCaptcha", "请输入验证码", "验证码错误")
 	v.Custom("VerifyCaptcha", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
 		if !ok {

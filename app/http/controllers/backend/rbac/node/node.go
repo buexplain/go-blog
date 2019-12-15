@@ -20,9 +20,9 @@ var v *validator.Validator
 
 func init()  {
 	v = validator.New()
-	v.Rule("Name").Add("required", "请输入节点名")
-	v.Rule("URL").Add("required", "请输入访问路径")
-	v.Rule("Methods").Add(`in:in=,GET,POST,PUT,DELETE&split=\,`, "请勾选请求方法", "错误的请求方法，请重新勾选")
+	v.Field("Name").Rule("required", "请输入节点名")
+	v.Field("URL").Rule("required", "请输入访问路径")
+	v.Field("Methods").Rule(`in:in=,GET,POST,PUT,DELETE&split=\,`, "请勾选请求方法", "错误的请求方法，请重新勾选")
 }
 
 //列表

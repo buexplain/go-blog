@@ -25,10 +25,10 @@ var v *validator.Validator
 //初始化表单校验器
 func init() {
 	v = validator.New()
-	v.Rule("Title").Add("required", "请填写标题")
-	v.Rule("Category").Add("required", "请选择分类")
-	v.Rule("Online").Add(fmt.Sprintf("in:in=%d,%d", m_content.OnlineYes, m_content.OnlineNo), "请选择上下线")
-	v.Rule("Body").Add("required", "请填写内容")
+	v.Field("Title").Rule("required", "请填写标题")
+	v.Field("Category").Rule("required", "请选择分类")
+	v.Field("Online").Rule(fmt.Sprintf("in:in=%d,%d", m_content.OnlineYes, m_content.OnlineNo), "请选择上下线")
+	v.Field("Body").Rule("required", "请填写内容")
 }
 
 //列表
@@ -131,7 +131,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	mod.ID = r.ParamInt("id", 0)
 	vClone := v.Clone()
-	vClone.Rule("ID").Add("required", "ID错误")
+	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return ctx.Error().WrapServer(err)

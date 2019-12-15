@@ -55,3 +55,8 @@ go build -o artisan.exe artisan.go && artisan.exe asset pack
 go mod edit -replace=github.com/buexplain/go-fool=F:/go-fool
 go mod edit -replace=github.com/buexplain/go-fool=C:\Edisk\code\go-fool
 ```
+
+### 包升级到最新版本
+```bash
+go get -u 包路径@[版本号,保持最新请使用latest 或者 master]
+```

@@ -18,7 +18,7 @@ var v *validator.Validator
 
 func init()  {
 	v = validator.New()
-	v.Rule("Name").Add("required", "请填写标签名").Add("CheckUnique:id=0", "该标签名已存在")
+	v.Field("Name").Rule("required", "请填写标签名").Rule("CheckUnique:id=0", "该标签名已存在")
 	//校验标签是否存在
 	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
@@ -101,8 +101,8 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod.ID = r.ParamInt("id", 0)
 
 	vClone := v.Clone()
-	vClone.Rule("ID").Add("required", "ID错误")
-	vClone.Rule("Name").Add("CheckUnique:id="+strconv.Itoa(mod.ID), "该标签名已存在")
+	vClone.Field("ID").Rule("required", "ID错误")
+	vClone.Field("Name").Rule("CheckUnique:id="+strconv.Itoa(mod.ID), "该标签名已存在")
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return ctx.Error().WrapServer(err)

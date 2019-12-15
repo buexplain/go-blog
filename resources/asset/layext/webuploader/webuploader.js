@@ -117,6 +117,7 @@
         // the closure below.
         define([ 'jquery' ], makeExport );
     }else if(window.layui && layui.define) {
+        //此处改动为layui模块导出
         layui.define(['jquery'], function (exports) {
             exports('webuploader', makeExport(layui.jquery));
         });
@@ -6768,12 +6769,17 @@
                 if ( opts.sendAsBinary ) {
                     server += (/\?/.test( server ) ? '&' : '?') +
                             $.param( owner._formData );
-    
+
                     binary = blob.getSource();
                 } else {
                     formData = new FormData();
                     $.each( owner._formData, function( k, v ) {
-                        formData.append( k, v );
+                        //此处改动为支持动态获取参数
+                        if(typeof v === 'function') {
+                            formData.append( k, v());
+                        }else {
+                            formData.append( k, v );
+                        }
                     });
     
                     formData.append( opts.fileVal, blob.getSource(),

@@ -20,13 +20,13 @@ var v *validator.Validator
 
 func init()  {
 	v = validator.New()
-	v.Rule("Account").Add("required", "请填写账号").Add("CheckUnique:id=0", "该账号已存在")
-	v.Rule("Password",).Add("password:min=8,max=16",
+	v.Field("Account").Rule("required", "请填写账号").Rule("CheckUnique:id=0", "该账号已存在")
+	v.Field("Password",).Rule("password:min=8,max=16",
 		"请输入新密码",
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
 		"密码格式有误，数字、字母、符号至少两种")
-	v.Rule("Status").Add("in:in=1,2", "请选择状态")
+	v.Field("Status").Rule("in:in=1,2", "请选择状态")
 	//校验账号是否存在
 	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
@@ -133,8 +133,8 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 		return validator.Pool("password")(field, value, rule, structVar)
 	})
-	vClone.Rule("ID").Add("required", "ID错误")
-	vClone.Rule("Account").Add("CheckUnique:id="+strconv.Itoa(mod.ID), "该账号已存在")
+	vClone.Field("ID").Rule("required", "ID错误")
+	vClone.Field("Account").Rule("CheckUnique:id="+strconv.Itoa(mod.ID), "该账号已存在")
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return ctx.Error().WrapServer(err)

@@ -18,7 +18,7 @@ var v *validator.Validator
 
 func init()  {
 	v = validator.New()
-	v.Rule("Name").Add("required", "请输入分类名")
+	v.Field("Name").Rule("required", "请输入分类名")
 }
 
 //列表
@@ -94,7 +94,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod.ID = r.ParamInt("id", 0)
 
 	vClone := v.Clone()
-	vClone.Rule("ID").Add("required", "ID错误")
+	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := v.Validate(mod); err != nil {
 		return ctx.Error().WrapServer(err)

@@ -80,7 +80,7 @@ func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	<- time.After(500*time.Second)
+	<- time.After(5*time.Second)
 	//获取上传的文件
 	file, err := r.File("file")
 	if err != nil {
