@@ -16,10 +16,10 @@
     <blockquote class="layui-elem-quote">
         <div class="layui-inline">
             <form class="layui-form" method="get" action="/backend/article/attachment">
-                <div class="layui-inline">
+                <div class="layui-inline" style="width: 200px;">
                     <input type="text" name="whereLike[Name]" value="{{.Name}}" placeholder="请输入搜索的文件名" autocomplete="off" class="layui-input">
                 </div>
-                <div class="layui-inline" style="width: 170px;">
+                <div class="layui-inline" style="width: 200px;">
                     <select name="whereEq[Folder]">
                         <option value="">请选择自定义文件夹</option>
                         {{range $_, $v := .folderList}}
@@ -27,7 +27,7 @@
                         {{end}}
                     </select>
                 </div>
-                <div class="layui-inline" style="width: 170px;">
+                <div class="layui-inline" style="width: 200px;">
                     <select name="whereEq[Ext]">
                         <option value="">请选择文件后缀</option>
                         {{range $_, $v := .extList}}
@@ -148,22 +148,41 @@
                 } //开启分页
                 ,cols: [[ //表头
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
-                    ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
                     ,{field: 'Name', title: '文件名', edit: 'text'}
-                    ,{field: 'Path', title: '存储地址'}
-                    ,{field: 'MD5', title: '哈希值'}
+                    ,{field: 'Path', title: '存储地址', templet: function (data) {
+                        let html = '';
+                        var images = ['jpeg', 'gif', 'jpg', 'png', 'bmp'];
+                        images.is = function(url) {
+                            for(var i in this) {
+                                if(url.substr(url.length - this[i].length, this[i].length).toLocaleLowerCase() === this[i]) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+                        if(images.is(data.Path)) {
+                            html += '<img style="max-height: 110px;" src="/'+data.Path+'">';
+                            html += '<br>';
+                        }
+                        html += '<a href="javascript:preview(\'/'+data.Path+'\', \''+data.Name+'\');">'+data.Path+'</a>';
+                        return html;
+                    }}
                     ,{field: 'Size', title: '文件大小', templet: function (data) {
-                            return myUtil.renderBytes(data['Size']);
-                        }}
-                    ,{field: 'UpdatedAt', width:200, title: '更新时间', templet: function (data) {
-                            return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
-                        }}
-                    ,{fixed: 'right', title:'操作', width:200, templet:function (data) {
-                            let btn = '';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
-                            return btn;
-                        }}
+                        return myUtil.renderBytes(data['Size']);
+                    }}
+                    ,{fixed: 'right', title:'操作', templet:function (data) {
+                        let btn = '';
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
+                        return btn;
+                    }}
                 ]]
+                ,done: function () {
+                    var css = {
+                        'height': 'auto'
+                    };
+                    var tmp = $.find('div[lay-id="j-table"]');
+                    $(tmp[0]).find('.layui-table-cell').css(css);
+                }
             };
             var tableIns = table.render(tableOption);
 
@@ -184,6 +203,7 @@
                         $.post('/backend/article/attachment/delete-batch', param, function (json) {
                             if(json.code === 0) {
                                 layer.close(index);
+                                //重新渲染表格
                                 table.reload(obj.config.id, obj.config);
                             }else {
                                 layer.alert(json.message, {icon: 2});
@@ -241,5 +261,16 @@
                 return false;
             });
         });
+
+        function preview(url, title) {
+            if(window.parent.skeleton === undefined) {
+                window.open(url);
+                return;
+            }
+            var index = (new Date()).getMilliseconds();
+            window.parent.skeleton.tab.add(title, url, index);
+            window.parent.skeleton.tab.change(index);
+        }
     </script>
+
 {{end}}

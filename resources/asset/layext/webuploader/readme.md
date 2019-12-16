@@ -21,6 +21,7 @@ layui.config({
     layuploader:'layext/webuploader/layuploader'
 });
 
+//上传
 layui.use(['layuploader', 'jquery'], function () {
     var layUploader = layui.layuploader;
     var $ = layui.jquery;
