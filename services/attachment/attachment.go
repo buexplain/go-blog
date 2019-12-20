@@ -79,6 +79,8 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 		savePath = filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Business.Upload.Save, folder)
 	}
 
+	file.SetValidateExt(a_boot.Config.Business.Upload.Ext...)
+
 	//保存文件
 	if _, err := file.SaveToPath(savePath); err != nil {
 		return  nil, err

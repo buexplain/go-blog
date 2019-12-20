@@ -1,6 +1,11 @@
 {{define "title"}}附件{{end}}
 
 {{define "css"}}
+    <style>
+        .data-table .layui-table-cell {
+            height: auto;
+        }
+    </style>
 {{end}}
 
 {{define "content"}}
@@ -48,7 +53,9 @@
             <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
         </div>
     </script>
-    <table id="j-table" lay-filter="j-table"></table>
+    <div class="data-table">
+        <table id="j-table" lay-filter="j-table"></table>
+    </div>
     {{._token}}
 {{end}}
 
@@ -176,13 +183,6 @@
                         return btn;
                     }}
                 ]]
-                ,done: function () {
-                    var css = {
-                        'height': 'auto'
-                    };
-                    var tmp = $.find('div[lay-id="j-table"]');
-                    $(tmp[0]).find('.layui-table-cell').css(css);
-                }
             };
             var tableIns = table.render(tableOption);
 
@@ -262,6 +262,11 @@
             });
         });
 
+        /**
+         * 预览
+         * @param url
+         * @param title
+         */
         function preview(url, title) {
             if(window.parent.skeleton === undefined) {
                 window.open(url);

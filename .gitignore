@@ -2,7 +2,9 @@
 !.gitignore
 config.toml
 go.sum
+build
 *.exe
+*.bin
 /database/database.db
 /storage/cache/*
 !/storage/cache/git.keep

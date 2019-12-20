@@ -1,3 +1,6 @@
+/**
+ * 内容
+ */
 class Content {
     constructor(data) {
         data = data || null;
@@ -59,6 +62,9 @@ class Content {
     }
 }
 
+/**
+ * 所有的标签
+ */
 class TagList {
     constructor(data) {
         data = data || null;
@@ -95,6 +101,9 @@ class TagList {
     }
 }
 
+/**
+ * 所有的分类
+ */
 class CategoryList {
     constructor(data) {
         data = data || null;
@@ -135,6 +144,9 @@ class CategoryList {
     }
 }
 
+/**
+ * 上下线
+ */
 class Online {
     constructor() {
         this.data = [{ID:1, Name:'上线'}, {ID:2, Name:'下线'}];
@@ -199,6 +211,90 @@ const LazyLoadImage = () => {
         });
     }
 };
+
+class Upload {
+    constructor(data) {
+        data = data || null;
+        this.data = data;
+    }
+
+    getMarkdownText () {
+        if(this.data === null) {
+            return '';
+        }
+        var images = ['jpeg', 'gif', 'jpg', 'png', 'bmp'];
+        images.is = function(url) {
+            for(var i in this) {
+                if(url.substr(url.length - this[i].length, this[i].length).toLocaleLowerCase() === this[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        var tmp = '['+this.data.Name+'](/'+this.data.Path+' "'+this.data.Name+'")';
+        if(images.is(this.data.Path)) {
+            tmp = '!'+tmp;
+        }
+        return tmp;
+    };
+
+    static getInstance(formData) {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                url: "/backend/article/content/upload",
+                async:true,
+                data: formData,
+                type: "post",
+                processData: false,
+                contentType: false,
+                success: function (json) {
+                    if (json.code !== 0) {
+                        reject(json.message);
+                    } else {
+                        resolve(new Upload(json.data));
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    reject(textStatus+errorThrown);
+                }
+            });
+        });
+    }
+}
+
+class Uploads
+{
+    constructor(data) {
+        data = data || null;
+        this.data = data;
+    }
+
+    getMarkdownText () {
+        if(this.data === null) {
+            return '';
+        }
+        var tmp = '';
+        for(var i in this.data) {
+            if(tmp !== '') {
+                tmp += '\r\n\r\n';
+            }
+            tmp += this.data[i].getMarkdownText();
+        }
+        return tmp;
+    }
+
+    static getInstance(formDataArr) {
+        var arr = [];
+        for (var i in formDataArr) {
+            arr.push(Upload.getInstance(formDataArr[i]));
+        }
+        return Promise.all(arr).then(function(values) {
+            return new Promise(function(resolve, reject) {
+                resolve(new Uploads(values));
+            });
+        });
+    }
+}
 
 //更多操作
 layui.use(['jquery'], function () {

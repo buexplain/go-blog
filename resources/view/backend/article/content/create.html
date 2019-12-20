@@ -154,39 +154,20 @@
                     width:"100%",
                     tab: '\t',
                     upload: {
-                        handler (file) {
-                            var formData = new FormData();
-                            formData.append('_token', document.querySelector("input[name=_token]").value);
-                            for(var i in file) {
-                                formData.append('file[]', file[i]);
+                        handler (files) {
+                            var formDataArr = [];
+                            var token = document.querySelector("input[name=_token]").value;
+                            for(var i in files) {
+                                var formData = new FormData();
+                                formData.append('_token', token);
+                                formData.append('file', files[i]);
+                                formDataArr.push(formData);
                             }
-                            var request = new XMLHttpRequest();
-                            request.open("POST", "/backend/article/content/upload");
-                            request.onload = function(oEvent) {
-                                let currentTarget = oEvent.currentTarget;
-                                if(currentTarget.status !== 200) {
-                                    layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
-                                    return '';
-                                }
-                                let json = JSON.parse(currentTarget.response);
-                                if(json.code === 0) {
-                                    var show = [".jpg", ".png", ".gif", ".jpeg", ".bmp"];
-                                    for(var i in json.data) {
-                                        var tmp = '['+json.data[i].name+']('+json.data[i].path+' "'+json.data[i].name+'")';
-                                        for(var j in show) {
-                                            if(json.data[i].path.substr(0 - show[j].length).toLocaleLowerCase() === show[j]) {
-                                                tmp = '!'+tmp;
-                                                break;
-                                            }
-                                        }
-                                        //压入上传结果
-                                        vEditorObj.insertValue(tmp);
-                                    }
-                                }else {
-                                    layer.alert(json.message, {icon: 2});
-                                }
-                            };
-                            request.send(formData);
+                            Uploads.getInstance(formDataArr).then(function (result) {
+                                vEditorObj.insertValue(result.getMarkdownText());
+                            }).catch(function(rej) {
+                                layer.alert(rej.toString(), {icon: 2});
+                            });
                         },
                     },
                     preview: {
@@ -196,10 +177,11 @@
                         },
                     },
                 });
+
                 //压入文章内容
                 vEditorObj.setValue(result.content.getBody());
 
-                //提交表单
+                //绑定提交表单
                 form.on('submit(listen)', function(data) {
                     //构造表单参数
                     var formData = new FormData();

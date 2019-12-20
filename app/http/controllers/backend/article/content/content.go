@@ -9,14 +9,14 @@ import (
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/services"
+	"github.com/buexplain/go-blog/services/attachment"
 	"github.com/buexplain/go-blog/services/content"
 	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-validator"
-	"xorm.io/xorm"
 	"github.com/gorilla/csrf"
 	"net/http"
-	"path/filepath"
+	"xorm.io/xorm"
 )
 
 //表单校验器
@@ -296,24 +296,18 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //上传附件
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	uploads, err := r.FileSlice("file")
+	file, err := r.File("file")
 	if err != nil {
-		return ctx.Error().WrapClient(err)
+		return err
 	}
 	defer func() {
-		_ = uploads.Close()
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
 	}()
-	uploads.SetValidateExt(a_boot.Config.Business.Upload.Ext...)
-	_, err = uploads.SaveToPath(filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Business.Upload.Save))
+	result, err := s_attachment.Upload(file, "")
 	if err != nil {
-		return ctx.Error().WrapClient(err)
+		return w.Assign("data", "").Assign("message", err.Error()).Assign("code", code.SERVER).JSON(http.StatusOK)
 	}
-	data := []map[string]string{}
-	for _, upload := range uploads  {
-		data = append(data, map[string]string{"name":upload.Name(), "path":"/"+upload.Result()})
-	}
-	return w.Assign("data", data).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return w.Assign("data", result).Assign("message", code.Text(code.SUCCESS)).Assign("code", code.SUCCESS).JSON(http.StatusOK)
 }
