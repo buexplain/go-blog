@@ -1,7 +1,7 @@
 # 基于百度上传组件进行封装的layui上传组件
 
 ## 文档
-百度上传组件文档：http://fex.baidu.com/webuploader/doc/index.html#WebUploader_Uploader_events
+[百度上传组件文档](http://fex.baidu.com/webuploader/doc/index.html#WebUploader_Uploader_events)
 
 ## 升级注意
 webuploader.js做了如下更改：

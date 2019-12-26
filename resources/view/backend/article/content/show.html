@@ -1,0 +1,165 @@
+{{define "title"}}
+{{.result.Content.Title}}
+{{end}}
+
+{{define "css"}}
+    <!--引入markdown基础样式-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.classic.css">
+    <style>
+        .details .nav{
+            margin-bottom: 15px;
+        }
+
+        .details .nav a {
+            color: #424242 !important;
+            font-size: 18px !important;
+        }
+
+        .details .nav a:hover {
+            color: #4183c4 !important;
+        }
+
+        .details .title {
+            color: #424242;
+            font-weight: 700;
+            font-size: 22px;
+            margin: 0 0 15px 0;
+        }
+
+        .details .title .layui-badge {
+            margin-left: 8px;
+            font-size: 14px;
+            padding: 2px 6px;
+        }
+
+        .details .extra {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            margin: 0 0 15px 0;
+        }
+
+        .details .extra span {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            border: none;
+            padding: 0 8px 0 0;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        .details .tag {
+            margin-bottom: 15px;
+        }
+        .details .tag span {
+            font-size: 14px;
+            margin-right: 8px;
+            padding: 3px 5px;
+        }
+        .details .tag a span:hover {
+            color: #4183c4 !important;
+        }
+        .details .content .origin a:hover {
+            color: #4183c4 !important;
+        }
+    </style>
+{{end}}
+
+{{define "content"}}
+    <div class="details">
+        {{ if .result.Category }}
+            <div class="nav">
+            <span class="layui-breadcrumb" lay-separator=">">
+                {{range $_, $v := .result.Category}}
+                    <a>
+                        <cite>{{$v.Name}}</cite>
+                    </a>
+                {{end}}
+                <a>
+                    <cite>正文</cite>
+                </a>
+            </span>
+            </div>
+        {{ end }}
+        <h2 class="title">
+            {{.result.Content.Title}}
+            {{ if .result.Content.Origin }}
+                <span class="layui-badge layui-bg-green">转载</span>
+            {{ else }}
+                <span class="layui-badge layui-bg-green">原创</span>
+            {{ end }}
+        </h2>
+        <div class="extra">
+            <span class="layui-badge-rim">
+                更新时间：{{.result.Content.UpdatedAt}}
+            </span>
+            <span class="layui-badge-rim">
+                阅读量：{{.result.Content.Hits}}
+            </span>
+        </div>
+        <div class="tag">
+            {{range $_, $v := .result.Tag}}
+                <span class="layui-badge layui-bg-gray">{{$v.Name}}</span>
+            {{end}}
+        </div>
+        <div class="content">
+            {{ if .result.Content.Origin }}
+                <blockquote class="layui-elem-quote layui-quote-nm origin">
+                    <a href="{{.result.Content.Origin}}" target="_blank">原文地址：{{.result.Content.Origin}}</a>
+                </blockquote>
+            {{ end }}
+            <div id="j-preview" style="padding: 0;" class="preview vditor-reset vditor-reset--anchor">
+                {{.result.Content.HTML}}
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js"></script>
+    <script>
+        //渲染分类
+        layui.use(['element'], function() {
+            var element = layui.element;
+        });
+        //高亮显示代码部分
+        var preview = document.getElementById('j-preview');
+        Vditor.highlightRender({
+            enable:true,
+            style:'monokai',
+            lineNumber:true
+        }, preview);
+        //为 element 中的代码块添加复制按钮
+        Vditor.codeRender(preview);
+        //转换 preview 中的文本为数学公式
+        Vditor.mathRender(preview);
+        //转换 preview 中 class 为 className 的元素为流程图/时序图/甘特图
+        Vditor.mermaidRender(preview);
+        //图表渲染
+        Vditor.chartRender(preview);
+        //五线谱渲染
+        Vditor.abcRender(preview);
+        //为特定链接分别渲染为视频、音频、嵌入的 iframe
+        Vditor.mediaRender(preview);
+        //对使用 Lute 渲染的数学公式进行渲染
+        Vditor.mathRenderByLute(preview);
+        //消除第一个元素的上边空白
+        setTimeout(function () {
+            var childNodes = document.getElementById('j-preview').childNodes;
+            for(var i in childNodes) {
+                var first = childNodes[i];
+                if(first.style !== undefined && first.style.marginTop !== undefined) {
+                    first.style.marginTop = 0;
+                    first.style.paddingTop = 0;
+                    break;
+                }
+            }
+        }, 100);
+    </script>
+{{end}}

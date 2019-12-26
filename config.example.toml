@@ -2,7 +2,7 @@
 Debug = true
 
 [App.Server]
-IP = "localhost"
+IP = "192.168.171.203"
 Port = 1991
 ReadTimeout = "60s"
 WriteTimeout = "60s"
@@ -60,10 +60,37 @@ HttpOnly = true
 [Asset]
 Dir = ["resources/..."]
 
-
 [Business]
 SuperRoleID = 1
 
 [Business.Upload]
-Ext = ["jpg", "gif", "png", "jpeg"]
+Ext = [
+    "jpg", "jpeg",
+    "gif",
+    "png",
+    "mp3",
+    "mp4",
+    "txt",
+    "csv",
+    "xls", "xlsx",
+    "ppt", "pptx",
+    "doc", "docx",
+    "pdf",
+    "zip"
+]
+# https://www.iana.org/assignments/media-types/media-types.xhtml
+MimeTypes = [
+    "image/jpeg",
+    "image/gif",
+    "image/png",
+    "audio/mpeg",
+    "video/mp4",
+    "text/plain",
+    "text/csv",
+    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/pdf",
+    "application/zip"
+]
 Save = "/uploads"

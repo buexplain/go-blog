@@ -21,7 +21,7 @@ func GetDetails(id int) (*Details, error) {
 	details.Tag = new(m_tag.List)
 	if b, err := dao.Dao.Table("Content").ID(id).Get(details.Content); err != nil {
 		return nil, err
-	}else if(b == false) {
+	}else if b == false {
 		return nil, fmt.Errorf("not found content %d", id)
 	}
 

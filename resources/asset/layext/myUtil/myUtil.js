@@ -52,6 +52,15 @@ layui.define([], function(exports) {
                 return url.substr(0, index);
             }
         },
+        isImage: function(file_name) {
+            var images = ['jpeg', 'gif', 'jpg', 'png', 'bmp'];
+            for(var i in images) {
+                if(file_name.substr(file_name.length - images[i].length, images[i].length).toLocaleLowerCase() === images[i]) {
+                    return true;
+                }
+            }
+            return false;
+        },
         /**
          * 根据当前url生成分页url
          * @param targetPage 目标页码

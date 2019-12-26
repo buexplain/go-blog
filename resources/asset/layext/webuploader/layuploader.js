@@ -84,14 +84,13 @@ layui.define(['webuploader', 'table', 'layer', 'jquery', 'element'], function(ex
                 //如果有缩略图，则设置为自动高度
                 for (var i in that.option.data) {
                     if(that.option.data[i].src !== '') {
-                        var css = {
-                            'height': 'auto'
-                        };
-                        var tmp = $.find('div[lay-id="'+that.option.id+'"]');
-                        if(tmp.length > 0) {
-                            $(tmp[0]).find('.layui-table-cell').css(css);
-                        }else {
-                            $(".layui-table-cell").css(css);
+                        var id = 'j-table-style'+that.lay_filter;
+                        var style = document.getElementById(id);
+                        if(!style) {
+                            style = document.createElement('style');
+                            style.setAttribute('id', id);
+                            style.innerHTML = 'div[lay-id=j-webUploader-table] .layui-table-cell {height: auto;}';
+                            document.getElementsByTagName('body')[0].append(style);
                         }
                         break;
                     }

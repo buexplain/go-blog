@@ -2,9 +2,7 @@
 
 {{define "css"}}
     <style>
-        .data-table .layui-table-cell {
-            height: auto;
-        }
+        div[lay-id=j-table] .layui-table-cell {height: auto;}
     </style>
 {{end}}
 
@@ -53,14 +51,16 @@
             <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
         </div>
     </script>
-    <div class="data-table">
-        <table id="j-table" lay-filter="j-table"></table>
-    </div>
+    <table id="j-table" lay-filter="j-table"></table>
     {{._token}}
 {{end}}
 
 {{define "js"}}
     <script>
+        //允许上传的后缀
+        var acceptExt = "{{.acceptExt}}";
+        //允许上传的文件头
+        var acceptMimeTypes = "{{.acceptMimeTypes}}";
         //上传
         layui.use(['layuploader', 'jquery'], function () {
             var layUploader = layui.layuploader;
@@ -115,6 +115,10 @@
                     folder:function () {
                         return $("#j-folder").val();
                     }
+                },
+                accept: {
+                    extensions: acceptExt,
+                    mimeTypes: acceptMimeTypes
                 }
             }, {
                 //上传列表的表格的id（数据表格）
@@ -155,34 +159,53 @@
                 } //开启分页
                 ,cols: [[ //表头
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
-                    ,{field: 'Name', title: '文件名', edit: 'text'}
+                    ,{field: 'Name', title: '文件名', edit: 'text', templet: function (data) {
+                        return data.Name;
+                    }}
                     ,{field: 'Path', title: '存储地址', templet: function (data) {
                         let html = '';
-                        var images = ['jpeg', 'gif', 'jpg', 'png', 'bmp'];
-                        images.is = function(url) {
-                            for(var i in this) {
-                                if(url.substr(url.length - this[i].length, this[i].length).toLocaleLowerCase() === this[i]) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        };
-                        if(images.is(data.Path)) {
+                        if(myUtil.isImage(data.Path)) {
                             html += '<img style="max-height: 110px;" src="/'+data.Path+'">';
                             html += '<br>';
                         }
-                        html += '<a href="javascript:preview(\'/'+data.Path+'\', \''+data.Name+'\');">'+data.Path+'</a>';
+                        html += data.Path;
+                        html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+data.Name+'\');">'+html+'</a>';
                         return html;
                     }}
-                    ,{field: 'Size', title: '文件大小', templet: function (data) {
+                    ,{field: 'Size', title: '文件大小', width:150, templet: function (data) {
                         return myUtil.renderBytes(data['Size']);
                     }}
-                    ,{fixed: 'right', title:'操作', templet:function (data) {
+                    ,{fixed: 'right', title:'操作', width:150, templet:function (data) {
+                        let text = '['+data.Name+'](/'+data.Path+' "'+data.Name+'")';
+                        if(myUtil.isImage(data.Path)) {
+                            text = '!'+text;
+                        }
+                        text = encodeURIComponent(text);
                         let btn = '';
+                        btn += '<a class="layui-btn layui-btn-sm j-copy" data-clipboard-text="'+text+'">复制</a>';
                         btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
                         return btn;
                     }}
                 ]]
+                ,done: function () {
+                    layui.use(['clipboard', 'layer'], function () {
+                        var clipboard = layui.clipboard;
+                        var layer = layui.layer;
+                        var copy = new clipboard('.j-copy', {text: function (target) {
+                            return decodeURIComponent(target.getAttribute('data-clipboard-text'));
+                        }});
+                        copy.on('success', function(e) {
+                            layer.tips('成功', e.trigger, {
+                                tips: [2, '#FFB800'],
+                                time:1000
+                            });
+                            e.clearSelection();
+                        });
+                        copy.on('error', function(e) {
+                            submit.alertError("失败："+e.text);
+                        });
+                    });
+                }
             };
             var tableIns = table.render(tableOption);
 

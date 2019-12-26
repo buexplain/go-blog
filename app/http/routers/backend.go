@@ -103,6 +103,7 @@ func backend(mux *fool.Mux) {
 			mux.Get("content/tag", c_content.Tag)
 			mux.Post("content/tag", c_content.AddTag).AddLabel("json")
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
+			mux.Any("content/render", c_content.Render, http.MethodGet, http.MethodPost)
 
 			//附件管理
 			mux.Get("attachment", c_attachment.Index)

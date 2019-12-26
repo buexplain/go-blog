@@ -170,7 +170,7 @@ class Online {
 /**
  * 图片懒加载
  */
-const LazyLoadImage = () => {
+const lazyLoadImage = () => {
     const loadImg = (it) => {
         const testImage = document.createElement('img');
         testImage.src = it.getAttribute('data-src');

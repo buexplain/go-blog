@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/csrf"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 var folderRegexp *regexp.Regexp
@@ -32,6 +33,8 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		w.Assign("extList", extList)
 		w.Assign("folderList", folderList)
 		w.Assign("folderRegexp", folderRegexp.String())
+		w.Assign("acceptExt", strings.Join(a_boot.Config.Business.Upload.Ext, ","))
+		w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
 		w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
 		return w.Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/article/attachment/index.html")
@@ -47,20 +50,17 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var count int64
 	query.FindAndCount(&result, &count)
 	if query.Error != nil {
-		return ctx.Error().WrapServer(query.Error).Location()
+		return query.Error
 	}
-	return w.
-		Assign("code", code.SUCCESS).
-		Assign("message", "操作成功").
-		Assign("count", count).
-		Assign("data", result).
-		JSON(http.StatusOK)
+	w.Assign("count", count)
+	return code.Success(ctx, result)
 }
 
 func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_attachment.Attachment)
 	result.MD5 = r.Param("md5", "")
 	if result.MD5 == "" {
+
 		return w.Assign("data", "").Assign("message", code.Text(code.INVALID_ARGUMENT)).Assign("code", code.INVALID_ARGUMENT).JSON(http.StatusOK)
 	}
 	if has, err := dao.Dao.Get(result); err != nil {

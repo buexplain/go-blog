@@ -4,7 +4,6 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot"
 	_ "github.com/buexplain/go-blog/app/http/events"
 	_ "github.com/buexplain/go-blog/app/http/routers"
-	"os"
 	"time"
 )
 
@@ -17,6 +16,5 @@ func init() {
 }
 
 func main() {
-	os.Exit(1)
 	h_boot.Run()
 }

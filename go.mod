@@ -3,6 +3,7 @@ module github.com/buexplain/go-blog
 go 1.13
 
 require (
+	github.com/88250/lute v0.0.0-20191224084500-3572f0af14b3
 	github.com/BurntSushi/toml v0.3.1
 	github.com/buexplain/go-fool v0.0.0-20191213100955-1b8ff588343b
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2

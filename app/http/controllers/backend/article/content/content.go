@@ -16,7 +16,6 @@ import (
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
-	"xorm.io/xorm"
 )
 
 //表单校验器
@@ -47,12 +46,8 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if query.Error != nil {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
-	return w.
-		Assign("code", code.SUCCESS).
-		Assign("message", "操作成功").
-		Assign("count", count).
-		Assign("data", result).
-		JSON(http.StatusOK)
+	w.Assign("count", count)
+	return  code.Success(ctx, result)
 }
 
 //新增
@@ -76,31 +71,22 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return err
 	}else if !r.IsEmpty() {
-		return w.Assign("data", "").
-			Assign("message", r.ToSimpleString()).
-			Assign("code", 1).
-			JSON(http.StatusOK)
+		return code.Error(ctx, 1, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Assign("data", "").
-			Assign("message", "请选择标签").
-			Assign("code", 1).
-			JSON(http.StatusOK)
+		return code.Error(ctx, 1, "请选择标签")
 	}
 
 	if err := s_content.Save(mod, tagsID, 0); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return err
 	}
 
-	return w.Assign("data", mod.ID).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return code.Success(ctx, mod.ID)
 }
 
 //编辑
@@ -134,92 +120,59 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := vClone.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return err
 	}else if !r.IsEmpty() {
-		return w.Assign("data", "").
-			Assign("message", r.ToSimpleString()).
-			Assign("code", 1).
-			JSON(http.StatusOK)
+		return code.Error(ctx, 1, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Assign("data", "").
-			Assign("message", "请选择标签").
-			Assign("code", 1).
-			JSON(http.StatusOK)
+		return code.Error(ctx, 1, "请选择标签")
 	}
 
 	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return err
 	}
 
-	return w.Assign("data", mod.ID).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return code.Success(ctx, mod.ID)
 }
 
 //单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result := new(m_content.Content)
-
-	result.ID = r.ParamInt("id", 0)
-	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+	ids := []int{r.ParamInt("id", 0)}
+	err := s_content.DestroyBatch(ids)
+	if err != nil {
+		return code.Error(ctx, code.SERVER, nil, err.Error())
 	}
-
-	if affected, err := dao.Dao.Where("Online=?", m_content.OnlineNo).Delete(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
-	}else if affected > 0 {
-		return w.
-			Assign("code", code.SUCCESS).
-			Assign("message", "操作成功").
-			Assign("data", "").
-			JSON(http.StatusOK)
-	}
-
-	return w.
-		Assign("code", 1).
-		Assign("message", "操作失败").
-		Assign("data", "").
-		JSON(http.StatusOK)
+	return code.Success(ctx)
 }
 
 //批量删除
 func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
-	if len(ids) == 0 {
-		return w.JumpBack("参数错误")
+	err := s_content.DestroyBatch(ids)
+	if err != nil {
+		return code.Error(ctx, code.SERVER, nil, err.Error())
 	}
-
-	if affected, err := s_services.DestroyBatch("Content", ids, func(session *xorm.Session) *xorm.Session {
-		return  session.Where("Online=?", m_content.OnlineNo)
-	}); err != nil {
-		return ctx.Error().WrapServer(err).Location()
-	}else if affected > 0 {
-		return w.
-			Assign("code", code.SUCCESS).
-			Assign("message", "操作成功").
-			Assign("data", "").
-			JSON(http.StatusOK)
-	}
-
-	return w.
-		Assign("code", 1).
-		Assign("message", "操作失败").
-		Assign("data", "").
-		JSON(http.StatusOK)
+	return code.Success(ctx)
 }
 
 //查看
 func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	d, err := s_content.GetDetails(r.ParamInt("id"))
-	if err != nil {
-		return w.Assign("data", d).Assign("code", 1).Assign("message", err.Error()).JSON(http.StatusOK)
+	result, err := s_content.GetDetails(r.ParamInt("id"))
+	if r.IsAjax() {
+		if err != nil {
+			return code.Error(ctx, 1, err.Error())
+		}
+		return code.Success(ctx, result)
 	}
-	return w.Assign("data", d).Assign("code", code.SUCCESS).Assign("message", code.Text(code.SUCCESS)).JSON(http.StatusOK)
+	if err != nil {
+		return err
+	}
+	return w.
+		Assign("result", result).
+		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/show.html")
 }
 
 //设置上下线
@@ -242,11 +195,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
-	return w.
-		Assign("code", code.SUCCESS).
-		Assign("message", "操作成功").
-		Assign("data", result.Online).
-		JSON(http.StatusOK)
+	return code.Success(ctx, result.Online)
 }
 
 //返回分类
@@ -258,12 +207,9 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	result := make(m_category.List, 0)
 	if err := query.Find(&result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return err
 	}
-	return w.Assign("data", result).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return code.Success(ctx, result)
 }
 
 //返回标签
@@ -272,10 +218,7 @@ func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := dao.Dao.Find(result); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
-	return w.Assign("data", result).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return code.Success(ctx, result)
 }
 
 //新增tag
@@ -283,15 +226,9 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	name := r.Form("name", "")
 	id, err := s_tag.Store(name)
 	if err != nil {
-		return w.Assign("data", "").
-			Assign("message", err.Error()).
-			Assign("code", code.SUCCESS).
-			JSON(http.StatusOK)
+		return code.Error(ctx, code.SERVER, err.Error())
 	}
-	return w.Assign("data", id).
-		Assign("message", code.Text(code.SUCCESS)).
-		Assign("code", code.SUCCESS).
-		JSON(http.StatusOK)
+	return code.Success(ctx, id)
 }
 
 //上传附件
@@ -307,7 +244,25 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}()
 	result, err := s_attachment.Upload(file, "")
 	if err != nil {
-		return w.Assign("data", "").Assign("message", err.Error()).Assign("code", code.SERVER).JSON(http.StatusOK)
+		return code.Error(ctx, code.SERVER, err.Error())
 	}
-	return w.Assign("data", result).Assign("message", code.Text(code.SUCCESS)).Assign("code", code.SUCCESS).JSON(http.StatusOK)
+	return code.Success(ctx, result)
+}
+
+func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	var err error
+	var html string
+	id := r.QueryInt("id", 0)
+	if id > 0 {
+		html, err = s_content.RenderByID(id)
+	}else {
+		markdown := r.Form("markdown", "")
+		if markdown != "" {
+			html, err = s_content.Render(markdown)
+		}
+	}
+	if err != nil {
+		return code.Error(ctx, code.CLIENT, err.Error())
+	}
+	return code.Success(ctx, html)
 }

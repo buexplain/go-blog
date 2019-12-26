@@ -21,5 +21,7 @@ layui.config({
     //百度上传组件
     webuploader:'layext/webuploader/webuploader',
     //layupload上传组件
-    layuploader:'layext/webuploader/layuploader'
+    layuploader:'layext/webuploader/layuploader',
+    //复制组件
+    clipboard:'layext/clipboard/clipboard'
 });

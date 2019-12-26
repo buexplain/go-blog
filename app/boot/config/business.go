@@ -8,6 +8,8 @@ type Business struct {
 	Upload struct {
 		//允许的后缀
 		Ext []string
+		//input file 选择文件的 accept
+		MimeTypes []string
 		//保存的路径
 		Save string
 	}

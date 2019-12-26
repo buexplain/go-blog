@@ -87,9 +87,9 @@
                         return btn;
                     }}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
-                        let btn = '<a class="layui-btn layui-btn-sm" href="javascript:preview('+data['ID']+', "'+data['Title']+'");">预览</a>';
+                        let btn = '<a class="layui-btn layui-btn-sm" href="javascript:preview('+data['ID']+', \''+data['Title']+'\');">预览</a>';
                         btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/'+data['ID']+'">编辑</a>';
-                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['Online'] === 1 ? 'none' : '')+';">删除</a>';
                         return btn;
                     }}
                 ]]
@@ -150,6 +150,12 @@
                 $.post('/backend/article/content/online/'+input.data('id'), formData, function (json) {
                     if(json.code === 0) {
                         input.val(json.data);
+                        var o = document.getElementById('j-del'+input.data('id'));
+                        if(parseInt(json.data) === 1) {
+                            o.style.display = 'none';
+                        }else {
+                            o.style.display = '';
+                        }
                     }else {
                         layer.alert(json.message, {icon: 2});
                     }
@@ -167,5 +173,21 @@
                 return false;
             });
         });
+
+        /**
+         * 预览
+         * @param id
+         * @param title
+         */
+        function preview(id, title) {
+            var url = '/backend/article/content/show/'+id;
+            if(window.parent.skeleton === undefined) {
+                window.open(url);
+                return;
+            }
+            var index = (new Date()).getMilliseconds();
+            window.parent.skeleton.tab.add(title, url, index);
+            window.parent.skeleton.tab.change(index);
+        }
     </script>
 {{end}}

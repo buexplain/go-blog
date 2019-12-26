@@ -1,11 +1,15 @@
 package m_content
 
-import "github.com/buexplain/go-blog/models"
+import (
+	"github.com/buexplain/go-blog/models"
+	"html/template"
+)
 
 type Content struct {
 	models.Field `xorm:"extends"`
 	Title        string `xorm:"TEXT"`
 	Body         string `xorm:"TEXT"`
+	HTML         template.HTML `xorm:"TEXT"`
 	Hits         int    `xorm:"INTEGER"`
 	Online       int    `xorm:"INTEGER"`
 	Category     int    `xorm:"INTEGER"`
