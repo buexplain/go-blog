@@ -31,18 +31,19 @@ func GetFolderList() (result FolderList, err error) {
 	return result, err
 }
 
-var folderRegexp *regexp.Regexp
+//上传的时候自定义文件夹的校验正则
+var FolderRegexp *regexp.Regexp
 
 func init() {
-	folderRegexp = regexp.MustCompile(`^[\w][\w/]*[\w]$`)
+	FolderRegexp = regexp.MustCompile(`^[\w][\w/]*[\w]$`)
 }
 
 //上传文件
 func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error) {
 	if folder != "" {
 		folder = strings.Trim(folder, "/")
-		if !folderRegexp.MatchString(folder) {
-			return  nil, fmt.Errorf("自定义文件夹必须符合规则：%s", folderRegexp.String())
+		if !FolderRegexp.MatchString(folder) {
+			return  nil, fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String())
 		}
 		if len(folder) > 50 {
 			return  nil, fmt.Errorf("自定义文件夹长度必须小于50个字符")

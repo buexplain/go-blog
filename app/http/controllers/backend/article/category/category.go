@@ -25,7 +25,7 @@ func init()  {
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result, err := m_category.GetALL()
 	if err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return err
 	}
 	return w.
 		Assign("result", template.JS(result.String())).
@@ -77,6 +77,8 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	} else if !has {
 		return w.JumpBack("参数错误")
 	}
+
+
 
 	return w.
 		Assign("result", result).
