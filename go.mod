@@ -21,4 +21,4 @@ require (
 	xorm.io/xorm v0.8.0
 )
 
-replace github.com/buexplain/go-fool => F:/go-fool
+replace github.com/buexplain/go-fool => C:\Edisk\code\go-fool

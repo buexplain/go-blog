@@ -47,7 +47,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(query.Error).Location()
 	}
 	w.Assign("count", count)
-	return  code.Success(ctx, result)
+	return  w.Success(result)
 }
 
 //新增
@@ -73,20 +73,20 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := v.Validate(mod); err != nil {
 		return err
 	}else if !r.IsEmpty() {
-		return code.Error(ctx, 1, r.ToSimpleString())
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return code.Error(ctx, 1, "请选择标签")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "id")
 	}
 
 	if err := s_content.Save(mod, tagsID, 0); err != nil {
 		return err
 	}
 
-	return code.Success(ctx, mod.ID)
+	return w.Success(mod.ID)
 }
 
 //编辑
@@ -122,20 +122,20 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := vClone.Validate(mod); err != nil {
 		return err
 	}else if !r.IsEmpty() {
-		return code.Error(ctx, 1, r.ToSimpleString())
+		return w.Client(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return code.Error(ctx, 1, "请选择标签")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "id")
 	}
 
 	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
 		return err
 	}
 
-	return code.Success(ctx, mod.ID)
+	return w.Success(mod.ID)
 }
 
 //单个删除
@@ -143,9 +143,9 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
 	err := s_content.DestroyBatch(ids)
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx)
+	return w.Success()
 }
 
 //批量删除
@@ -153,9 +153,9 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
 	err := s_content.DestroyBatch(ids)
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx)
+	return w.Success()
 }
 
 //查看
@@ -163,9 +163,9 @@ func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result, err := s_content.GetDetails(r.ParamInt("id"))
 	if r.IsAjax() {
 		if err != nil {
-			return code.Error(ctx, 1, err.Error())
+			return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 		}
-		return code.Success(ctx, result)
+		return w.Success(result)
 	}
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return ctx.Error().WrapServer(err).Location()
 	}
 
-	return code.Success(ctx, result.Online)
+	return w.Success(result.Online)
 }
 
 //返回分类
@@ -209,7 +209,7 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := query.Find(&result); err != nil {
 		return err
 	}
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 //返回标签
@@ -218,7 +218,7 @@ func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := dao.Dao.Find(result); err != nil {
 		return ctx.Error().WrapServer(err).Location()
 	}
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 //新增tag
@@ -226,9 +226,9 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	name := r.Form("name", "")
 	id, err := s_tag.Store(name)
 	if err != nil {
-		return code.Error(ctx, code.SERVER, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx, id)
+	return w.Success(id)
 }
 
 //上传附件
@@ -244,9 +244,9 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}()
 	result, err := s_attachment.Upload(file, "")
 	if err != nil {
-		return code.Error(ctx, code.SERVER, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -262,7 +262,7 @@ func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 	}
 	if err != nil {
-		return code.Error(ctx, code.CLIENT, err.Error())
+		return w.Client(code.CLIENT, err.Error())
 	}
-	return code.Success(ctx, html)
+	return w.Success(html)
 }

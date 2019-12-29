@@ -46,27 +46,27 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return query.Error
 	}
 	w.Assign("count", count)
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_attachment.Attachment)
 	result.MD5 = r.Param("md5", "")
 	if result.MD5 == "" {
-		return code.Error(ctx, code.INVALID_ARGUMENT, nil, "MD5")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "MD5")
 	}
 	if has, err := dao.Dao.Get(result); err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	} else if !has {
-		return code.Error(ctx, code.NOT_FOUND_DATA, nil)
+		return w.Client(code.NOT_FOUND_DATA, code.Text(code.NOT_FOUND_DATA))
 	}
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	file, err := r.File("file")
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
@@ -75,33 +75,33 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}()
 	result, err := s_attachment.Upload(file, r.Form("folder", ""))
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx, result)
+	return w.Success(result)
 }
 
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	id := r.FormInt("id", 0)
 	name := r.Form("name", "")
 	if id == 0 || name == "" {
-		return code.Error(ctx, code.INVALID_ARGUMENT, nil, "id or name")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "id or name")
 	}
 	result := new(m_attachment.Attachment)
 	result.Name = name
 	affected, err := dao.Dao.Id(id).Update(result)
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx, affected)
+	return w.Success(affected)
 }
 
 //单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	err := s_attachment.DestroyBatch([]int{r.ParamInt("id", 0)})
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx)
+	return w.Success()
 }
 
 //批量删除
@@ -109,7 +109,7 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
 	err := s_attachment.DestroyBatch(ids)
 	if err != nil {
-		return code.Error(ctx, code.SERVER, nil, err.Error())
+		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
 	}
-	return code.Success(ctx)
+	return w.Success()
 }
