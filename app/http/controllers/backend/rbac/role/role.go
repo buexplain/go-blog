@@ -6,6 +6,7 @@ import (
 	m_role "github.com/buexplain/go-blog/models/role"
 	s_role "github.com/buexplain/go-blog/services/role"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"html/template"
@@ -25,7 +26,7 @@ func init()  {
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result, err := m_role.GetALL()
 	if err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 	return w.
 		Assign("result", template.JS(result.String())).
@@ -51,7 +52,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
@@ -73,7 +74,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if has, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	} else if !has {
 		return w.JumpBack("参数错误")
 	}
@@ -98,7 +99,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := vClone.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}

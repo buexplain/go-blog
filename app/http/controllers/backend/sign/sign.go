@@ -6,6 +6,7 @@ import (
 	"github.com/buexplain/go-blog/services/captcha"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -53,7 +54,7 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	})
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}

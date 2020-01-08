@@ -13,6 +13,7 @@ import (
 	"github.com/buexplain/go-blog/services/content"
 	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -44,7 +45,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var count int64
 	query.FindAndCount(&result, &count)
 	if query.Error != nil {
-		return ctx.Error().WrapServer(query.Error).Location()
+		return errors.MarkServer(query.Error)
 	}
 	w.Assign("count", count)
 	return  w.Success(result)
@@ -98,7 +99,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack("参数错误")
 	}
 	if ok, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	} else if !ok {
 		return w.JumpBack("参数错误")
 	}
@@ -192,7 +193,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if _, err := dao.Dao.ID(result.ID).Update(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 
 	return w.Success(result.Online)
@@ -216,7 +217,7 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_tag.List)
 	if err := dao.Dao.Find(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 	return w.Success(result)
 }

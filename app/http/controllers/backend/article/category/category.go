@@ -6,6 +6,7 @@ import (
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/services/category"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"html/template"
@@ -51,7 +52,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkClient(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
@@ -73,7 +74,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if has, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	} else if !has {
 		return w.JumpBack("参数错误")
 	}
@@ -99,7 +100,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}

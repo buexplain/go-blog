@@ -7,6 +7,7 @@ import (
 	"github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -39,7 +40,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var count int64
 	query.FindAndCount(&result, &count)
 	if query.Error != nil {
-		return ctx.Error().WrapServer(query.Error).Location()
+		return errors.MarkServer(query.Error)
 	}
 	return w.Assign("count", count).
 		Assign("result", result).
@@ -60,13 +61,13 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
 	if _, err := dao.Dao.Insert(mod); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 
 	return w.JumpBack("操作成功")
@@ -81,7 +82,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if ok, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	} else if !ok {
 		return w.JumpBack("参数错误")
 	}
@@ -105,13 +106,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	vClone.Field("Name").Rule("CheckUnique:id="+strconv.Itoa(mod.ID), "该标签名已存在")
 
 	if r, err := vClone.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
 	if _, err := dao.Dao.ID(mod.ID).Update(mod); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 
 	return w.Jump("/backend/article/tag", "操作成功")
@@ -126,7 +127,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if _, err := dao.Dao.Delete(result); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 
 	return w.Jump("/backend/article/tag", "操作成功")

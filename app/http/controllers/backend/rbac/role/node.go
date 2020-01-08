@@ -2,11 +2,12 @@ package c_role
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	c_util "github.com/buexplain/go-blog/app/http/controllers/util"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
@@ -22,7 +23,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 
 		if ok, err := dao.Dao.Get(role); err != nil {
-			return ctx.Error().WrapServer(err).Location()
+			return errors.MarkServer(err)
 		} else if !ok {
 			return w.JumpBack("参数错误")
 		}
@@ -43,16 +44,16 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入角色节点关系表
 	roleID := r.ParamInt("id")
 	if roleID <= 0 {
-		return c_util.Error(w, "参数错误")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT))
 	}
 
 	nodeID := r.FormSliceInt("ids")
 
 	err := s_roleNodeRelation.SetRoleNode(roleID, nodeID)
 	if err != nil {
-		return c_util.Error(w, err.Error())
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), err.Error())
 	}
 
-	return c_util.Success(w)
+	return w.Success()
 }
 

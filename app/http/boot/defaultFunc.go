@@ -90,15 +90,15 @@ func defaultClientErrorFunc(ctx *fool.Ctx, err error) {
 
 //错误处理
 func defaultErrorFunc(ctx *fool.Ctx, err error) {
-	if knownErr, ok := err.(*errors.Error); ok && knownErr != nil {
-		ctx.Response().Buffer().Reset()
-		if knownErr.GetCode() == ctx.Error().ClientCode {
-			defaultClientErrorFunc(ctx, err)
-		} else {
-			defaultServerErrorFunc(ctx, err)
-		}
-	} else if err != nil {
-		ctx.Response().Buffer().Reset()
+	if err == nil {
+		return
+	}
+	ctx.Response().Buffer().Reset()
+	if errors.HasMarkerClient(err) {
+		//明确的是客户端的错误
+		defaultClientErrorFunc(ctx, err)
+	} else {
+		//通通作为服务端错误
 		defaultServerErrorFunc(ctx, err)
 	}
 }

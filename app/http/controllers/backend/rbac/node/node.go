@@ -7,6 +7,7 @@ import (
 	"github.com/buexplain/go-blog/models/node"
 	"github.com/buexplain/go-blog/services/node"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"html/template"
@@ -29,7 +30,7 @@ func init()  {
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result, err := m_node.GetALL()
 	if err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 	return w.
 		Assign("result", template.JS(result.String())).
@@ -56,7 +57,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
@@ -123,7 +124,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	defer session.Close()
 
 	if err := session.Begin(); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 
 	for k, v := range restfulArr {
@@ -132,14 +133,14 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 		if _, err := session.Insert(v); err != nil {
 			if err := session.Rollback(); err != nil {
-				return ctx.Error().WrapServer(err).Location()
+				return errors.MarkServer(err)
 			}
-			return ctx.Error().WrapServer(err)
+			return errors.MarkServer(err)
 		}
 	}
 
 	if err := session.Commit(); err != nil {
-		return ctx.Error().WrapServer(err).Location()
+		return errors.MarkServer(err)
 	}
 	//触发超级角色的节点同步
 	ctx.Event().Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
@@ -156,7 +157,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if has, err := dao.Dao.Get(result); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	} else if !has {
 		return w.JumpBack("参数错误")
 	}
@@ -183,7 +184,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
 
 	if r, err := v.Validate(mod); err != nil {
-		return ctx.Error().WrapServer(err)
+		return errors.MarkServer(err)
 	}else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}

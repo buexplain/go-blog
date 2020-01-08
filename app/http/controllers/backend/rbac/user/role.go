@@ -2,11 +2,12 @@ package c_official_user
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	c_util "github.com/buexplain/go-blog/app/http/controllers/util"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
@@ -22,7 +23,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 
 		if ok, err := dao.Dao.Get(user); err != nil {
-			return ctx.Error().WrapServer(err).Location()
+			return errors.MarkServer(err)
 		} else if !ok {
 			return w.JumpBack("参数错误")
 		}
@@ -43,15 +44,15 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入用户角色关系表
 	userID := r.ParamInt("id")
 	if userID <= 0 {
-		return c_util.Error(w, "参数错误")
+		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT))
 	}
 
 	roleID := r.FormSliceInt("ids")
 
 	err := s_userRoleRelation.SetUserRole(userID, roleID)
 	if err != nil {
-		return w.Assign("code", 1).Assign("message", err.Error()).Assign("data", "").JSON(http.StatusOK)
+		return w.Client(1, err.Error())
 	}
 
-	return c_util.Success(w)
+	return w.Success()
 }
