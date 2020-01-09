@@ -19,13 +19,13 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 		role.ID = r.ParamInt("id", 0)
 		if role.ID <= 0 {
-			return w.JumpBack("参数错误")
+			return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 		}
 
-		if ok, err := dao.Dao.Get(role); err != nil {
+		if has, err := dao.Dao.Get(role); err != nil {
 			return errors.MarkServer(err)
-		} else if !ok {
-			return w.JumpBack("参数错误")
+		} else if !has {
+			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, role.ID))
 		}
 
 		if node, err := s_roleNodeRelation.GetRoleNode(role.ID); err != nil {
@@ -44,14 +44,14 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入角色节点关系表
 	roleID := r.ParamInt("id")
 	if roleID <= 0 {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT))
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
 	nodeID := r.FormSliceInt("ids")
 
 	err := s_roleNodeRelation.SetRoleNode(roleID, nodeID)
 	if err != nil {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), err.Error())
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
 	}
 
 	return w.Success()

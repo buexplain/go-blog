@@ -1,12 +1,12 @@
 package s_content
 
 import (
-	"fmt"
 	"github.com/88250/lute"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
+	"github.com/buexplain/go-fool/errors"
 	"html/template"
 )
 
@@ -119,11 +119,11 @@ func DestroyBatch(ids []int) error {
 
 func RenderByID(id int) (string, error) {
 	result := m_content.Content{}
-	ok, err := dao.Dao.Where("ID=?", id).Get(&result)
+	has, err := dao.Dao.Where("ID=?", id).Get(&result)
 	if err != nil {
 		return "", err
-	}else if !ok {
-		return "", fmt.Errorf("%s", code.Text(code.NOT_FOUND_DATA))
+	}else if !has {
+		return "", errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
 	}
 	return Render(result.Body)
 }
@@ -134,5 +134,5 @@ func Render(markdown string) (string, error) {
 	luteEngine.CodeSyntaxHighlight = false
 	luteEngine.CodeSyntaxHighlightLineNum = false
 	html, err := luteEngine.MarkdownStr("default", markdown)
-	return html, err
+	return html, errors.TryMarkClient(err)
 }

@@ -19,13 +19,13 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 		user.ID = r.ParamInt("id", 0)
 		if user.ID <= 0 {
-			return w.JumpBack("参数错误")
+			return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 		}
 
-		if ok, err := dao.Dao.Get(user); err != nil {
+		if has, err := dao.Dao.Get(user); err != nil {
 			return errors.MarkServer(err)
-		} else if !ok {
-			return w.JumpBack("参数错误")
+		} else if !has {
+			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, user.ID))
 		}
 
 		if role, err := s_userRoleRelation.GetUserRole(user.ID); err != nil {
@@ -44,14 +44,14 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入用户角色关系表
 	userID := r.ParamInt("id")
 	if userID <= 0 {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT))
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
 	roleID := r.FormSliceInt("ids")
 
 	err := s_userRoleRelation.SetUserRole(userID, roleID)
 	if err != nil {
-		return w.Client(1, err.Error())
+		return err
 	}
 
 	return w.Success()

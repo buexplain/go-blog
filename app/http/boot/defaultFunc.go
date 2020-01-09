@@ -14,59 +14,54 @@ import (
 
 //恐慌恢复
 func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
-	ctx.Response().Buffer().Reset()
-	data := fmt.Sprintf("%+v\n%s", a, debug.Stack())
-	isDebug := ctx.App().Debug()
-	isJSON := (ctx.Request().AcceptJSON() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
-	var err error
-	if isJSON {
-		ctx.Response().Assign("code", code.SERVER).Assign("message", code.Text(code.SERVER))
-		if isDebug {
-			ctx.Response().Assign("data", data)
-		} else {
-			ctx.Response().Assign("data", "")
+	if err, ok := a.(interface {Error() string}); ok {
+		//判断是否实现了错误接口
+		if errors.HasMarkerClient(err) {
+			//是一个客户端错误
+			defaultClientErrorFunc(ctx, err)
+		}else {
+			//是一个服务端错误
+			err = fmt.Errorf("%w\n%s", err, debug.Stack())
+			defaultServerErrorFunc(ctx, err)
 		}
-		err = ctx.Response().JSON(http.StatusOK)
-	} else {
-		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
-		if isDebug {
-			err = ctx.Response().Plain(http.StatusInternalServerError, data)
-		} else {
-			err = ctx.Response().Plain(http.StatusInternalServerError, code.Text(code.SERVER))
-		}
-	}
-	if !isDebug {
-		ctx.Logger().Error(data, ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
-	}
-	if err != nil {
-		ctx.Logger().Error(err.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
+	}else {
+		//未实现错误接口
+		err := fmt.Errorf("%+v\n%s", a, debug.Stack())
+		defaultServerErrorFunc(ctx, err)
 	}
 }
 
 //服务端错误处理
 func defaultServerErrorFunc(ctx *fool.Ctx, err error) {
+	ctx.Response().Buffer().Reset()
 	isDebug := ctx.App().Debug()
 	isJSON := (ctx.Request().AcceptJSON() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
 	var responseErr error
 	if isJSON {
-		ctx.Response().Assign("code", code.SERVER).Assign("message", code.Text(code.SERVER))
+		//返回json
 		if isDebug {
-			ctx.Response().Assign("data", err.Error())
+			//返回具体错误
+			responseErr = ctx.Response().Error(code.SERVER, code.Text(code.SERVER, err), http.StatusInternalServerError)
 		} else {
-			ctx.Response().Assign("data", "")
+			//屏蔽错误
+			responseErr = ctx.Response().Error(code.SERVER, code.Text(code.SERVER), http.StatusInternalServerError)
 		}
-		responseErr = ctx.Response().JSON(http.StatusOK)
 	} else {
+		//返回文本
 		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
 		if isDebug {
-			responseErr = ctx.Response().Abort(http.StatusInternalServerError, err.Error())
+			//返回具体错误
+			responseErr = ctx.Response().Abort(http.StatusInternalServerError, strings.ReplaceAll(err.Error(), "\n", "<br>"))
 		} else {
+			//屏蔽错误
 			responseErr = ctx.Response().Abort(http.StatusInternalServerError, code.Text(code.SERVER))
 		}
 	}
 	if !isDebug {
+		//生产环境，记录错误日志
 		ctx.Logger().Error(err.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
+	//响应失败，记录日志
 	if responseErr != nil {
 		ctx.Logger().Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
@@ -74,15 +69,18 @@ func defaultServerErrorFunc(ctx *fool.Ctx, err error) {
 
 //客户端错误处理
 func defaultClientErrorFunc(ctx *fool.Ctx, err error) {
+	ctx.Response().Buffer().Reset()
 	isJSON := (ctx.Request().AcceptJSON() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
 	var responseErr error
 	if isJSON {
-		ctx.Response().Assign("code", code.CLIENT).Assign("message", code.Text(code.CLIENT)).Assign("data", err.Error())
-		responseErr = ctx.Response().JSON(http.StatusOK)
+		//返回json
+		responseErr = ctx.Response().Error(code.CLIENT, code.Text(code.CLIENT, err))
 	} else {
+		//返回文本
 		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
 		responseErr = ctx.Response().Abort(http.StatusBadRequest, err.Error())
 	}
+	//响应失败，记录日志
 	if responseErr != nil {
 		ctx.Logger().Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
@@ -93,7 +91,6 @@ func defaultErrorFunc(ctx *fool.Ctx, err error) {
 	if err == nil {
 		return
 	}
-	ctx.Response().Buffer().Reset()
 	if errors.HasMarkerClient(err) {
 		//明确的是客户端的错误
 		defaultClientErrorFunc(ctx, err)

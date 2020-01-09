@@ -3,6 +3,7 @@ package c_official_user
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services"
@@ -109,13 +110,13 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
-	if ok, err := dao.Dao.Get(result); err != nil {
+	if has, err := dao.Dao.Get(result); err != nil {
 		return errors.MarkServer(err)
-	} else if !ok {
-		return w.JumpBack("参数错误")
+	} else if !has {
+		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
 
 	return w.

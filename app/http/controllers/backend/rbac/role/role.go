@@ -2,6 +2,7 @@ package c_role
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	m_role "github.com/buexplain/go-blog/models/role"
 	s_role "github.com/buexplain/go-blog/services/role"
@@ -70,13 +71,13 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
 	if has, err := dao.Dao.Get(result); err != nil {
 		return errors.MarkServer(err)
 	} else if !has {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
 
 	return w.
@@ -115,7 +116,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.QuerySliceInt("ids")
 	if len(ids) == 0 {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "ids"))
 	}
 	if _, err := s_role.Destroy(ids); err != nil {
 		return w.JumpBack(err)

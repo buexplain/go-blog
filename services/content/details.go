@@ -1,11 +1,12 @@
 package s_content
 
 import (
-	"fmt"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/tag"
+	"github.com/buexplain/go-fool/errors"
 )
 
 type Details struct {
@@ -19,10 +20,10 @@ func GetDetails(id int) (*Details, error) {
 	details.Content = new(m_content.Content)
 	details.Category = m_category.List{}
 	details.Tag = new(m_tag.List)
-	if b, err := dao.Dao.Table("Content").ID(id).Get(details.Content); err != nil {
+	if has, err := dao.Dao.Table("Content").ID(id).Get(details.Content); err != nil {
 		return nil, err
-	}else if b == false {
-		return nil, fmt.Errorf("not found content %d", id)
+	}else if !has {
+		return nil, errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
 	}
 
 	err := dao.Dao.

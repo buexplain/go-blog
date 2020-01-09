@@ -4,7 +4,7 @@ import (
 	"encoding/gob"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-fool"
-	"github.com/pkg/errors"
+	"github.com/buexplain/go-fool/errors"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -40,19 +40,19 @@ func OfficialSignIn(session fool.Session, account string, password string) (*m_u
 		return nil, err
 	}
 	if !has {
-		return nil, errors.New("账号或密码错误")
+		return nil, errors.MarkClient(errors.New("账号或密码错误"))
 	}
 
 	if !ComparePassword(password, user.Password) {
-		return nil, errors.New("账号或密码错误")
+		return nil, errors.MarkClient(errors.New("账号或密码错误"))
 	}
 
 	if user.Status != m_user.StatusAllow {
-		return nil, errors.New("账号已被禁用，请联系管理员")
+		return nil, errors.MarkClient(errors.New("账号已被禁用，请联系管理员"))
 	}
 
 	if user.Identity != m_user.IdentityOfficial {
-		return nil, errors.New("非法登录")
+		return nil, errors.MarkClient(errors.New("非法登录"))
 	}
 
 	user.LastTime = time.Now()

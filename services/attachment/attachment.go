@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/attachment"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-fool/upload"
 	"os"
 	"path/filepath"
@@ -43,14 +44,14 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 	if folder != "" {
 		folder = strings.Trim(folder, "/")
 		if !FolderRegexp.MatchString(folder) {
-			return  nil, fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String())
+			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String()))
 		}
 		if len(folder) > 50 {
-			return  nil, fmt.Errorf("自定义文件夹长度必须小于50个字符")
+			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹长度必须小于50个字符"))
 		}
 
 		if len(strings.Split(folder, "/")) > 5 {
-			return  nil, fmt.Errorf("自定义文件夹深度不能超过5层")
+			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹深度不能超过5层"))
 		}
 	}
 
@@ -102,9 +103,9 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 	if _, insertErr := dao.Dao.Insert(result); insertErr != nil {
 		//插入失败，移除已经保存的文件
 		if removeErr := os.Remove(file.Result()); removeErr != nil {
-			return nil, fmt.Errorf("插入错误：%s 移除文件错误：%s", insertErr, removeErr)
+			return nil, fmt.Errorf("上传附件插入错误: %w 上传附件移除文件错误: %w", insertErr, removeErr)
 		}
-		return nil, fmt.Errorf("插入错误：%s", insertErr)
+		return nil, fmt.Errorf("上传附件插入错误: %w", insertErr)
 	}
 
 	return  result, nil
@@ -132,7 +133,7 @@ func DestroyBatch(ids []int) error {
 		} else if affected > 0 {
 			if removeErr := os.Remove(result.Path); removeErr != nil && !os.IsNotExist(removeErr) {
 				if rollbackErr := session.Rollback(); rollbackErr != nil {
-					return fmt.Errorf("移除文件错误：%s，数据库事务回滚错误：%s", removeErr, rollbackErr)
+					return fmt.Errorf("移除附件文件错误: %w，数据库事务回滚错误: %w", removeErr, rollbackErr)
 				}
 				return removeErr
 			}

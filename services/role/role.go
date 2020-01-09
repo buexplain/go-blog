@@ -6,6 +6,7 @@ import (
 	m_role "github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/models/roleNodeRelation"
 	"github.com/buexplain/go-blog/models/userRoleRelation"
+	"github.com/buexplain/go-fool/errors"
 )
 
 func Destroy(ids[]int) (int64, error) {
@@ -23,7 +24,7 @@ func Destroy(ids[]int) (int64, error) {
 				}
 			}
 			if !has {
-				return 0, fmt.Errorf("入参错误：ID【%d】必须与其父ID【%d】一并删除", child.ID, child.Pid)
+				return 0, errors.MarkClient(fmt.Errorf("入参错误：ID【%d】必须与其父ID【%d】一并删除", child.ID, child.Pid))
 			}
 		}
 	}

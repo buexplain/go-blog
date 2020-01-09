@@ -8,11 +8,11 @@ import (
 func Store(name string) (int, error) {
 	mod := &m_tag.Tag{}
 	mod.Name = name
-	b, err := dao.Dao.Get(mod)
+	has, err := dao.Dao.Get(mod)
 	if err != nil {
 		return 0, err
 	}
-	if b {
+	if has {
 		return mod.ID, nil
 	}
 

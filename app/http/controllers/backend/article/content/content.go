@@ -74,13 +74,13 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := v.Validate(mod); err != nil {
 		return err
 	}else if !r.IsEmpty() {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), r.ToSimpleString())
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "id")
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
 	if err := s_content.Save(mod, tagsID, 0); err != nil {
@@ -96,12 +96,12 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_content.Content)
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
-	if ok, err := dao.Dao.Get(result); err != nil {
+	if has, err := dao.Dao.Get(result); err != nil {
 		return errors.MarkServer(err)
-	} else if !ok {
-		return w.JumpBack("参数错误")
+	} else if !has {
+		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
 
 	return w.
@@ -123,13 +123,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := vClone.Validate(mod); err != nil {
 		return err
 	}else if !r.IsEmpty() {
-		return w.Client(code.INVALID_ARGUMENT, r.ToSimpleString())
+		return w.Error(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Client(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT), "id")
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 
 	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
@@ -144,7 +144,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
 	err := s_content.DestroyBatch(ids)
 	if err != nil {
-		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
+		return err
 	}
 	return w.Success()
 }
@@ -154,7 +154,7 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
 	err := s_content.DestroyBatch(ids)
 	if err != nil {
-		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
+		return err
 	}
 	return w.Success()
 }
@@ -164,7 +164,7 @@ func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result, err := s_content.GetDetails(r.ParamInt("id"))
 	if r.IsAjax() {
 		if err != nil {
-			return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
+			return err
 		}
 		return w.Success(result)
 	}
@@ -182,7 +182,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {
-		return w.JumpBack("参数错误")
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 	result.Online = r.FormInt("online", 0)
 
@@ -227,7 +227,7 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	name := r.Form("name", "")
 	id, err := s_tag.Store(name)
 	if err != nil {
-		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
+		return err
 	}
 	return w.Success(id)
 }
@@ -245,7 +245,7 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}()
 	result, err := s_attachment.Upload(file, "")
 	if err != nil {
-		return w.Server(code.SERVER, code.Text(code.SERVER), err.Error())
+		return err
 	}
 	return w.Success(result)
 }
@@ -263,7 +263,7 @@ func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 	}
 	if err != nil {
-		return w.Client(code.CLIENT, err.Error())
+		return w.Error(code.CLIENT, err.Error())
 	}
 	return w.Success(html)
 }

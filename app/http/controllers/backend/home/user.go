@@ -40,18 +40,18 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		"密码格式有误，数字、字母、符号至少两种")
 
 	if r, err := v.Validate(mod); err != nil {
-		return w.Client(code.INVALID_ARGUMENT,code.Text(code.INVALID_ARGUMENT), code.INVALID_ARGUMENT, err.Error())
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
 	}else if !r.IsEmpty() {
-		return w.Client(code.INVALID_ARGUMENT,code.Text(code.INVALID_ARGUMENT), code.INVALID_ARGUMENT, r.ToSimpleString())
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
 	}
 
 	user := s_user.IsSignIn(r.Session())
 	if user == nil {
-		return w.Client(code.INVALID_ARGUMENT, "错误的登录信息")
+		return w.Error(code.INVALID_ARGUMENT, "错误的登录信息")
 	}
 
 	if !s_user.ComparePassword(mod.OldPassword, user.Password) {
-		return w.Client(code.INVALID_ARGUMENT, "错误的旧密码")
+		return w.Error(code.INVALID_ARGUMENT, "错误的旧密码")
 	}
 
 	var err error

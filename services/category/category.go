@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
 	m_category "github.com/buexplain/go-blog/models/category"
+	"github.com/buexplain/go-fool/errors"
 )
 
 func Destroy(ids[]int) (affected int64, err error) {
@@ -21,7 +22,7 @@ func Destroy(ids[]int) (affected int64, err error) {
 				}
 			}
 			if !has {
-				return 0, fmt.Errorf("入参错误：ID【%d】必须与其父ID【%d】一并删除", child.ID, child.Pid)
+				return 0, errors.MarkClient(fmt.Errorf("入参错误：ID【%d】必须与其父ID【%d】一并删除", child.ID, child.Pid))
 			}
 		}
 	}
