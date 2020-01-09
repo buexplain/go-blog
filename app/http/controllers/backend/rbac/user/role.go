@@ -30,7 +30,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 		if role, err := s_userRoleRelation.GetUserRole(user.ID); err != nil {
 			return w.JumpBack(err)
-		}else {
+		} else {
 			w.Assign("role", template.JS(role.String()))
 		}
 

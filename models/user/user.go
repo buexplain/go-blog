@@ -16,7 +16,7 @@ type User struct {
 	//昵称
 	Nickname string `xorm:"TEXT"`
 	//用户身份
-	Identity     int       `xorm:"INTEGER"`
+	Identity int `xorm:"INTEGER"`
 	//用户状态
 	Status int `xorm:"INTEGER"`
 	//最后登录时间
@@ -32,7 +32,6 @@ func (this User) LastTimeText() string {
 }
 
 type List []User
-
 
 func GetByAccount(account string) (*User, bool, error) {
 	u := new(User)

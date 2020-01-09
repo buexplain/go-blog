@@ -14,11 +14,10 @@ import (
 	"net/http"
 )
 
-
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Name").Rule("required", "请输入分类名")
 }
@@ -54,7 +53,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkClient(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -80,8 +79,6 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
 
-
-
 	return w.
 		Assign("result", result).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
@@ -102,7 +99,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 

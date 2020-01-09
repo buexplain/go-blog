@@ -10,11 +10,11 @@ import (
 type Role struct {
 	models.Field `xorm:"extends"`
 	//父id
-	Pid          int    `xorm:"INTEGER"`
+	Pid int `xorm:"INTEGER"`
 	//角色名
-	Name         string `xorm:"TEXT"`
+	Name string `xorm:"TEXT"`
 	//排序id
-	SortID       int    `xorm:"INTEGER"`
+	SortID int `xorm:"INTEGER"`
 }
 
 type List []Role

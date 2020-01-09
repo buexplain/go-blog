@@ -15,7 +15,7 @@ func Text(code int, moreInfo ...interface{}) string {
 		if len(moreInfo) == 0 {
 			return v
 		}
-		format := v+":"+strings.Repeat(" %+v", len(moreInfo))
+		format := v + ":" + strings.Repeat(" %+v", len(moreInfo))
 		return fmt.Sprintf(format, moreInfo...)
 	} else {
 		return StatusTextUnknown

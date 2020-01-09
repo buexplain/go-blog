@@ -11,11 +11,11 @@ import (
 type Category struct {
 	models.Field `xorm:"extends"`
 	//父id
-	Pid          int    `xorm:"INTEGER"`
+	Pid int `xorm:"INTEGER"`
 	//分类名
-	Name         string `xorm:"TEXT"`
+	Name string `xorm:"TEXT"`
 	//排序id
-	SortID       int    `xorm:"INTEGER"`
+	SortID int `xorm:"INTEGER"`
 }
 
 //返回当前分类的父级分类
@@ -26,7 +26,7 @@ func (this Category) Parent() (*Category, error) {
 	tmp := &Category{}
 	if b, err := dao.Dao.ID(this.Pid).Get(tmp); err != nil {
 		return nil, err
-	}else if !b {
+	} else if !b {
 		return nil, fmt.Errorf("not found parent category %d", this.Pid)
 	}
 	return tmp, nil
@@ -39,9 +39,9 @@ func (this Category) Parents() (List, error) {
 	for {
 		if c, err := tmp.Parent(); err != nil {
 			return nil, err
-		}else if c == nil {
+		} else if c == nil {
 			break
-		}else {
+		} else {
 			l = append(l, c)
 			tmp = c
 		}
@@ -64,4 +64,3 @@ func GetALL() (List, error) {
 	err := dao.Dao.Table("Category").Desc("SortID").Find(&result)
 	return result, err
 }
-

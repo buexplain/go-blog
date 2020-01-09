@@ -18,7 +18,7 @@ import (
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Name").Rule("required", "请填写标签名").Rule("CheckUnique:id=0", "该标签名已存在")
 	//校验标签是否存在
@@ -63,7 +63,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -108,7 +108,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 

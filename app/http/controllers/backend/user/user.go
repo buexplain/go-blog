@@ -16,14 +16,13 @@ import (
 	"strconv"
 )
 
-
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Account").Rule("required", "请填写账号").Rule("CheckUnique:id=0", "该账号已存在")
-	v.Field("Password",).Rule("password:min=8,max=16",
+	v.Field("Password").Rule("password:min=8,max=16",
 		"请输入新密码",
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
@@ -75,7 +74,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -85,7 +84,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if p, err := s_user.GeneratePassword(mod.Password); err != nil {
 		return w.JumpBack(err)
-	}else {
+	} else {
 		mod.Password = p
 	}
 
@@ -140,7 +139,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -151,7 +150,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if mod.Password != "" {
 		if p, err := s_user.GeneratePassword(mod.Password); err != nil {
 			return w.JumpBack(err)
-		}else {
+		} else {
 			mod.Password = p
 		}
 	}

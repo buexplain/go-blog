@@ -16,4 +16,3 @@ func CheckStatus(status int) bool {
 	}
 	return true
 }
-

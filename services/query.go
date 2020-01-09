@@ -6,9 +6,9 @@ import (
 	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
 	"strings"
-	"xorm.io/xorm"
 	"time"
 	"xorm.io/core"
+	"xorm.io/xorm"
 )
 
 type where []string
@@ -23,17 +23,17 @@ func (this where) Get(index int) string {
 //查询构造器
 type Query struct {
 	//请求上下文
-	ctx               *fool.Ctx
+	ctx *fool.Ctx
 	//表名称
-	tableName         string
+	tableName string
 	//表信息
-	tableInfo         *core.Table
+	tableInfo *core.Table
 	//统计器
-	Counter           *xorm.Session
+	Counter *xorm.Session
 	//查询器
-	Finder            *xorm.Session
+	Finder *xorm.Session
 	//错误值
-	Error             error
+	Error error
 }
 
 //返回表信息
@@ -91,7 +91,7 @@ func (this *Query) FindAndCount(rowsSlicePtr interface{}, counter *int64, condiB
 		c, err := this.Finder.FindAndCount(rowsSlicePtr, condiBean...)
 		if err != nil {
 			this.Error = err
-		}else {
+		} else {
 			*counter = c
 		}
 	}

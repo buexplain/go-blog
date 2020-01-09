@@ -11,17 +11,17 @@ import (
 type Node struct {
 	models.Field `xorm:"extends"`
 	//父id
-	Pid          int    `xorm:"INTEGER"`
+	Pid int `xorm:"INTEGER"`
 	//节点名称
-	Name         string `xorm:"TEXT"`
+	Name string `xorm:"TEXT"`
 	//节点路径
-	URL          string `xorm:"TEXT"`
+	URL string `xorm:"TEXT"`
 	//节点路径允许的方法
-	Methods       string `xorm:"TEXT"`
+	Methods string `xorm:"TEXT"`
 	//是否为后台导航菜单
-	IsMenu       int    `xorm:"INTEGER"`
+	IsMenu int `xorm:"INTEGER"`
 	//排序id
-	SortID       int    `xorm:"INTEGER"`
+	SortID int `xorm:"INTEGER"`
 }
 
 func (this Node) HasMethod(method string) bool {
@@ -37,7 +37,7 @@ func (this Node) HasMethod(method string) bool {
 func (this *Node) Parse() {
 	if this.IsMenu == 0 {
 		this.IsMenu = IsMenuNo
-	}else {
+	} else {
 		this.IsMenu = IsMenuYes
 	}
 	this.URL = strings.Trim(this.URL, " ")

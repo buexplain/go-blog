@@ -20,7 +20,7 @@ import (
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Name").Rule("required", "请输入节点名")
 	v.Field("URL").Rule("required", "请输入访问路径")
@@ -59,7 +59,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -116,7 +116,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		show.IsMenu = m_node.IsMenuNo
 		show.Methods = "GET"
 		restfulArr = append(restfulArr, show)
-	}else {
+	} else {
 		restfulArr = make([]*m_node.Node, 0, 1)
 		restfulArr = append(restfulArr, mod)
 	}
@@ -170,7 +170,6 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/rbac/node/create.html")
 }
 
-
 //更新
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := &m_node.Node{}
@@ -186,7 +185,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 

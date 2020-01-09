@@ -13,7 +13,7 @@ func CheckUnique(tableName string, field string, value interface{}, selfID ...in
 		d.Where("`ID`!=?", selfID[0])
 	}
 	type Tmp struct {
-		ID int `xorm:"INTEGER"`
+		ID                    int `xorm:"INTEGER"`
 		models.DeletedAtField `xorm:"extends"`
 	}
 	has, err := d.Exist(new(Tmp))

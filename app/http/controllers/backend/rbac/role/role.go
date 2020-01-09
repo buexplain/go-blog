@@ -17,11 +17,10 @@ import (
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Name").Rule("required", "请输入角色名")
 }
-
 
 //列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -54,7 +53,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -95,13 +94,12 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	mod.ID = r.ParamInt("id", 0)
 
-
 	vClone := v.Clone()
 	vClone.Field("ID").Rule("required", "ID错误")
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 

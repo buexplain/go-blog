@@ -34,7 +34,7 @@ func (this *EventListener) Handle(e *events.Event) {
 	if l, err := m_node.GetALL(); err != nil {
 		h_boot.Logger.ErrorF("同步超级角色节点失败: %s", err)
 		return
-	}else {
+	} else {
 		nodeID := make([]int, 0, len(l))
 		for _, v := range l {
 			nodeID = append(nodeID, v.ID)
@@ -42,12 +42,11 @@ func (this *EventListener) Handle(e *events.Event) {
 		if len(nodeID) > 0 {
 			if err := s_roleNodeRelation.SetRoleNode(result.ID, nodeID); err != nil {
 				h_boot.Logger.ErrorF("同步超级角色节点失败: %s", err)
-			}else {
+			} else {
 				h_boot.Logger.InfoF("同步超级角色节点成功: %d", result.ID)
 			}
-		}else {
+		} else {
 			h_boot.Logger.Info("同步超级角色节点失败: 没有找到任何权限节点")
 		}
 	}
 }
-

@@ -9,7 +9,7 @@ import (
 
 type UserRole struct {
 	m_role.Role `xorm:"extends"`
-	Checked bool `xorm:"-"`
+	Checked     bool `xorm:"-"`
 }
 
 type UserRoleList []*UserRole
@@ -71,7 +71,7 @@ func SetUserRole(userID int, roleID []int) error {
 	//插入新关系
 	result := make(m_userRoleRelation.List, 0, len(roleID))
 	for _, v := range roleID {
-		result = append(result, m_userRoleRelation.UserRoleRelation{UserID:userID, RoleID:v})
+		result = append(result, m_userRoleRelation.UserRoleRelation{UserID: userID, RoleID: v})
 	}
 	_, err = session.Insert(&result)
 	if err != nil {
@@ -79,7 +79,7 @@ func SetUserRole(userID int, roleID []int) error {
 			return err
 		}
 		return err
-	}else {
+	} else {
 		if err := session.Commit(); err != nil {
 			return err
 		}

@@ -14,17 +14,17 @@ import (
 
 //恐慌恢复
 func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
-	if err, ok := a.(interface {Error() string}); ok {
+	if err, ok := a.(interface{ Error() string }); ok {
 		//判断是否实现了错误接口
 		if errors.HasMarkerClient(err) {
 			//是一个客户端错误
 			defaultClientErrorFunc(ctx, err)
-		}else {
+		} else {
 			//是一个服务端错误
 			err = fmt.Errorf("%w\n%s", err, debug.Stack())
 			defaultServerErrorFunc(ctx, err)
 		}
-	}else {
+	} else {
 		//未实现错误接口
 		err := fmt.Errorf("%+v\n%s", a, debug.Stack())
 		defaultServerErrorFunc(ctx, err)
@@ -51,7 +51,9 @@ func defaultServerErrorFunc(ctx *fool.Ctx, err error) {
 		ctx.Response().Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
 		if isDebug {
 			//返回具体错误
-			responseErr = ctx.Response().Abort(http.StatusInternalServerError, strings.ReplaceAll(err.Error(), "\n", "<br>"))
+			responseErr = ctx.Response().Abort(
+				http.StatusInternalServerError,
+				strings.ReplaceAll(strings.ReplaceAll(err.Error(), "\n", "<br>"), "\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
 		} else {
 			//屏蔽错误
 			responseErr = ctx.Response().Abort(http.StatusInternalServerError, code.Text(code.SERVER))

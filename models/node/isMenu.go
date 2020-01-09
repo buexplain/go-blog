@@ -1,6 +1,5 @@
 package m_node
 
-
 func (this Node) IsMenuText() string {
 	return IsMenuText[this.IsMenu]
 }

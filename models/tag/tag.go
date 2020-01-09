@@ -8,4 +8,4 @@ type Tag struct {
 	Name         string `xorm:"index TEXT"`
 }
 
-type List []Tag 
+type List []Tag

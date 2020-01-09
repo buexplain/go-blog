@@ -16,14 +16,14 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	if ctx.Route() == nil {
 		//该中间件必须设置为组中间件或者是路由中间件
 		ctx.Throw(ctx.Response().Plain(http.StatusInternalServerError, code.Text(code.MIDDLEWARE_SET_ERROR)))
-	}else {
+	} else {
 		if rbacCheck(ctx) {
 			ctx.Next()
 		} else {
 			var message string
-			if ctx.App().Debug() && ctx.Route() !=nil {
+			if ctx.App().Debug() && ctx.Route() != nil {
 				message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())
-			}else {
+			} else {
 				message = code.Text(code.INVALID_AUTH)
 			}
 			if ctx.Route() != nil && ctx.Route().HasLabel("json") {

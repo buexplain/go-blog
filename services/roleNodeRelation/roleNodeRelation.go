@@ -9,7 +9,7 @@ import (
 
 type RoleNode struct {
 	m_node.Node `xorm:"extends"`
-	Checked bool `xorm:"-"`
+	Checked     bool `xorm:"-"`
 }
 
 type RoleNodeList []*RoleNode
@@ -71,7 +71,7 @@ func SetRoleNode(roleID int, nodeID []int) error {
 	//插入新关系
 	result := make(m_roleNodeRelation.List, 0, len(nodeID))
 	for _, v := range nodeID {
-		result = append(result, m_roleNodeRelation.RoleNodeRelation{RoleID:roleID, NodeID:v})
+		result = append(result, m_roleNodeRelation.RoleNodeRelation{RoleID: roleID, NodeID: v})
 	}
 	_, err = session.Insert(&result)
 	if err != nil {
@@ -79,7 +79,7 @@ func SetRoleNode(roleID int, nodeID []int) error {
 			return err
 		}
 		return err
-	}else {
+	} else {
 		if err := session.Commit(); err != nil {
 			return err
 		}

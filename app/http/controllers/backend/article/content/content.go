@@ -48,7 +48,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return errors.MarkServer(query.Error)
 	}
 	w.Assign("count", count)
-	return  w.Success(result)
+	return w.Success(result)
 }
 
 //新增
@@ -73,7 +73,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return err
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
 	}
 
@@ -122,7 +122,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return err
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.Error(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
@@ -188,7 +188,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if result.Online == m_content.OnlineYes {
 		result.Online = m_content.OnlineNo
-	}else {
+	} else {
 		result.Online = m_content.OnlineYes
 	}
 
@@ -256,7 +256,7 @@ func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	id := r.QueryInt("id", 0)
 	if id > 0 {
 		html, err = s_content.RenderByID(id)
-	}else {
+	} else {
 		markdown := r.Form("markdown", "")
 		if markdown != "" {
 			html, err = s_content.Render(markdown)

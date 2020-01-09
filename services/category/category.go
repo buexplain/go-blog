@@ -7,11 +7,11 @@ import (
 	"github.com/buexplain/go-fool/errors"
 )
 
-func Destroy(ids[]int) (affected int64, err error) {
+func Destroy(ids []int) (affected int64, err error) {
 	childList := make(m_category.List, 0)
 	if err := dao.Dao.In("Pid", ids).Find(&childList); err != nil {
 		return 0, err
-	}else if len(childList) > 0 {
+	} else if len(childList) > 0 {
 		//ids中的id含有子级分类，判断这些子级分类是否也在ids中
 		for _, child := range childList {
 			has := false

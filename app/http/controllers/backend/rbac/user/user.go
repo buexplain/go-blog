@@ -16,14 +16,13 @@ import (
 	"strconv"
 )
 
-
 //表单校验器
 var v *validator.Validator
 
-func init()  {
+func init() {
 	v = validator.New()
 	v.Field("Account").Rule("required", "请填写账号").Rule("CheckUnique:id=0", "该账号已存在")
-	v.Field("Password",).Rule("password:min=8,max=16",
+	v.Field("Password").Rule("password:min=8,max=16",
 		"请输入新密码",
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
@@ -55,7 +54,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	type User struct {
 		m_user.User `xorm:"extends"`
-		RoleGroup string
+		RoleGroup   string
 	}
 	var result []User
 	query.Find(&result)
@@ -77,7 +76,6 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
-
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := new(m_user.User)
 
@@ -87,13 +85,13 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
 	if p, err := s_user.GeneratePassword(mod.Password); err != nil {
 		return w.JumpBack(err)
-	}else {
+	} else {
 		mod.Password = p
 	}
 
@@ -103,7 +101,6 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.JumpBack("操作成功")
 }
-
 
 func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_user.User)
@@ -126,7 +123,6 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
-
 func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := new(m_user.User)
 	if err := r.FormToStruct(mod); err != nil {
@@ -147,7 +143,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := vClone.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 
@@ -158,7 +154,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if len(mod.Password) > 0 {
 		if p, err := s_user.GeneratePassword(mod.Password); err != nil {
 			return w.JumpBack(err)
-		}else {
+		} else {
 			mod.Password = p
 		}
 	}

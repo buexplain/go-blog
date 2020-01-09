@@ -30,7 +30,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 		if node, err := s_roleNodeRelation.GetRoleNode(role.ID); err != nil {
 			return w.JumpBack(err)
-		}else {
+		} else {
 			w.Assign("node", template.JS(node.String()))
 		}
 
@@ -56,4 +56,3 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	return w.Success()
 }
-

@@ -9,11 +9,11 @@ import (
 	"github.com/buexplain/go-fool/errors"
 )
 
-func Destroy(ids[]int) (int64, error) {
+func Destroy(ids []int) (int64, error) {
 	childList := make(m_role.List, 0)
 	if err := dao.Dao.In("Pid", ids).Find(&childList); err != nil {
 		return 0, err
-	}else if len(childList) > 0 {
+	} else if len(childList) > 0 {
 		//ids中的id含有子级菜单，判断这些子级菜单是否也在ids中
 		for _, child := range childList {
 			has := false

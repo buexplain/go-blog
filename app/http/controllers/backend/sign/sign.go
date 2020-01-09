@@ -13,7 +13,6 @@ import (
 	"strings"
 )
 
-
 //显示登录页面
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if s_user.IsSignIn(r.Session()) != nil {
@@ -25,8 +24,8 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 //登录
 func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	type In struct {
-		Account string
-		Password string
+		Account    string
+		Password   string
 		CaptchaVal string
 	}
 	mod := &In{}
@@ -55,7 +54,7 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return errors.MarkServer(err)
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
 

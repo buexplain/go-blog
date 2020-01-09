@@ -10,9 +10,9 @@ import (
 )
 
 type Details struct {
-	Content    *m_content.Content    `xorm:"extends"`
-	Category   m_category.List
-	Tag        *m_tag.List  `xorm:"extends"`
+	Content  *m_content.Content `xorm:"extends"`
+	Category m_category.List
+	Tag      *m_tag.List `xorm:"extends"`
 }
 
 func GetDetails(id int) (*Details, error) {
@@ -22,7 +22,7 @@ func GetDetails(id int) (*Details, error) {
 	details.Tag = new(m_tag.List)
 	if has, err := dao.Dao.Table("Content").ID(id).Get(details.Content); err != nil {
 		return nil, err
-	}else if !has {
+	} else if !has {
 		return nil, errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
 	}
 

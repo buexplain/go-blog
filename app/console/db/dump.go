@@ -55,7 +55,7 @@ func init() {
 			var f *os.File
 			if isAppend {
 				f, err = os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
-			}else {
+			} else {
 				f, err = os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 			}
 			if err != nil {

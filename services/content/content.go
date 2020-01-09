@@ -15,7 +15,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 	//将内容转为html
 	if html, err := Render(content.Body); err != nil {
 		return err
-	}else {
+	} else {
 		content.HTML = template.HTML(html)
 	}
 
@@ -43,7 +43,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 			}
 			return err
 		}
-	}else {
+	} else {
 		//插入内容
 		if _, err := session.Insert(content); err != nil {
 			if err := session.Rollback(); err != nil {
@@ -76,7 +76,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 
 //删除
 func DestroyBatch(ids []int) error {
-	if affected, err:= dao.Dao.
+	if affected, err := dao.Dao.
 		Unscoped().
 		In("ID", ids).
 		Select("ID").
@@ -122,7 +122,7 @@ func RenderByID(id int) (string, error) {
 	has, err := dao.Dao.Where("ID=?", id).Get(&result)
 	if err != nil {
 		return "", err
-	}else if !has {
+	} else if !has {
 		return "", errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
 	}
 	return Render(result.Body)

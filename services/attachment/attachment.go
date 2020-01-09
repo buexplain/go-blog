@@ -15,6 +15,7 @@ import (
 )
 
 type ExtList []string
+
 func GetExtList() (result ExtList, err error) {
 	err = dao.Dao.Table("Attachment").Distinct("Ext").Select("Ext").OrderBy("ID DESC").Find(&result)
 	if err == nil && len(result) > 0 {
@@ -24,6 +25,7 @@ func GetExtList() (result ExtList, err error) {
 }
 
 type FolderList []string
+
 func GetFolderList() (result FolderList, err error) {
 	err = dao.Dao.Table("Attachment").Distinct("Folder").Select("Folder").OrderBy("ID DESC").Find(&result)
 	if err == nil && len(result) > 0 {
@@ -44,14 +46,14 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 	if folder != "" {
 		folder = strings.Trim(folder, "/")
 		if !FolderRegexp.MatchString(folder) {
-			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String()))
+			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String()))
 		}
 		if len(folder) > 50 {
-			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹长度必须小于50个字符"))
+			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹长度必须小于50个字符"))
 		}
 
 		if len(strings.Split(folder, "/")) > 5 {
-			return  nil, errors.MarkClient(fmt.Errorf("自定义文件夹深度不能超过5层"))
+			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹深度不能超过5层"))
 		}
 	}
 
@@ -85,7 +87,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 
 	//保存文件
 	if _, err := file.SaveToPath(savePath); err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	//登记文件信息到数据库
@@ -95,7 +97,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 	result.Ext = file.Ext()
 	if folder == "" {
 		result.Folder = "./"
-	}else {
+	} else {
 		result.Folder = folder
 	}
 	result.Size = int(file.Size())
@@ -108,7 +110,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 		return nil, fmt.Errorf("上传附件插入错误: %w", insertErr)
 	}
 
-	return  result, nil
+	return result, nil
 }
 
 //删除文件

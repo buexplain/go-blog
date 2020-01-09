@@ -5,7 +5,6 @@ import (
 	"github.com/buexplain/go-fool"
 )
 
-
 func frontend(mux *fool.Mux) {
 	mux.Get("/", c_frontend.Index)
 }

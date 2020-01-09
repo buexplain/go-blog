@@ -4,8 +4,8 @@ import "github.com/buexplain/go-blog/models"
 
 type ContentTag struct {
 	models.IDField `xorm:"extends"`
-	ContentID    int `xorm:"index(ContentID_TagID) INTEGER"`
-	TagID        int `xorm:"index(ContentID_TagID) INTEGER"`
+	ContentID      int `xorm:"index(ContentID_TagID) INTEGER"`
+	TagID          int `xorm:"index(ContentID_TagID) INTEGER"`
 }
 
 type List []ContentTag

@@ -33,7 +33,7 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	v := validator.New()
 	v.Field("OldPassword").Rule("required", "请输入旧密码")
-	v.Field("NewPassword",).Rule("password:min=8,max=16",
+	v.Field("NewPassword").Rule("password:min=8,max=16",
 		"请输入新密码",
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
@@ -41,7 +41,7 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	if r, err := v.Validate(mod); err != nil {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
-	}else if !r.IsEmpty() {
+	} else if !r.IsEmpty() {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
 	}
 
@@ -55,7 +55,7 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	var err error
-	user.Password, err= s_user.GeneratePassword(mod.NewPassword)
+	user.Password, err = s_user.GeneratePassword(mod.NewPassword)
 	if err != nil {
 		return errors.MarkServer(err)
 	}

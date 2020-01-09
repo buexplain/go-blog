@@ -7,15 +7,15 @@ import (
 
 type Content struct {
 	models.Field `xorm:"extends"`
-	Title        string `xorm:"TEXT"`
-	Body         string `xorm:"TEXT"`
+	Title        string        `xorm:"TEXT"`
+	Body         string        `xorm:"TEXT"`
 	HTML         template.HTML `xorm:"TEXT"`
-	Hits         int    `xorm:"INTEGER"`
-	Online       int    `xorm:"INTEGER"`
-	Category     int    `xorm:"INTEGER"`
-	CoverPC      string `xorm:"TEXT"`
-	CoverWAP     string `xorm:"TEXT"`
-	Origin       string `xorm:"TEXT"`
+	Hits         int           `xorm:"INTEGER"`
+	Online       int           `xorm:"INTEGER"`
+	Category     int           `xorm:"INTEGER"`
+	CoverPC      string        `xorm:"TEXT"`
+	CoverWAP     string        `xorm:"TEXT"`
+	Origin       string        `xorm:"TEXT"`
 }
 
 func (this Content) OnlineText() string {
@@ -30,6 +30,6 @@ const (
 )
 
 var OnlineText = map[int]string{
-	OnlineYes:   "已上线",
+	OnlineYes: "已上线",
 	OnlineNo:  "已下线",
 }

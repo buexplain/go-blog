@@ -4,7 +4,7 @@ import "time"
 
 //id
 type IDField struct {
-	ID        int       `xorm:"not null pk autoincr INTEGER"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
 }
 
 func (this IDField) GetID() int {
@@ -14,7 +14,6 @@ func (this IDField) GetID() int {
 //创建时间
 type CreatedAtField struct {
 	CreatedAt time.Time `xorm:"DATETIME created"`
-
 }
 
 func (this CreatedAtField) CreatedAtText() string {
@@ -30,7 +29,6 @@ func (this UpdatedAtField) UpdatedAtText() string {
 	return this.UpdatedAt.Format("2006-01-02 15:04:05")
 }
 
-
 //软删除时间
 type DeletedAtField struct {
 	DeletedAt time.Time `xorm:"DATETIME deleted"`
@@ -42,10 +40,8 @@ func (this DeletedAtField) DeletedAtText() string {
 
 //公共字段
 type Field struct {
-	IDField `xorm:"extends"`
+	IDField        `xorm:"extends"`
 	CreatedAtField `xorm:"extends"`
 	UpdatedAtField `xorm:"extends"`
 	DeletedAtField `xorm:"extends"`
 }
-
-

@@ -14,4 +14,3 @@ type Business struct {
 		Save string
 	}
 }
-

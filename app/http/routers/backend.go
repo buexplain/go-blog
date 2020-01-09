@@ -52,7 +52,7 @@ func backend(mux *fool.Mux) {
 			mux.Post("user", c_official_user.Store)
 			mux.Get("user/edit/:id", c_official_user.Edit)
 			mux.Put("user/update/:id", c_official_user.Update)
-			mux.Any("user/role/:id", c_official_user.EditRole,  http.MethodGet, http.MethodPost)
+			mux.Any("user/role/:id", c_official_user.EditRole, http.MethodGet, http.MethodPost)
 
 			//角色管理
 			mux.Get("role", c_role.Index)
@@ -61,7 +61,7 @@ func backend(mux *fool.Mux) {
 			mux.Get("role/edit/:id", c_role.Edit)
 			mux.Put("role/update/:id", c_role.Update)
 			mux.Delete("role/delete/:id", c_role.Destroy)
-			mux.Any("role/node/:id", c_role.EditNode,  http.MethodGet, http.MethodPost)
+			mux.Any("role/node/:id", c_role.EditNode, http.MethodGet, http.MethodPost)
 		})
 
 		//普通用户管理
