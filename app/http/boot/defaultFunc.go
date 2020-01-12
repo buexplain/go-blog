@@ -61,11 +61,11 @@ func defaultServerErrorFunc(ctx *fool.Ctx, err error) {
 	}
 	if !isDebug {
 		//生产环境，记录错误日志
-		ctx.Logger().Error(err.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
+		Logger.Error(err.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
 	//响应失败，记录日志
 	if responseErr != nil {
-		ctx.Logger().Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
+		Logger.Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
 }
 
@@ -84,7 +84,7 @@ func defaultClientErrorFunc(ctx *fool.Ctx, err error) {
 	}
 	//响应失败，记录日志
 	if responseErr != nil {
-		ctx.Logger().Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
+		Logger.Error(responseErr.Error(), ctx.Request().Raw().Method, ctx.Request().Raw().URL.String())
 	}
 }
 

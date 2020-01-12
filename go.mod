@@ -5,6 +5,8 @@ go 1.13
 require (
 	github.com/88250/lute v0.0.0-20191224084500-3572f0af14b3
 	github.com/BurntSushi/toml v0.3.1
+	github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5
+	github.com/buexplain/go-flog v0.0.0-20200112093650-5bf8cac6d7c8
 	github.com/buexplain/go-fool v0.0.0-20191213100955-1b8ff588343b
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2
 	github.com/gorilla/csrf v1.6.0
@@ -19,4 +21,4 @@ require (
 	xorm.io/xorm v0.8.0
 )
 
-replace github.com/buexplain/go-fool => F:/go-fool
+replace github.com/buexplain/go-fool => C:\Edisk\code\go-fool

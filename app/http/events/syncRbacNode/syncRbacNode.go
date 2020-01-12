@@ -6,7 +6,7 @@ import (
 	m_node "github.com/buexplain/go-blog/models/node"
 	m_role "github.com/buexplain/go-blog/models/role"
 	s_roleNodeRelation "github.com/buexplain/go-blog/services/roleNodeRelation"
-	"github.com/buexplain/go-fool/events"
+	"github.com/buexplain/go-event"
 )
 
 //事件名称
@@ -16,7 +16,7 @@ const EVENT_NAME = "syncRbacNode"
 type EventListener struct {
 }
 
-func (this *EventListener) Handle(e *events.Event) {
+func (this *EventListener) Handle(e *event.Event) {
 	superRoleID, ok := e.Data.(int)
 	if !ok || superRoleID == 0 {
 		h_boot.Logger.ErrorF("同步超级角色节点失败，超级角色ID错误：%+v", e.Data)

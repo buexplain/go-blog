@@ -27,7 +27,7 @@ func Run() {
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())
 	}
-	if err := APP.Close(); err != nil {
+	if err := Logger.Close(); err != nil {
 		log.Println(err)
 	}
 }

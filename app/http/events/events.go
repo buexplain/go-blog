@@ -6,5 +6,5 @@ import (
 )
 
 func init() {
-	h_boot.APP.EventHandler().AddListener(e_syncRbacNode.EVENT_NAME, &e_syncRbacNode.EventListener{})
+	h_boot.Bus.AddListener(e_syncRbacNode.EVENT_NAME, &e_syncRbacNode.EventListener{})
 }

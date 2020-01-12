@@ -2,6 +2,7 @@ package c_node
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
+	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	e_syncRbacNode "github.com/buexplain/go-blog/app/http/events/syncRbacNode"
 	"github.com/buexplain/go-blog/dao"
@@ -144,7 +145,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return errors.MarkServer(err)
 	}
 	//触发超级角色的节点同步
-	ctx.Event().Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
+	h_boot.Bus.Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
 	return w.JumpBack("操作成功")
 }
 
@@ -206,6 +207,6 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(err)
 	}
 	//触发超级角色的节点同步
-	ctx.Event().Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
+	h_boot.Bus.Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
 	return w.Jump("/backend/rbac/node", "操作成功")
 }

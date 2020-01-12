@@ -6,11 +6,12 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot/session"
 	"github.com/buexplain/go-blog/app/http/boot/staticFile"
 	"github.com/buexplain/go-blog/app/http/boot/viewFunc"
+	"github.com/buexplain/go-event"
+	"github.com/buexplain/go-flog"
+	"github.com/buexplain/go-flog/extra"
+	"github.com/buexplain/go-flog/formatter"
+	"github.com/buexplain/go-flog/handler"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/flog"
-	"github.com/buexplain/go-fool/flog/extra"
-	"github.com/buexplain/go-fool/flog/formatter"
-	"github.com/buexplain/go-fool/flog/handler"
 	"github.com/gorilla/csrf"
 	"log"
 	"net/http"
@@ -18,22 +19,6 @@ import (
 	"time"
 )
 
-var APP *fool.App
-
-//初始化app
-func init() {
-	APP = fool.New(a_boot.Config.App.Debug)
-}
-
-//设置相关默认函数
-func init() {
-	//设置程序崩溃处理函数
-	APP.SetRecoverFunc(defaultRecoverFunc)
-	//设置错误处理函数
-	APP.SetErrorFunc(defaultErrorFunc)
-	//设置路由not found处理函数
-	APP.Mux().SetDefaultRoute(defaultRoute)
-}
 
 //设置日志
 var Logger *flog.Logger
@@ -52,7 +37,34 @@ func init() {
 	if a_boot.Config.Log.Async {
 		Logger.Async(int(a_boot.Config.Log.Capacity))
 	}
-	APP.SetLoggerHandler(Logger)
+}
+
+var Bus *event.Bus
+
+//设置事件监听者
+func init() {
+	Bus = event.New("http")
+	if a_boot.Config.App.Event.Async {
+		//开启事件异步处理
+		Bus.Async(int(a_boot.Config.App.Event.Worker), int(a_boot.Config.App.Event.Capacity))
+	}
+}
+
+var APP *fool.App
+
+//初始化app
+func init() {
+	APP = fool.New(a_boot.Config.App.Debug)
+}
+
+//设置相关默认函数
+func init() {
+	//设置程序崩溃处理函数
+	APP.SetRecoverFunc(defaultRecoverFunc)
+	//设置错误处理函数
+	APP.SetErrorFunc(defaultErrorFunc)
+	//设置路由not found处理函数
+	APP.Mux().SetDefaultRoute(defaultRoute)
 }
 
 //设置模板引擎
@@ -63,14 +75,6 @@ func init() {
 	APP.View().SetCache(!APP.Debug())
 	//设置模板函数
 	APP.View().AddFunc("message", viewFunc.Message)
-}
-
-//设置事件监听者
-func init() {
-	if a_boot.Config.App.Event.Async {
-		//开启事件异步处理
-		APP.EventHandler().Async(int(a_boot.Config.App.Event.Worker), int(a_boot.Config.App.Event.Capacity))
-	}
 }
 
 //设置session
