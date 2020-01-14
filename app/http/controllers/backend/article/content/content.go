@@ -34,9 +34,7 @@ func init() {
 //列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if !r.IsAjax() {
-		return w.
-			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-			Layout("backend/layout/layout.html").
+		return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			View(http.StatusOK, "backend/article/content/index.html")
 	}
 	query := s_services.NewQuery("Content", ctx).Limit().Where()
@@ -59,9 +57,8 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	w.Assign("tagList", tagList)
 
-	return w.
-		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
+	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+		View(http.StatusOK, "backend/article/content/create.html")
 }
 
 //保存
@@ -104,10 +101,9 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
 
-	return w.
-		Assign("result", result).
+	return w.Assign("result", result).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/create.html")
+		View(http.StatusOK, "backend/article/content/create.html")
 }
 
 //更新
@@ -171,9 +167,8 @@ func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err != nil {
 		return err
 	}
-	return w.
-		Assign("result", result).
-		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/article/content/show.html")
+	return w.Assign("result", result).
+		View(http.StatusOK, "backend/article/content/show.html")
 }
 
 //设置上下线

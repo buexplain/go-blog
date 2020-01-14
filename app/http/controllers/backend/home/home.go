@@ -7,8 +7,6 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	return w.
-		Assign("user", s_user.IsSignIn(r.Session())).
-		Layout("backend/layout/layout.html").
+	return w.Assign("user", s_user.IsSignIn(r.Session())).
 		View(http.StatusOK, "backend/home/index.html")
 }

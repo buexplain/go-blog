@@ -37,7 +37,6 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.
 			Assign("user", user).
 			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/rbac/user/role.html")
 	}
 
@@ -53,6 +52,5 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err != nil {
 		return err
 	}
-
 	return w.Success()
 }

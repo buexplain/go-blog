@@ -66,14 +66,13 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.
 		Assign("count", count).
 		Assign("result", result).
-		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/rbac/user/index.html")
 }
 
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-		Layout("backend/layout/layout.html").View(http.StatusOK, "backend/rbac/user/create.html")
+		View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -119,7 +118,6 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.
 		Assign("result", result).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-		Layout("backend/layout/layout.html").
 		View(http.StatusOK, "backend/rbac/user/create.html")
 }
 

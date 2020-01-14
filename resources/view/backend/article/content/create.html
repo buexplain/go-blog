@@ -1,3 +1,7 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
 {{define "title"}}
     {{if .result}}新增{{else}}编辑{{end}}内容
 {{end}}
@@ -148,7 +152,8 @@
                 });
 
                 //渲染编辑器
-                const vEditorObj = new Vditor('j-editor', {
+                let vEditorObj = null;
+                vEditorObj = new Vditor('j-editor', {
                     placeholder:'请输入文章内容',
                     cache:false,
                     counter: 65535,
@@ -183,10 +188,11 @@
                             lazyLoadImage()
                         },
                     },
+                    after: function () {
+                        //压入文章内容
+                        vEditorObj.setValue(result.content.getBody());
+                    }
                 });
-
-                //压入文章内容
-                vEditorObj.setValue(result.content.getBody());
 
                 //绑定提交表单
                 form.on('submit(listen)', function(data) {
@@ -238,6 +244,7 @@
                     return false;
                 });
             }).catch(function (rej) {
+                console.error(rej);
                 layer.alert(rej.toString(), {icon: 2});
             });
         });

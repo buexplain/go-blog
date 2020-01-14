@@ -37,7 +37,6 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.
 			Assign("role", role).
 			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/rbac/role/node.html")
 	}
 

@@ -17,7 +17,6 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r.IsMethod("get") {
 		return w.
 			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
-			Layout("backend/layout/layout.html").
 			View(http.StatusOK, "backend/home/forget.html")
 	}
 

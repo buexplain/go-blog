@@ -29,8 +29,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		w.Assign("acceptExt", strings.Join(a_boot.Config.Business.Upload.Ext, ","))
 		w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
 		w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
-		return w.Layout("backend/layout/layout.html").
-			View(http.StatusOK, "backend/article/attachment/index.html")
+		return w.View(http.StatusOK, "backend/article/attachment/index.html")
 	}
 
 	query := s_services.NewQuery("Attachment", ctx).Limit().Where()
