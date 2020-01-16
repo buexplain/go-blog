@@ -69,11 +69,10 @@ layui.define([], function(exports) {
          */
         createPageUrl: function (targetPage, limit) {
             var url = this.queryString.update('page', targetPage);
-            url = this.queryString.update('limit', limit);
-            return url;
+            return this.queryString.update('limit', limit, url);
         },
-        renderBytes: function (size){
-            if(size === undefined || size === null || size =='0') {
+        renderBytes: function (size) {
+            if(size === undefined || size === null || parseFloat(size) <= 0) {
                 return "0 Bytes";
             }
             size = parseFloat(size);

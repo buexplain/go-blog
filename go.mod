@@ -17,6 +17,7 @@ require (
 	github.com/mojocn/base64Captcha v0.0.0-20190715093106-6d468d3c5b2a
 	github.com/spf13/cobra v0.0.5
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
+	xorm.io/builder v0.3.6
 	xorm.io/core v0.7.2
 	xorm.io/xorm v0.8.0
 )

@@ -17,6 +17,7 @@ import (
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
+	"strings"
 )
 
 //表单校验器
@@ -43,7 +44,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var count int64
 	query.FindAndCount(&result, &count)
 	if query.Error != nil {
-		return errors.MarkServer(query.Error)
+		return query.Error
 	}
 	w.Assign("count", count)
 	return w.Success(result)
@@ -56,7 +57,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	w.Assign("tagList", tagList)
-
+	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
 	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/article/content/create.html")
 }
@@ -100,7 +101,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	} else if !has {
 		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
-
+	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
 	return w.Assign("result", result).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/article/content/create.html")
@@ -138,7 +139,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 //单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
-	err := s_content.DestroyBatch(ids)
+	err := s_content.Destroy(ids)
 	if err != nil {
 		return err
 	}
@@ -148,7 +149,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 //批量删除
 func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
-	err := s_content.DestroyBatch(ids)
+	err := s_content.Destroy(ids)
 	if err != nil {
 		return err
 	}

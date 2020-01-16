@@ -58,9 +58,3 @@ func (this List) String() string {
 	}
 	return string(b)
 }
-
-func GetALL() (List, error) {
-	result := make(List, 0)
-	err := dao.Dao.Table("Category").Desc("SortID").Find(&result)
-	return result, err
-}

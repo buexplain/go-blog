@@ -1,6 +1,7 @@
 package c_node
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
@@ -196,14 +197,17 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	ids := r.QuerySliceInt("ids")
+	ids := r.QuerySlicePositiveInt("ids")
 	if len(ids) == 0 {
 		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "ids"))
 	}
-	if _, err := s_node.Destroy(ids); err != nil {
+	if affected, err := s_node.Destroy(ids); err != nil {
 		return w.JumpBack(err)
+	}else {
+		if affected > 0 {
+			//触发超级角色的节点同步
+			h_boot.Bus.Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
+		}
+		return w.Jump("/backend/rbac/node", fmt.Sprintf("操作 %d 条数据成功", affected))
 	}
-	//触发超级角色的节点同步
-	h_boot.Bus.Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)
-	return w.Jump("/backend/rbac/node", "操作成功")
 }

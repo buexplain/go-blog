@@ -7,56 +7,129 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <a class="layui-btn layui-btn-sm" href="/backend/article/tag/create">新增</a>
-    <table class="layui-table">
-        <colgroup>
-            <col width="150">
-            <col width="200">
-        </colgroup>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>标签名</th>
-            <th>创建时间</th>
-            <th>更新时间</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{range $_, $v := .result}}
-            <tr>
-                <td>{{$v.ID}}</td>
-                <td>{{$v.Name}}</td>
-                <td>{{$v.CreatedAtText}}
-                <td>{{$v.UpdatedAtText}}</td>
-                <td style="width:132px;text-align:center;">
-                    <a class="layui-btn layui-btn-sm" href="/backend/article/tag/edit/{{$v.ID}}">编辑</a>
-                    <a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/tag/delete/{{$v.ID}}?_method=delete">删除</a>
-                </td>
-            </tr>
-        {{end}}
-        </tbody>
-    </table>
-    <div id="j-laypage"></div>
+    <blockquote class="layui-elem-quote">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <input type="text" name="whereLike[Name]" value="{{.Name}}" placeholder="请输入搜索的标签名" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="search">
+                    搜索
+                </button>
+            </div>
+        </form>
+    </blockquote>
+    <script type="text/html" id="j-toolbar">
+        <div class="layui-btn-container">
+            <a class="layui-btn layui-btn-sm" href="/backend/article/tag/create">新增</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
+        </div>
+    </script>
+    <table id="j-table" lay-filter="j-table"></table>
+    {{._token}}
 {{end}}
 
 {{define "js"}}
     <script>
-        var limit = {{.limit}};
-        var page = {{.page}};
-        var count = {{.count}};
-        layui.use(['laypage', 'myUtil'], function() {
-            var laypage = layui.laypage;
-            laypage.render({
-                elem: 'j-laypage',
-                limit: limit,
-                curr: page,
-                count: count,
-                jump: function (obj, first) {
-                    if(!first) {
-                        window.location.href = layui.myUtil.createPageUrl(obj.curr, obj.limit);
+        layui.use(['laydate'], function() {
+            var layDate = layui.laydate;
+            layDate.render({
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                elem: "input[name='whereGe[GeCreatedAt]']"
+            });
+            layDate.render({
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                elem: "input[name='whereLe[LeCreatedAt]']"
+            });
+        });
+
+        layui.use(['table', 'jquery', 'form'], function() {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var form = layui.form;
+
+            //渲染表格
+            var tableOption = {
+                elem: '#j-table'
+                ,url: '/backend/article/tag' //数据接口
+                ,toolbar: '#j-toolbar' //开启头部工具栏，并为其绑定左侧模板
+                ,page: {
+                    curr: 1,
+                    where:{},
+                } //开启分页
+                ,cols: [[ //表头
+                    {field: 'ID', type: 'checkbox', fixed: 'left'}
+                    ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
+                    ,{field: 'Name', title: '标签名'}
+                    ,{field: 'ContentNum', title: '文章数量',sort: true, width:120}
+                    ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
+                        return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
+                    }}
+                    ,{fixed: 'right', title:'操作', templet:function (data) {
+                        let btn = '';
+                        btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/tag/edit/'+data['ID']+'">编辑</a>';
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['ContentNum'] > 0 ? 'none' : '')+';">删除</a>';
+                        return btn;
+                    }}
+                ]]
+            };
+            var tableIns = table.render(tableOption);
+
+            //监听表格头部操作按钮
+            table.on('toolbar(j-table)', function(obj) {
+                //批量删除
+                if(obj.event === 'del-batch') {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    if(checkStatus.data.length === 0) {
+                        layer.alert('请勾选数据', {icon: 2});
+                        return '';
                     }
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        var param = {ids:[], _method:'put', _token:document.querySelector("input[name=_token]").value};
+                        checkStatus.data.forEach(function (v) {
+                            param.ids.push(v['ID']);
+                        });
+                        $.post('/backend/article/tag/delete-batch', param, function (json) {
+                            if(json.code === 0) {
+                                layer.close(index);
+                                table.reload(obj.config.id, obj.config);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
                 }
+            });
+
+            //监听表格右侧操作按钮
+            table.on('tool(j-table)', function(obj) {
+                var data = obj.data;
+                //单个删除
+                if(obj.event === 'del') {
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        $.get('/backend/article/tag/delete/'+data['ID']+'?_method=delete', function (json) {
+                            if(json.code === 0) {
+                                obj.del();
+                                layer.close(index);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
+            });
+
+            //搜索
+            layui.form.on('submit(search)', function(data) {
+                tableIns.reload({
+                    where: data.field
+                    ,page: {
+                        curr: 1
+                    }
+                });
+                return false;
             });
         });
     </script>

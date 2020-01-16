@@ -69,6 +69,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.min.js"></script>
     <script type="text/javascript" src="/resources/asset/backend/article/content/common.js"></script>
     <script>
+        var acceptMimeTypes = "{{.acceptMimeTypes}}";
         var contentID = {{.result.ID}};
         layui.use(['form', 'layer', 'jquery', 'xmSelect', 'dtree'], function() {
             var form = layui.form;
@@ -90,7 +91,7 @@
                 //渲染分类
                 const categoryObj = dtree.render({
                     elem: "#j-category",
-                    selectInputName:{nodeId: "category",  context: "categoryTitle"},
+                    selectInputName:{nodeId: "categoryID",  context: "categoryTitle"},
                     selectTips: "请选择分类",
                     accordion: true,  // 开启手风琴
                     select: true, //指定下拉树模式
@@ -160,7 +161,9 @@
                     height: $(window).height() - 93,
                     width:"100%",
                     tab: '\t',
+                    mode:'markdown-show',
                     upload: {
+                        accept: acceptMimeTypes,
                         handler (files) {
                             var formDataArr = [];
                             var token = document.querySelector("input[name=_token]").value;

@@ -36,7 +36,7 @@ func GetDetails(id int) (*Details, error) {
 	}
 
 	tmp := new(m_category.Category)
-	if b, err := dao.Dao.ID(details.Content.Category).Get(tmp); err == nil && b {
+	if b, err := dao.Dao.ID(details.Content.CategoryID).Get(tmp); err == nil && b {
 		details.Category = append(details.Category, tmp)
 		if p, err := tmp.Parents(); err == nil {
 			details.Category = append(details.Category, p...)

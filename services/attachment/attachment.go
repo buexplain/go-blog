@@ -114,7 +114,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 }
 
 //删除文件
-func DestroyBatch(ids []int) error {
+func Destroy(ids []int) error {
 	var resultArr m_attachment.List
 	err := dao.Dao.Unscoped().In("ID", ids).Find(&resultArr)
 	if err != nil {

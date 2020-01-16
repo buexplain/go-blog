@@ -88,6 +88,7 @@ func backend(mux *fool.Mux) {
 			mux.Get("tag/edit/:id", c_tag.Edit)
 			mux.Put("tag/update/:id", c_tag.Update)
 			mux.Delete("tag/delete/:id", c_tag.Destroy)
+			mux.Put("tag/delete-batch", c_tag.DestroyBatch)
 
 			//内容管理
 			mux.Get("content", c_content.Index)

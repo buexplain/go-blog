@@ -16,6 +16,14 @@
 {{define "js"}}
     <script type="text/javascript">
         var result = {{.result}};
+        result.hasChildren = function (id) {
+            for(var i in this) {
+                if(this[i].Pid === id) {
+                    return true;
+                }
+            }
+            return false;
+        }
     </script>
     <script type="text/javascript">
         layui.use(['treeTable','layer','code','form'],function() {
@@ -63,13 +71,21 @@
                         align: 'center',
                     },
                     {
+                        key: 'ContentNum',
+                        title: '文章数量',
+                        width: '50px',
+                        align: 'center',
+                    },
+                    {
                         title: '操作',
                         width: '200px',
-                        align: 'center',
                         template: function(item) {
+                            console.log(item);
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/article/category/create/'+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/category/edit/'+item.ID+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            if(item.ContentNum === 0 && !result.hasChildren(item.ID)) {
+                                btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
+                            }
                             return btn;
                         }
                     }

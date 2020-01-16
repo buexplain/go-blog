@@ -12,7 +12,7 @@ type Content struct {
 	HTML         template.HTML `xorm:"TEXT"`
 	Hits         int           `xorm:"INTEGER"`
 	Online       int           `xorm:"INTEGER"`
-	Category     int           `xorm:"INTEGER"`
+	CategoryID     int           `xorm:"INTEGER"`
 	CoverPC      string        `xorm:"TEXT"`
 	CoverWAP     string        `xorm:"TEXT"`
 	Origin       string        `xorm:"TEXT"`

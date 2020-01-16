@@ -3,30 +3,32 @@ package s_node
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
-	"github.com/buexplain/go-blog/models/node"
-	"github.com/buexplain/go-blog/models/roleNodeRelation"
-	"github.com/buexplain/go-fool/errors"
+	"xorm.io/builder"
 )
 
-func Destroy(ids []int) (affected int64, err error) {
-	childList := make(m_node.List, 0)
-	if err := dao.Dao.In("Pid", ids).Find(&childList); err != nil {
+func Destroy(ids []int) (int64, error) {
+	var err error
+	var in string
+	var notIn string
+	in, err = builder.ToBoundSQL(builder.In("ID", ids))
+	if err != nil {
 		return 0, err
-	} else if len(childList) > 0 {
-		//ids中的id含有子级菜单，判断这些子级菜单是否也在ids中
-		for _, child := range childList {
-			has := false
-			for _, id := range ids {
-				if child.ID == id {
-					has = true
-					break
-				}
-			}
-			if !has {
-				return 0, errors.MarkClient(fmt.Errorf("入参错误：ID【%d】必须与其父ID【%d】一并删除", child.ID, child.Pid))
-			}
-		}
 	}
+	notIn, err = builder.ToBoundSQL(builder.In("Pid", ids))
+	if err != nil {
+		return 0, err
+	}
+	delNodeSql := fmt.Sprintf("DELETE FROM Node WHERE %s AND ID NOT IN (SELECT Pid FROM Node WHERE %s)", in, notIn)
+
+	in, err = builder.ToBoundSQL(builder.In("NodeID", ids))
+	if err != nil {
+		return 0, err
+	}
+	notIn, err = builder.ToBoundSQL(builder.In("ID", ids))
+	if err != nil {
+		return 0, err
+	}
+	delRoleNodeRelationSql := fmt.Sprintf("DELETE FROM RoleNodeRelation WHERE %s AND NodeID NOT IN ( SELECT ID FROM Node WHERE %s)", in, notIn)
 
 	//开启事务
 	session := dao.Dao.NewSession()
@@ -34,27 +36,35 @@ func Destroy(ids []int) (affected int64, err error) {
 	if err := session.Begin(); err != nil {
 		return 0, err
 	}
-
 	//删除节点
-	affected, deleteErr := session.In("ID", ids).Delete(new(m_node.Node))
-	if deleteErr != nil {
-		if err := session.Rollback(); err != nil {
-			return 0, err
-		}
-		return affected, deleteErr
-	}
-
-	//删除角色节点表
-	if _, err := session.In("NodeID", ids).Delete(new(m_roleNodeRelation.RoleNodeRelation)); err != nil {
+	if result, err := session.Exec(delNodeSql); err != nil {
 		if err := session.Rollback(); err != nil {
 			return 0, err
 		}
 		return 0, err
+	}else {
+		//获取受影响的行数
+		var affected int64
+		if affected, err = result.RowsAffected(); err != nil {
+			if err := session.Rollback(); err != nil {
+				return 0, err
+			}
+			return 0, err
+		}
+		if affected > 0 {
+			//删除角色节点表
+			if _, err := session.Exec(delRoleNodeRelationSql); err != nil {
+				if err := session.Rollback(); err != nil {
+					return 0, err
+				}
+				return 0, err
+			}
+		}
+		//提交事务
+		if err := session.Commit(); err != nil {
+			return 0, err
+		}
+		//返回删除结果
+		return affected, nil
 	}
-
-	if err := session.Commit(); err != nil {
-		return 0, err
-	}
-
-	return affected, deleteErr
 }

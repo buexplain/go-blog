@@ -1,6 +1,7 @@
 package c_category
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
@@ -24,7 +25,7 @@ func init() {
 
 //列表
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result, err := m_category.GetALL()
+	result, err := s_category.GetALL()
 	if err != nil {
 		return err
 	}
@@ -109,12 +110,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	ids := r.QuerySliceInt("ids")
+	ids := r.QuerySlicePositiveInt("ids")
 	if len(ids) == 0 {
 		return w.Jump("/backend/article/category", "入参错误")
 	}
-	if _, err := s_category.Destroy(ids); err != nil {
+	if affected, err := s_category.Destroy(ids); err != nil {
 		return w.Jump("/backend/article/category", err)
+	}else{
+		return w.Jump("/backend/article/category", fmt.Sprintf("操作 %d 条数据成功", affected))
 	}
-	return w.Jump("/backend/article/category", "操作成功")
 }

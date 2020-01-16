@@ -96,7 +96,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	err := s_attachment.DestroyBatch([]int{r.ParamInt("id", 0)})
+	err := s_attachment.Destroy([]int{r.ParamInt("id", 0)})
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 //批量删除
 func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ids := r.FormSliceInt("ids")
-	err := s_attachment.DestroyBatch(ids)
+	err := s_attachment.Destroy(ids)
 	if err != nil {
 		return err
 	}

@@ -51,7 +51,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var count int64
 	query.FindAndCount(&result, &count)
 	if query.Error != nil {
-		return errors.MarkServer(query.Error)
+		return query.Error
 	}
 	return w.
 		Assign("count", count).

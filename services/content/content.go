@@ -75,7 +75,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 }
 
 //删除
-func DestroyBatch(ids []int) error {
+func Destroy(ids []int) error {
 	if affected, err := dao.Dao.
 		Unscoped().
 		In("ID", ids).

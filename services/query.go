@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"strings"
 	"time"
 	"xorm.io/core"
@@ -42,6 +43,8 @@ func (this *Query) TableInfo() *core.Table {
 		this.tableInfo, this.Error = m_util.GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
 			this.tableName = this.tableInfo.Name
+		}else {
+			this.Error = errors.MarkServer(this.Error)
 		}
 	}
 	return this.tableInfo
@@ -53,7 +56,7 @@ func (this *Query) Find(rowsSlicePtr interface{}) {
 		this.Counter = this.Finder.Clone()
 	}
 	if this.Error == nil {
-		this.Error = this.Finder.Find(rowsSlicePtr)
+		this.Error = errors.MarkServer(this.Finder.Find(rowsSlicePtr))
 	}
 }
 
@@ -71,14 +74,16 @@ func (this *Query) Count() int64 {
 					DeletedAt time.Time `xorm:"DATETIME deleted"`
 				}
 				total, this.Error = this.Counter.Count(new(Tmp))
+				this.Error = errors.MarkServer(this.Error)
 			} else if tableInfo.GetColumn("ID") != nil {
 				type Tmp struct {
 					ID int `xorm:"INTEGER"`
 				}
 				total, this.Error = this.Counter.Count(new(Tmp))
+				this.Error = errors.MarkServer(this.Error)
 			} else {
 				//如果报这个错误，请在此处添加一个比较通用的字段
-				this.Error = fmt.Errorf("not hit table field: %s", this.tableName)
+				this.Error = errors.MarkServer(fmt.Errorf("not hit table field: %s", this.tableName))
 			}
 		}
 	}
@@ -90,7 +95,7 @@ func (this *Query) FindAndCount(rowsSlicePtr interface{}, counter *int64, condiB
 	if this.Error == nil {
 		c, err := this.Finder.FindAndCount(rowsSlicePtr, condiBean...)
 		if err != nil {
-			this.Error = err
+			this.Error = errors.MarkServer(err)
 		} else {
 			*counter = c
 		}

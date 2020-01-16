@@ -1,6 +1,7 @@
 package c_role
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
@@ -109,12 +110,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	ids := r.QuerySliceInt("ids")
+	ids := r.QuerySlicePositiveInt("ids")
 	if len(ids) == 0 {
 		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "ids"))
 	}
-	if _, err := s_role.Destroy(ids); err != nil {
+	if affected, err := s_role.Destroy(ids); err != nil {
 		return w.JumpBack(err)
+	}else {
+		return w.Jump("/backend/rbac/role", fmt.Sprintf("操作 %d 条数据成功", affected))
 	}
-	return w.Jump("/backend/rbac/role", "操作成功")
 }

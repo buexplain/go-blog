@@ -7,6 +7,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/services"
+	s_tag "github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
@@ -35,17 +36,16 @@ func init() {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := s_services.NewQuery("Tag", ctx).Limit()
-	query.Finder.Desc("ID")
-	var result m_tag.List
-	var count int64
-	query.FindAndCount(&result, &count)
-	if query.Error != nil {
-		return errors.MarkServer(query.Error)
+	if !r.IsAjax() {
+		return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
+			View(http.StatusOK, "backend/article/tag/index.html")
 	}
-	return w.Assign("count", count).
-		Assign("result", result).
-		View(http.StatusOK, "backend/article/tag/index.html")
+	counter, result, err := s_tag.GetList(ctx)
+	if err != nil {
+		return err
+	}
+	w.Assign("count", counter)
+	return w.Success(result)
 }
 
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -117,17 +117,22 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Jump("/backend/article/tag", "操作成功")
 }
 
+//单个删除
 func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result := new(m_tag.Tag)
-
-	result.ID = r.ParamInt("id", 0)
-	if result.ID <= 0 {
-		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
+	ids := []int{r.ParamInt("id", 0)}
+	_, err := s_tag.Destroy(ids)
+	if err != nil {
+		return err
 	}
+	return w.Success()
+}
 
-	if _, err := dao.Dao.Delete(result); err != nil {
-		return errors.MarkServer(err)
+//批量删除
+func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	ids := r.FormSliceInt("ids")
+	_, err := s_tag.Destroy(ids)
+	if err != nil {
+		return err
 	}
-
-	return w.Jump("/backend/article/tag", "操作成功")
+	return w.Success()
 }
