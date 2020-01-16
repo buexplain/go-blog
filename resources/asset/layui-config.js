@@ -15,8 +15,6 @@ layui.config({
     //树组件
     dtree:'layext/dtree/dtree',
     //select下拉选项卡
-    formSelects:'layext/formSelects/formSelects-v4',
-    //select下拉选项卡
     xmSelect:'layext/xm-select/xm-select',
     //百度上传组件
     webuploader:'layext/webuploader/webuploader',
