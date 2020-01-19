@@ -6,6 +6,7 @@ import (
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/tag"
+	s_category "github.com/buexplain/go-blog/services/category"
 	"github.com/buexplain/go-fool/errors"
 )
 
@@ -35,13 +36,7 @@ func GetDetails(id int) (*Details, error) {
 		return nil, err
 	}
 
-	tmp := new(m_category.Category)
-	if b, err := dao.Dao.ID(details.Content.CategoryID).Get(tmp); err == nil && b {
-		details.Category = append(details.Category, tmp)
-		if p, err := tmp.Parents(); err == nil {
-			details.Category = append(details.Category, p...)
-		}
-	}
+	details.Category = s_category.GetParents(details.Content.CategoryID)
 
 	return details, nil
 }

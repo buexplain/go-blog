@@ -29,6 +29,6 @@ func (this List) String() string {
 
 func GetALL() (List, error) {
 	result := make(List, 0)
-	err := dao.Dao.Table("Role").Desc("SortID").Find(&result)
+	err := dao.Dao.Table("Role").Asc("SortID").Find(&result)
 	return result, err
 }

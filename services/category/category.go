@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
+	s_services "github.com/buexplain/go-blog/services"
 	"xorm.io/builder"
 )
 
@@ -43,12 +44,58 @@ func (this List) String() string {
 	return string(b)
 }
 
+//返回所有的分类，返回平面结构
 func GetALL() (List, error) {
 	result := make(List, 0)
 	err := dao.Dao.
 		Table("Category").
 		Select("Category.*, Content.ContentNum").
 		Join("LEFT", "(SELECT count(*) as ContentNum, CategoryID FROM Content GROUP BY CategoryID) as Content", "Category.ID = Content.CategoryID").
-		Desc("SortID").Find(&result)
+		Asc("SortID").Find(&result)
 	return result, err
+}
+
+type TreeItem struct {
+	m_category.Category `xorm:"extends"`
+	Children []*TreeItem `xorm:"-"`
+}
+
+type TreeList []*TreeItem
+
+//获取所有分类，返回树状结构
+func GetTree() (TreeList, error) {
+	lists := make(TreeList, 0)
+	err := dao.Dao.Table("Category").Desc("SortID").Find(&lists)
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[int]*TreeItem)
+	for _,v := range lists {
+		m[v.ID] = v
+	}
+	result := make(TreeList, 0)
+	for _,v := range lists {
+		if v.Pid == 0 {
+			result = append(result, v)
+		}
+		i, ok := m[v.Pid]
+		if !ok {
+			continue
+		}
+		i.Children = append(i.Children, v)
+	}
+	return result, nil
+}
+
+//获取一个分类的父分类
+func GetParents(categoryID int) (m_category.List) {
+	if categoryID <= 0 {
+		return nil
+	}
+	list := make(m_category.List, 0)
+	err := s_services.GetRecursion("category", categoryID, &list, nil)
+	if err != nil {
+		return nil
+	}
+	return list
 }

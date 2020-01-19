@@ -32,6 +32,16 @@ func GetList(ctx *fool.Ctx)(counter int64, result List, err error)  {
 	return
 }
 
+func GetALL() (result List, err error) {
+	mod := dao.Dao.Table("Tag").Desc("ID").Join(
+		"LEFT",
+		"(SELECT count(*) as ContentNum, TagID FROM ContentTag GROUP BY TagID) as ContentTag",
+		"Tag.ID = ContentTag.TagID",
+	)
+	err = mod.Find(&result)
+	return
+}
+
 func Destroy(ids []int) (int64, error) {
 	notIn := builder.Select("TagID").From("ContentTag").Where(builder.In("TagID", ids)).GroupBy("TagID")
 	sql, err := builder.Delete().From("Tag").
