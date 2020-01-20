@@ -5,6 +5,8 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	m_attachment "github.com/buexplain/go-blog/models/attachment"
 	m_category "github.com/buexplain/go-blog/models/category"
+	m_configGroup "github.com/buexplain/go-blog/models/config/configGroup"
+	m_configItem "github.com/buexplain/go-blog/models/config/configItem"
 	m_content "github.com/buexplain/go-blog/models/content"
 	m_contentTag "github.com/buexplain/go-blog/models/contentTag"
 	m_node "github.com/buexplain/go-blog/models/node"
@@ -36,6 +38,8 @@ func init() {
 				new(m_tag.Tag),
 				new(m_content.Content),
 				new(m_contentTag.ContentTag),
+				new(m_configGroup.ConfigGroup),
+				new(m_configItem.ConfigItem),
 			)
 			if err != nil {
 				a_boot.Logger.ErrorF("同步models到数据库失败: %s", err)

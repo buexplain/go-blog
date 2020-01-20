@@ -34,6 +34,12 @@
 
             <div class="layui-inline">
                 {{._token}}
+                <input type="hidden" value="idStr">
+                {{if .result}}
+                    <input type="hidden" name="IDStr" value="{{.result.IDStr}}">
+                {{else}}
+                    <input type="hidden" name="IDStr" value="{{.idStr}}">
+                {{end}}
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal layui-icon layui-icon-down" id="j-more-btn">
                     更多
                 </button>
@@ -47,15 +53,21 @@
         </div>
 
         <div class="layui-form-item" id="j-more">
-            <div class="layui-inline" style="width: 30%;">
+            <div class="layui-inline" style="width: 40%">
                 <input type="text" name="coverPC" value="{{.result.CoverPC}}" placeholder="PC封面图片路径" autocomplete="off" class="layui-input">
             </div>
-
-            <div class="layui-inline" style="width: 30%;">
+            <div class="layui-inline" style="width: 40%">
                 <input type="text" name="coverWap" value="{{.result.CoverWAP}}" placeholder="WAP封面图片路径" autocomplete="off" class="layui-input">
             </div>
-
-            <div class="layui-inline" style="width: 30%;">
+            <br>
+            <div class="layui-inline" style="width: 40%">
+                <input type="text" name="keywords" value="{{.result.Keywords}}" placeholder="页面SEO关键词" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline" style="width: 40%">
+                <input type="text" name="description" value="{{.result.Description}}" placeholder="页面SEO描述" autocomplete="off" class="layui-input">
+            </div>
+            <br>
+            <div class="layui-inline" style="width: 40%">
                 <input type="text" name="origin" value="{{.result.Origin}}" placeholder="文章来源地址" autocomplete="off" class="layui-input">
             </div>
         </div>

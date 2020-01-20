@@ -106,7 +106,7 @@ func defaultErrorFunc(ctx *fool.Ctx, err error) {
 func defaultRoute(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	ctx.Response().Buffer().Reset()
 	w.Header().Set(constant.HeaderXContentTypeOptions, "nosniff")
-	return w.Plain(http.StatusNotFound, code.Text(code.INVALID_ROUTE))
+	return w.Plain(http.StatusNotFound, code.Text(code.INVALID_ROUTE, ctx.Request().Raw().URL.String()))
 }
 
 type CSRFErrorHandler struct {

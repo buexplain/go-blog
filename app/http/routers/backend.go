@@ -5,6 +5,7 @@ import (
 	c_category "github.com/buexplain/go-blog/app/http/controllers/backend/article/category"
 	c_content "github.com/buexplain/go-blog/app/http/controllers/backend/article/content"
 	c_tag "github.com/buexplain/go-blog/app/http/controllers/backend/article/tag"
+	c_config "github.com/buexplain/go-blog/app/http/controllers/backend/config"
 	c_home "github.com/buexplain/go-blog/app/http/controllers/backend/home"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
 	c_role "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/role"
@@ -115,6 +116,9 @@ func backend(mux *fool.Mux) {
 			mux.Put("attachment/delete-batch", c_attachment.DestroyBatch)
 		})
 
+		//配置管理
+		mux.Get("config", c_config.Index)
+		mux.Post("config", c_config.Store)
 	}).Use(middleware.RbacCheck)
 	// --------------------------需要权限校验的路由 结束---------------------------
 }

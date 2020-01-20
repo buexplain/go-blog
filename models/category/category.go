@@ -12,6 +12,8 @@ type Category struct {
 	Pid int `xorm:"INTEGER"`
 	//分类名
 	Name string `xorm:"TEXT"`
+	//跳转地址
+	Redirect string `xorm:"TEXT"`
 	//排序id
 	SortID int `xorm:"INTEGER"`
 }

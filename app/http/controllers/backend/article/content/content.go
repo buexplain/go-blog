@@ -14,6 +14,7 @@ import (
 	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
+	"github.com/buexplain/go-fool/upload"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -56,7 +57,9 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := dao.Dao.Find(tagList); err != nil {
 		return err
 	}
+	idStr := upload.RandString(16)
 	w.Assign("tagList", tagList)
+	w.Assign("idStr", idStr)
 	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
 	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/article/content/create.html")

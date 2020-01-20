@@ -9,6 +9,7 @@
 {{define "content"}}
     <blockquote class="layui-elem-quote">
         <form class="layui-form">
+
             <div class="layui-inline">
                 <input type="text" name="whereLike[Title]" value="{{.Title}}" placeholder="请输入搜索的标题" autocomplete="off" class="layui-input">
             </div>
@@ -20,6 +21,14 @@
                 <div class="layui-input-inline">
                     <input type="text" name="whereLe[LeCreatedAt]" value="{{.LeCreatedAt}}" placeholder="请选择结束时间" autocomplete="off" class="layui-input">
                 </div>
+            </div>
+
+            <div class="layui-inline">
+                <input type="text" name="whereEq[ID]" value="{{.ID}}" placeholder="请输入文章ID" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-inline">
+                <input type="text" name="whereEq[IDStr]" value="{{.IDStr}}" placeholder="请输入文章IDStr" autocomplete="off" class="layui-input">
             </div>
 
             <div class="layui-inline" style="width: 170px;">
@@ -80,9 +89,8 @@
                 ,cols: [[ //表头
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
                     ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
+                    ,{field: 'IDStr', title: 'IDStr', fixed: 'left', width:160}
                     ,{field: 'Title', title: '标题'}
-                    ,{field: 'Hits', title: '点击量',sort: true, width:100}
-                    ,{field: 'Origin', title: '来源'}
                     ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
                         return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
                     }}
