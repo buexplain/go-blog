@@ -89,7 +89,6 @@
                 ,cols: [[ //表头
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
                     ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
-                    ,{field: 'IDStr', title: 'IDStr', fixed: 'left', width:160}
                     ,{field: 'Title', title: '标题'}
                     ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
                         return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
@@ -99,7 +98,7 @@
                         return btn;
                     }}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
-                        let btn = '<a class="layui-btn layui-btn-sm" href="javascript:preview('+data['ID']+', \''+data['Title']+'\');">预览</a>';
+                        let btn = '<a class="layui-btn layui-btn-sm layui-btn-normal" href="javascript:preview('+data['ID']+', \''+data['Title']+'\');">预览</a>';
                         btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/'+data['ID']+'">编辑</a>';
                         btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['Online'] === 1 ? 'none' : '')+';">删除</a>';
                         return btn;

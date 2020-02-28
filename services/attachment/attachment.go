@@ -116,7 +116,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 //删除文件
 func Destroy(ids []int) error {
 	var resultArr m_attachment.List
-	err := dao.Dao.Unscoped().In("ID", ids).Find(&resultArr)
+	err := dao.Dao.In("ID", ids).Find(&resultArr)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func Destroy(ids []int) error {
 		if err := session.Begin(); err != nil {
 			return err
 		}
-		if affected, err := session.Unscoped().ID(result.ID).Delete(new(m_attachment.Attachment)); err != nil {
+		if affected, err := session.ID(result.ID).Delete(new(m_attachment.Attachment)); err != nil {
 			if err := session.Rollback(); err != nil {
 				return err
 			}

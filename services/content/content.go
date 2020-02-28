@@ -3,10 +3,12 @@ package s_content
 import (
 	"fmt"
 	"github.com/88250/lute"
+	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
+	s_category "github.com/buexplain/go-blog/services/category"
 	"github.com/buexplain/go-fool/errors"
 	"html/template"
 	"time"
@@ -32,7 +34,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 	if id > 0 {
 		content.ID = id
 		//删除原有标签
-		if _, err := session.Unscoped().Where("ContentID=?", content.ID).Delete(new(m_contentTag.ContentTag)); err != nil {
+		if _, err := session.Where("ContentID=?", content.ID).Delete(new(m_contentTag.ContentTag)); err != nil {
 			if err := session.Rollback(); err != nil {
 				return err
 			}
@@ -78,9 +80,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 
 //删除
 func Destroy(ids []int) error {
-	if affected, err := dao.Dao.
-		Unscoped().
-		In("ID", ids).
+	if affected, err := dao.Dao.In("ID", ids).
 		Select("ID").
 		Where("Online=?", m_content.OnlineNo).
 		Delete(new(m_content.Content)); err != nil {
@@ -93,7 +93,7 @@ func Destroy(ids []int) error {
 		}
 		//检查还有哪些id是存在的
 		lists := make(m_content.List, 0)
-		err := dao.Dao.Unscoped().In("ID", ids).Find(&lists)
+		err := dao.Dao.In("ID", ids).Find(&lists)
 		if err != nil {
 			return err
 		}
@@ -140,23 +140,27 @@ func Render(markdown string) (string, error) {
 }
 
 type Place struct {
-	Counter int
+	Total int
 	CreatedAtYm string
 }
 type PlaceList []*Place
 
 //获取归档信息
-func GetPlace() (PlaceList, error) {
+func GetPlace() PlaceList {
 	mod := dao.Dao.Table("Content").
-		Select("COUNT(*) as counter, strftime('%Y年%m月', CreatedAt) as CreatedAtYm").
+		Select("COUNT(*) as total, strftime('%Y年%m月', CreatedAt) as CreatedAtYm").
+		Where("Online=?", m_content.OnlineYes).
 		GroupBy("CreatedAtYm").OrderBy("CreatedAt DESC")
 	result := make(PlaceList, 0)
 	err := mod.Find(&result)
-	return result, err
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 //获取列表
-func GetList(page int, limit int, categoryID int, place string, keyword string) (result m_content.List, counter int64, err error) {
+func GetList(page int, limit int, categoryID int, keyword string, tagID int, place string) (result m_content.List, total int64) {
 	if page <= 0 {
 		page = 1
 	}
@@ -164,23 +168,48 @@ func GetList(page int, limit int, categoryID int, place string, keyword string) 
 		limit = 15
 	}
 	mod := dao.Dao.Table("Content").Desc("ID")
-	offset := (page - 1) * limit
+	mod.Where("Content.`Online`=?", m_content.OnlineYes)
 	//设置分页
+	offset := (page - 1) * limit
 	mod.Limit(limit, offset)
+	//查询分类
 	if categoryID > 0 {
-		//查询分类
-		mod.Where("categoryID=?", categoryID)
-	}
-	if place != "" {
-		//查询归档时间内的列表，place的格式：2006-01
-		if t, err := time.ParseInLocation("2006-01", place, time.Local); err == nil {
-			mod.Where("CreatedAt>=?", t.String()).Where("CreatedAt<?", t.AddDate(0, 1, 1).String())
+		if tmp := s_category.GetSons(categoryID); tmp == nil {
+			mod.Where("categoryID=?", categoryID)
+		}else {
+			if len(tmp) == 1 {
+				mod.Where("categoryID=?", tmp[0].ID)
+			}else {
+				in := []int{}
+				for _, v:= range tmp {
+					in = append(in, v.ID)
+				}
+				mod.In("categoryID", in)
+			}
 		}
 	}
+	//查询归档时间内的列表，place的格式：2006年01月
+	if place != "" {
+		if t, err := time.ParseInLocation("2006年01月", place, time.Local); err == nil {
+			mod.Where("CreatedAt>=?", t.String()).Where("CreatedAt<?", t.AddDate(0, 1, 1).String())
+		}else {
+			h_boot.Logger.InfoF("parse time error: %s", err)
+		}
+	}
+	//查询关键字
 	if keyword != "" {
-		//查询关键字
 		mod.Where("Title LIKE ?", fmt.Sprintf("%s%s%s", "%", keyword, "%"))
 	}
-	counter, err = mod.FindAndCount(&result)
+	//标签查询
+	if tagID > 0 {
+		mod.Join("left", "ContentTag", "`Content`.`ID`=`ContentTag`.`ContentID`")
+		mod.Where("`ContentTag`.`TagID`=?", tagID)
+	}
+
+	var err error
+	total, err = mod.FindAndCount(&result)
+	if err != nil {
+		panic(err)
+	}
 	return
 }

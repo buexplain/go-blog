@@ -34,25 +34,6 @@ func (this Node) HasMethod(method string) bool {
 	return true
 }
 
-func (this *Node) Parse() {
-	if this.IsMenu == 0 {
-		this.IsMenu = IsMenuNo
-	} else {
-		this.IsMenu = IsMenuYes
-	}
-	this.URL = strings.Trim(this.URL, " ")
-}
-
-func (this *Node) Insert() (affected int64, err error) {
-	this.Parse()
-	return dao.Dao.Insert(this)
-}
-
-func (this *Node) Update() (affected int64, err error) {
-	this.Parse()
-	return dao.Dao.ID(this.ID).MustCols("Pid", "Methods").Update(this)
-}
-
 type List []Node
 
 func (this List) String() string {

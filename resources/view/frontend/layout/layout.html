@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>{{template "title" .}}</title>
+    <link rel="icon" href="data:image/ico;base64,aWNv">
+    <link rel="stylesheet" href="/resources/asset/layui/css/layui.css">
+    <link rel="stylesheet" href="/resources/asset/frontend/css/main.css">
+    <script src="//at.alicdn.com/t/font_976607_ni3gchk1s7n.js"></script>
+    {{template "css" .}}
+    <!--
+      / _|  ___    ___  | |
+     | |_  / _ \  / _ \ | |
+     |  _|| (_) || (_) || |
+     |_|   \___/  \___/ |_|
+	-->
+</head>
+<body class="blog">
+{{template "content" .}}
+<script src="/resources/asset/layui/layui.js"></script>
+<script src="/resources/asset/frontend/js/main.js"></script>
+{{template "js" .}}
+</body>
+</html>

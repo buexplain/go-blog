@@ -36,7 +36,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //创建
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	pid := r.ParamInt("pid", 0)
+	pid := r.QueryInt("pid", 0)
 	return ctx.Response().
 		Assign("pid", pid).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).

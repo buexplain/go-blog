@@ -31,20 +31,6 @@
 
 {{define "js"}}
     <script>
-        layui.use(['laydate'], function() {
-            var layDate = layui.laydate;
-            layDate.render({
-                type: 'datetime',
-                format: 'yyyy-MM-dd HH:mm:ss',
-                elem: "input[name='whereGe[GeCreatedAt]']"
-            });
-            layDate.render({
-                type: 'datetime',
-                format: 'yyyy-MM-dd HH:mm:ss',
-                elem: "input[name='whereLe[LeCreatedAt]']"
-            });
-        });
-
         layui.use(['table', 'jquery', 'form'], function() {
             var table = layui.table;
             var $ = layui.jquery;

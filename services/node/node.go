@@ -3,6 +3,8 @@ package s_node
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
+	m_node "github.com/buexplain/go-blog/models/node"
+	"strings"
 	"xorm.io/builder"
 )
 
@@ -67,4 +69,17 @@ func Destroy(ids []int) (int64, error) {
 		//返回删除结果
 		return affected, nil
 	}
+}
+
+func Store(mod *m_node.Node) (affected int64, err error) {
+	if mod.IsMenu == 0 {
+		mod.IsMenu = m_node.IsMenuNo
+	} else {
+		mod.IsMenu = m_node.IsMenuYes
+	}
+	mod.URL = strings.Trim(mod.URL, " ")
+	if mod.ID == 0 {
+		return dao.Dao.MustCols("Pid", "Methods").Insert(mod)
+	}
+	return dao.Dao.ID(mod.ID).MustCols("Pid", "Methods").Update(mod)
 }

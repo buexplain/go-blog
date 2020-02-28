@@ -6,6 +6,7 @@ build
 *.exe
 *.bin
 /database/database.db
+database/backup/*
 /storage/cache/*
 !/storage/cache/git.keep
 /storage/logs/*

@@ -1,0 +1,456 @@
+@charset "UTF-8";
+/*全局变量*/
+/*工具样式*/
+.float-right {
+  float: right !important;
+}
+
+.float-left {
+  float: left !important;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.text-align-right {
+  text-align: right !important;
+}
+
+.text-align-left {
+  text-align: left !important;
+}
+
+/*全局样式*/
+html {
+  height: 100%;
+}
+
+body {
+  color: #424242;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 25.6px;
+  font-family: "Pingfang SC",STHeiti,"Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",SimSun,sans-serif;
+  background: #F0F0F0;
+  height: 100%;
+}
+
+/*头部*/
+.blog {
+  /*响应式*/
+}
+
+.blog .header {
+  height: 100px;
+  line-height: 100px;
+  padding: 0 5% 0 5%;
+  background-color: #393D49;
+  margin: 0 auto -100px auto;
+  /*logo*/
+  /*导航*/
+  /*汉堡按钮*/
+  /*汉堡导航*/
+}
+
+.blog .header .logo {
+  height: 100%;
+}
+
+.blog .header .logo .text {
+  font-size: 40px;
+  color: #fff;
+}
+
+.blog .header .logo .image {
+  padding-right: 10px;
+  height: 65px;
+}
+
+.blog .header .nav {
+  height: 100%;
+}
+
+.blog .header .nav .layui-nav {
+  background-color: #393D49;
+}
+
+.blog .header .nav .layui-nav .layui-this:after, .blog .header .nav .layui-nav .layui-nav-bar {
+  background: #c2c2c2;
+}
+
+.blog .header .nav .layui-nav .layui-nav-item a {
+  font-size: 18px;
+  height: 100px;
+  line-height: 100px;
+}
+
+.blog .header .nav .layui-nav .layui-nav-item .layui-nav-child {
+  top: 100px;
+}
+
+.blog .header .nav .layui-nav .layui-nav-item .layui-nav-child a {
+  font-size: 18px;
+  height: 36px;
+  line-height: 36px;
+}
+
+.blog .header .nav .layui-nav .layui-nav-item .layui-nav-child .layui-this:hover {
+  background: #F0F0F0 !important;
+}
+
+.blog .header .nav .layui-nav .personal a i {
+  font-size: 20px;
+}
+
+.blog .header .hamburger-btn {
+  display: none;
+  height: 100px;
+}
+
+.blog .header .hamburger-btn i {
+  font-size: 20px;
+  color: #fff;
+}
+
+.blog .header .hamburger-nav {
+  display: none;
+  width: 100%;
+  position: absolute;
+  left: 0px;
+  top: 100px;
+  text-align: center;
+  background: #393D49;
+  z-index: 3;
+}
+
+.blog .header .hamburger-nav .layui-nav-item {
+  border-top: 1px solid #c2c2c2;
+}
+
+.blog .header .hamburger-nav .layui-nav-item a {
+  display: block;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-size: 18px;
+  color: #fff;
+}
+
+.blog .header .hamburger-nav .layui-nav-item .layui-nav-child .layui-this:hover {
+  background: #393D49 !important;
+}
+
+.blog .header .hamburger-nav .layui-nav-bar {
+  display: none;
+}
+
+@media only screen and (max-width: 1024px) {
+  .blog .header .nav {
+    display: none;
+  }
+  .blog .header .hamburger-btn {
+    display: block;
+  }
+}
+
+/*底部*/
+.blog .footer {
+  width: 100%;
+  padding: 30px 0;
+  line-height: 30px;
+  background: #393D49;
+  color: #fff;
+  text-align: center;
+  margin-top: -90px;
+}
+
+.blog .footer span {
+  padding: 0 5px;
+}
+
+.blog .footer a {
+  color: #fff;
+}
+
+/*主体*/
+.blog {
+  /*列表*/
+  /*侧边*/
+  /*详情*/
+}
+
+.blog .icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  margin-right: 5px;
+}
+
+.blog .icon-w15 {
+  width: 15px;
+}
+
+.blog .container {
+  min-height: 100%;
+  padding: 100px 0 90px 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.blog .wrap {
+  max-width: 1024px;
+  margin: 15px auto;
+  position: relative;
+}
+
+.blog .article {
+  background-color: #fff;
+  width: 759px;
+  border-radius: 2px;
+  margin-bottom: 15px;
+}
+
+.blog .article .nav {
+  padding: 15px;
+  padding-bottom: 0;
+}
+
+.blog .article .nav a {
+  color: #424242 !important;
+  font-size: 18px;
+}
+
+.blog .article .nav a:hover {
+  color: #4183c4 !important;
+}
+
+.blog .article .list li {
+  padding: 15px;
+  border-bottom: 1px solid #c2c2c2;
+}
+
+.blog .article .list li:last-child {
+  border-bottom: 0;
+}
+
+.blog .article .list .title a {
+  color: #424242;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.blog .article .list .title a:hover {
+  color: #4183c4;
+}
+
+.blog .article .list .title .layui-badge {
+  margin-left: 8px;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.blog .article .list .extra {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 8px 0 0 0;
+}
+
+.blog .article .list .extra span {
+  margin-right: 8px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 2px 6px;
+  font-size: 14px;
+}
+
+.blog .article .more {
+  text-align: center;
+  background-color: #F0F0F0;
+  padding-top: 15px;
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .blog .article {
+    width: 92%;
+    margin-left: 4% !important;
+    margin-right: 4% !important;
+  }
+}
+
+.blog .aside {
+  width: 250px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.blog .aside h2 {
+  line-height: 30px;
+  color: #424242;
+  font-weight: 700;
+  font-size: 20px;
+  border-bottom: 2px solid #c2c2c2;
+  padding: 8px 0;
+}
+
+.blog .aside > div {
+  margin-bottom: 15px;
+  padding: 0 8px 0 8px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.blog .aside > div:last-child {
+  margin-bottom: 0;
+}
+
+.blog .aside .search {
+  border: 1px solid #c2c2c2;
+}
+
+.blog .aside .search form {
+  width: 100%;
+  position: relative;
+}
+
+.blog .aside .search i {
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.blog .aside .search input {
+  padding: 0 25px 0 0px;
+  border: none;
+}
+
+.blog .aside .tag a {
+  margin: 8px 8px 8px 0;
+  padding: 5px 8px;
+  line-height: 18px;
+  font-size: 16px;
+}
+
+.blog .aside .tag a:hover, .blog .aside .tag a.current {
+  color: #4183c4;
+}
+
+.blog .aside .file li {
+  padding: 8px 0;
+  border-bottom: 1px solid #c2c2c2;
+}
+
+.blog .aside .file li:last-child {
+  border-bottom: 0;
+}
+
+.blog .aside .file li a {
+  font-size: 16px;
+}
+
+.blog .aside .file li a:hover, .blog .aside .file li a.current {
+  color: #4183c4;
+}
+
+@media only screen and (max-width: 1024px) {
+  .blog .aside {
+    position: unset !important;
+    width: 92%;
+    margin-left: 4% !important;
+    margin-right: 4% !important;
+  }
+}
+
+.blog .details {
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.blog .details .nav a {
+  color: #424242 !important;
+  font-size: 18px;
+}
+
+.blog .details .nav a:hover {
+  color: #4183c4 !important;
+}
+
+.blog .details .title {
+  color: #424242;
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 0 15px 0;
+}
+
+.blog .details .title .layui-badge {
+  margin-left: 8px;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.blog .details .extra {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0 0 15px 0;
+}
+
+.blog .details .extra span {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  border: none;
+  padding: 0 8px 0 0;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.blog .details .tag {
+  margin: 0 0 15px 0;
+}
+
+.blog .details .tag a span {
+  font-size: 14px;
+  margin-right: 8px;
+  padding: 3px 5px;
+}
+
+.blog .details .tag a span:hover {
+  color: #4183c4 !important;
+}
+
+.blog .details .content .origin a:hover {
+  color: #4183c4 !important;
+}
+
+@media only screen and (max-width: 1024px) {
+  .blog .details {
+    width: 86%;
+    margin-left: 4% !important;
+    margin-right: 4% !important;
+    padding: 3%;
+  }
+}
+/*# sourceMappingURL=main.css.map */

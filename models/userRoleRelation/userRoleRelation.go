@@ -6,8 +6,7 @@ import (
 
 //rbac 用户与角色的关系表
 type UserRoleRelation struct {
-	models.IDField        `xorm:"extends"`
-	models.CreatedAtField `xorm:"extends"`
+	models.Field `xorm:"extends"`
 	//用户id
 	UserID int `xorm:"INTEGER"`
 	//角色id

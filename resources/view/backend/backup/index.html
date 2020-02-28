@@ -1,0 +1,58 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    备份管理
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <blockquote class="layui-elem-quote">
+        <button class="layui-btn layui-btn-sm" onclick="submit.ajax(this)" data-call-success="backup.success" data-url="/backend/backup/start">开始备份</button>
+    </blockquote>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>备份</th>
+            <th>大小</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $k, $v := .result}}
+            <tr>
+                <td>{{$v}}</td>
+                <td>{{$.result.Size $v}}</td>
+                <td>
+                    <a class="layui-btn layui-btn-sm" href="/backend/backup/download?file={{$v}}">下载</a>
+                    {{if ne $k 0}}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" onclick="submit.confirm(this, 'form')" data-url="/backend/backup/delete" data-file="{{$v}}" data-_method="delete" data-csrf="{{$.csrf}}">删除</a>
+                    {{end}}
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+    <div id="j-laypage"></div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        var backup = {
+            success: function (DOMObject, json) {
+                layui.use(['layer'], function () {
+                    var layer = layui.layer;
+                    if(json.code === 0) {
+                        layer.alert(json.message, {icon: 1, end: function () {
+                            window.location.href = "/backend/backup";
+                        }});
+                    }else {
+                        submit.alertError(json.message);
+                    }
+                });
+            }
+        };
+    </script>
+{{end}}

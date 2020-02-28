@@ -219,6 +219,7 @@ var submit = {
         }
         //锁定
         DOMObject.setAttribute('disabled', 'disabled');
+        DOMObject.innerText = DOMObject.innerText + '...';
 
         //提交表单
         form.submit();
@@ -226,6 +227,7 @@ var submit = {
         try {
             //解锁
             DOMObject.removeAttribute('disabled');
+            DOMObject.innerText = DOMObject.innerText.substr(0, DOMObject.innerText.length-3);
             //移除表单元素
             body.removeChild(form);
         }catch (e) {
@@ -301,6 +303,8 @@ var submit = {
             }
             //锁定
             DOMObject.setAttribute('disabled', 'disabled');
+            DOMObject.innerText = DOMObject.innerText + '...';
+
             jQuery.ajax({
                 type: method,
                 url: url,
@@ -309,6 +313,8 @@ var submit = {
                 success: function (data) {
                     //解锁
                     DOMObject.removeAttribute('disabled');
+                    DOMObject.innerText = DOMObject.innerText.substr(0, DOMObject.innerText.length-3);
+
                     if(success !== undefined && success.length > 0) {
                         that._callUserFunc(success, DOMObject, data);
                     }else {
@@ -340,10 +346,35 @@ var submit = {
                 error: function (jqXHR) {
                     //解锁
                     DOMObject.removeAttribute('disabled');
+                    DOMObject.innerText = DOMObject.innerText.substr(0, DOMObject.innerText.length-3);
                     if(error !== undefined) {
-                        that._callUserFunc(error, DOMObject, jqXHR);
+                        if(jqXHR.hasOwnProperty('responseJSON')) {
+                            that._callUserFunc(error, DOMObject, jqXHR['responseJSON']);
+                        }else {
+                            that._callUserFunc(error, DOMObject, jqXHR['responseText']);
+                        }
                     }else {
-                        console.log(jqXHR);
+                        if(jqXHR.hasOwnProperty('responseJSON')) {
+                            var data = jqXHR['responseJSON'];
+                            if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
+                                //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
+                                var message = '';
+                                if(data.msg !== undefined) {
+                                    message = data.msg;
+                                }else {
+                                    message = data.message;
+                                }
+                                //如果没有任何消息提示，则不做弹出
+                                if(message !== '') {
+                                    that.alertError(message);
+                                }
+                            }else {
+                                //未知返回，直接弹出
+                                that.alertError(data);
+                            }
+                        }else {
+                            that.alertError(jqXHR['responseText']);
+                        }
                     }
                 }
             });

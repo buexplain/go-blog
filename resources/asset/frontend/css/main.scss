@@ -1,0 +1,416 @@
+/*全局变量*/
+$headerFooter-background-color: #393D49;
+$font-color-gray: #787878;
+$font-color-white: #fff;
+$font-color-hover: #4183c4;
+$font-color-black: #424242;
+$border-color:#c2c2c2;
+$body-background-color: #F0F0F0;
+
+$font-size-extra: 14px;
+$font-size-content: 16px;
+$font-size-nav: 18px;
+$font-size-title: 20px;
+
+/*工具样式*/
+.float-right {
+	float: right !important;
+}
+.float-left {
+	float: left !important;
+}
+.text-align-center {
+	text-align: center !important;
+}
+.text-align-right {
+	text-align: right !important;
+}
+.text-align-left {
+	text-align: left !important;
+}
+
+/*全局样式*/
+html {
+    height: 100%;
+}
+
+body {
+    color: $font-color-black;
+    font-size: $font-size-content;
+    font-weight: 400;
+    line-height: $font-size-content*1.6;
+    font-family: "Pingfang SC",STHeiti,"Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",SimSun,sans-serif;
+    background: $body-background-color;
+    height: 100%;
+}
+
+/*头部*/
+.blog {
+	.header {
+        height: 100px;
+        line-height: 100px;
+        padding: 0 5% 0 5%;
+        background-color: $headerFooter-background-color;
+        margin: 0 auto -100px auto;
+    
+        /*logo*/
+        .logo {
+            height: 100%;
+            .text {
+                font-size: $font-size-title*2;
+                color: $font-color-white;
+            }
+            .image {
+                padding-right: 10px;
+                height: 65px;
+            }
+        }
+        
+        /*导航*/
+        .nav {
+            height: 100%;
+            .layui-nav {
+                background-color: $headerFooter-background-color;
+                .layui-this:after, .layui-nav-bar {
+                    background: $border-color;
+                }
+                .layui-nav-item {
+                    a {
+                        font-size: $font-size-nav;
+                        height: 100px;
+                        line-height: 100px;
+                    }
+                    .layui-nav-child {
+                        top: 100px;
+                        a {
+                            font-size: $font-size-nav;
+                            height: 36px;
+                            line-height: 36px;
+                        }
+                        .layui-this:hover{
+                            background: $body-background-color !important;
+                        }
+                    }
+                }
+                .personal {
+                    a {
+                        i {
+                            font-size: $font-size-title;
+                        }
+                    }
+                }
+            }
+        }
+    
+        /*汉堡按钮*/
+        .hamburger-btn {
+            display: none;
+            height: 100px;
+    
+            i {
+                font-size: $font-size-title;
+                color: $font-color-white;
+            }
+        }
+    
+        /*汉堡导航*/
+        .hamburger-nav {
+            display: none;
+            width: 100%;
+            position: absolute;
+            left: 0px;
+            top: 100px;
+            text-align: center;
+            background: $headerFooter-background-color;
+            z-index: 3;
+    
+            .layui-nav-item {
+                border-top: 1px solid $border-color;
+                a {
+                    display: block;
+                    padding: 0;
+                    height: 100%;
+                    width: 100%;
+                    font-size: $font-size-nav;
+                    color: $font-color-white;
+                }
+                .layui-nav-child {
+                    .layui-this:hover{
+                        background: $headerFooter-background-color !important;
+                    }
+                }
+            }
+    
+            .layui-nav-bar {
+                display: none;
+            }
+        }
+    }
+    
+    /*响应式*/
+    @media only screen and (max-width: 1024px) {
+        .header .nav {
+            display: none;
+        }
+        .header .hamburger-btn {
+            display: block;
+        }
+    }
+}
+
+/*底部*/
+.blog {
+    .footer {
+        width: 100%;
+        padding: 30px 0;
+        line-height: 30px;
+        background: $headerFooter-background-color;
+        color: $font-color-white;
+        text-align: center;
+        margin-top: -90px;
+        span {
+            padding: 0 5px;
+        }
+        a {
+            color: $font-color-white;
+        }
+    }
+}
+
+/*主体*/
+.blog {
+    .icon {
+        width: 20px;
+        height: 20px;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+        margin-right: 5px;
+    }
+    .icon-w15 {
+        width: 15px;
+    }
+	.container {
+		min-height: 100%;
+		padding: 100px 0 90px 0;
+		box-sizing: border-box;
+	}
+	.wrap {
+		max-width: 1024px;
+        margin: 15px auto;
+        position: relative;
+    }
+    /*列表*/
+    .article {
+        background-color: $font-color-white;
+		width: 759px;
+        border-radius: 2px;
+        margin-bottom: 15px;
+        .nav {
+            padding: 15px;
+            padding-bottom: 0;
+            a {
+                &:hover {
+                    color: $font-color-hover !important;
+                }
+                color: $font-color-black !important;
+                font-size: $font-size-nav;
+            }
+        }
+        .list {
+            li {
+                padding: 15px;
+                border-bottom: 1px solid $border-color;
+                &:last-child {
+                    border-bottom: 0;
+                }
+            }
+            .title {
+                a {
+                    color: $font-color-black;
+                    font-weight: 700;
+                    font-size: $font-size-title;
+                }
+                a:hover {
+                    color: $font-color-hover;
+                }
+                .layui-badge {
+                    margin-left: 8px;
+                    font-size: $font-size-extra;
+                    padding: 2px 6px;
+                }
+            }
+            .extra {
+                display: flex;
+                padding: 8px 0 0 0;
+                span {
+                    margin-right: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2px 6px;
+                    font-size: $font-size-extra;
+                }
+            }
+        }
+        .more {
+            text-align: center;
+            background-color: $body-background-color;
+            padding-top: 15px;
+            font-size: $font-size-content;
+        }
+    }
+    @media only screen and (max-width: 1024px) {
+        .article {
+            width: 92%;
+            margin-left: 4% !important;
+            margin-right: 4% !important;
+        }
+    }
+    /*侧边*/
+    .aside {
+        width: 250px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        h2 {
+			line-height: 30px;
+			color: $font-color-black;
+			font-weight: 700;
+			font-size: $font-size-title;
+			border-bottom: 2px solid $border-color;
+            padding: 8px 0;
+        }
+        &>div {
+            margin-bottom: 15px;
+            padding: 0 8px 0 8px;
+            background-color: $font-color-white;
+            border-radius: 2px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+        .search {
+            border: 1px solid $border-color;
+            form {
+                width: 100%;
+                position: relative;
+            }
+            i {
+                position: absolute;
+                top: 5px;
+                right: 0px;
+                font-size: 20px;
+                cursor: pointer;
+            }
+            input {
+                padding: 0 25px 0 0px;
+                border: none;
+            }
+        }
+        .tag {
+            a {
+                margin: 8px 8px 8px 0;
+                padding: 5px 8px;
+                line-height: 18px;
+                font-size: $font-size-content;
+                &:hover,&.current {
+                    color: $font-color-hover;
+                }
+            }
+        }
+        .file {
+            li {
+                padding: 8px 0;
+                border-bottom: 1px solid $border-color;
+                &:last-child {
+                    border-bottom: 0;
+                }    
+                a {
+                    &:hover,&.current {
+                        color: $font-color-hover;
+                    }
+                    font-size: $font-size-content;
+                }
+            }
+        }
+    }
+    @media only screen and (max-width: 1024px) {
+        .aside {
+            position: unset !important;
+            width: 92%;
+            margin-left: 4% !important;
+            margin-right: 4% !important;
+        }
+    }
+    /*详情*/
+    .details {
+        background-color: $font-color-white;
+        border-radius: 2px;
+        padding: 15px;
+        margin-bottom: 15px;
+        .nav {
+            a {
+                &:hover {
+                    color: $font-color-hover !important;
+                }
+                color: $font-color-black !important;
+                font-size: $font-size-nav;
+            }
+        }
+        .title {
+            color: $font-color-black;
+            font-weight: 700;
+            font-size: $font-size-title;
+            margin: 0 0 15px 0;
+            .layui-badge {
+                margin-left: 8px;
+                font-size: $font-size-extra;
+                padding: 2px 6px;
+            }
+        }
+        .extra {
+            display: flex;
+            margin: 0 0 15px 0;
+            span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                padding: 0 8px 0 0;
+                margin-right: 8px;
+                font-size: $font-size-extra;
+            }
+        }
+        .tag {
+            margin: 0 0 15px 0;
+            a{
+                span {
+                    font-size: $font-size-extra;
+                    margin-right: 8px;
+                    padding: 3px 5px;
+                    &:hover {
+                        color: $font-color-hover !important;
+                    }
+                }
+            }
+        }
+        .content {
+            .origin {
+                a {
+                    &:hover {
+                        color: $font-color-hover !important;
+                    }
+                }
+            }
+        }
+    }
+    @media only screen and (max-width: 1024px) {
+        .details {
+            width: 86%;
+            margin-left: 4% !important;
+            margin-right: 4% !important;
+            padding: 3%;
+        }
+    }
+}

@@ -22,7 +22,7 @@ func init() {
 	}
 	if a_boot.Config.App.Debug {
 		Dao.ShowSQL(true)
-		Dao.Logger().SetLevel(core.LOG_DEBUG)
+		Dao.Logger().SetLevel(core.LOG_INFO)
 	}
 }
 
@@ -36,6 +36,10 @@ func NewDao(path string) (*xorm.Engine, error) {
 	dao.DatabaseTZ = time.Local
 	//设置结构体与表字段一致
 	dao.SetMapper(core.SameMapper{})
+	//设置连接池的空闲数大小
+	dao.SetMaxIdleConns(10)
+	//设置最大打开连接数
+	dao.SetMaxOpenConns(20)
 	return dao, nil
 }
 

@@ -14,7 +14,7 @@ cd go-blog && copy config.example.toml config.toml
 
 ### 初始化数据库
 ```bash
-go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db import -f database/init.sql
 ```
 
 ### 跑起来
@@ -36,13 +36,12 @@ go build -o artisan.exe artisan.go && artisan.exe db sync
 
 ### 初始化一个管理员用户
 ```bash
-go build -o artisan.exe artisan.go && artisan.exe db sync &&  artisan.exe db addAdmin -a admin -p 123456
+go build -o artisan.exe artisan.go && artisan.exe db addAdmin -a admin -p 123456
 ```
 
 ### `database/init.sql`制作
-下面的命令是导出数据，表结构与表索引不做导出。
 ```bash
-go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db dump -f database/init.sql
 ```
 
 ### 静态文件打包
@@ -59,4 +58,14 @@ go mod edit -replace=github.com/buexplain/go-fool=C:\Edisk\code\go-fool
 ### 包升级到最新版本
 ```bash
 go get -u 包路径@[版本号,保持最新请使用latest 或者 master]
+go get -u xorm.io/xorm@latest
+go get -u github.com/88250/lute@latest
+go get -u github.com/mojocn/base64Captcha@latest
+go get -u github.com/spf13/cobra@latest
+go get -u github.com/gorilla/sessions@latest
+go get -u github.com/kevinburke/go-bindata@latest
+go get -u github.com/mattn/go-sqlite3@latest
+go get -u github.com/BurntSushi/toml@latest
+go get -u github.com/gorilla/securecookie@latest
+go get -u github.com/buexplain/go-flog@latest
 ```

@@ -1,0 +1,61 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    {{if .result}}新增{{else}}编辑{{end}}配置分组
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="{{if .result}}/backend/config/group/update/{{.result.ID}}{{else}}/backend/config/group{{end}}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                名称
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                字段
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Key" value="{{.result.Key}}" required lay-verify="required" placeholder="请输入字段" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                备注
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="Comment" value="{{.result.Comment}}" placeholder="请输入备注" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{._token}}
+                {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+                <button class="layui-btn layui-btn-sm" lay-submit>
+                    提交
+                </button>
+                <a href="/backend/config/group" class="layui-btn layui-btn-sm layui-btn-primary">
+                    取消
+                </a>
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+        });
+    </script>
+{{end}}

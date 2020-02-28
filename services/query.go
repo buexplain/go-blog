@@ -3,7 +3,6 @@ package s_services
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
-	"github.com/buexplain/go-blog/models/util"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
 	"strings"
@@ -40,7 +39,7 @@ type Query struct {
 //返回表信息
 func (this *Query) TableInfo() *core.Table {
 	if this.Error == nil && this.tableInfo == nil {
-		this.tableInfo, this.Error = m_util.GetTableInfo(dao.Dao, this.tableName)
+		this.tableInfo, this.Error = GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
 			this.tableName = this.tableInfo.Name
 		}else {
@@ -69,9 +68,9 @@ func (this *Query) Count() int64 {
 	if this.Error == nil {
 		tableInfo := this.TableInfo()
 		if tableInfo != nil {
-			if tableInfo.GetColumn("DeletedAt") != nil {
+			if tableInfo.GetColumn("CreatedAt") != nil {
 				type Tmp struct {
-					DeletedAt time.Time `xorm:"DATETIME deleted"`
+					CreatedAt time.Time `xorm:"DATETIME created"`
 				}
 				total, this.Error = this.Counter.Count(new(Tmp))
 				this.Error = errors.MarkServer(this.Error)

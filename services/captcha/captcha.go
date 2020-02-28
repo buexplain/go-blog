@@ -3,62 +3,36 @@ package s_captcha
 import (
 	"github.com/buexplain/go-fool"
 	"github.com/mojocn/base64Captcha"
+	"image/color"
 )
-
+//
 const CaptchaID = "captchaID"
 
-type Option func(*base64Captcha.ConfigDigit)
+var store base64Captcha.Store = base64Captcha.DefaultMemStore
 
-func SetHeight(height int) Option {
-	return func(config *base64Captcha.ConfigDigit) {
-		config.Height = height
-	}
-}
-
-func SetWidth(width int) Option {
-	return func(config *base64Captcha.ConfigDigit) {
-		config.Width = width
-	}
-}
-
-func SetMaxSkew(maxSkew float64) Option {
-	return func(config *base64Captcha.ConfigDigit) {
-		config.MaxSkew = maxSkew
-	}
-}
-
-func SetDotCount(dotCount int) Option {
-	return func(config *base64Captcha.ConfigDigit) {
-		config.DotCount = dotCount
-	}
-}
-
-//设置验证码长度
-func SetCaptchaLen(captchaLen int) Option {
-	return func(config *base64Captcha.ConfigDigit) {
-		config.CaptchaLen = captchaLen
-	}
-}
 
 //校验验证码
 func Verify(session fool.Session, captcha string) bool {
-	return base64Captcha.VerifyCaptcha(session.GetString(CaptchaID), captcha)
+	return store.Verify(session.GetString(CaptchaID), captcha, true)
 }
 
 //生成验证码
-func Generate(session fool.Session, opts ...Option) (url string) {
-	var config = &base64Captcha.ConfigDigit{
-		Height:     40,
-		Width:      100,
-		MaxSkew:    1,
-		DotCount:   80,
-		CaptchaLen: 4,
+func Generate(session fool.Session, height int, width int, length int) string {
+	driver := base64Captcha.NewDriverString(
+		height,
+		width,
+		2,
+		8,
+		length,
+		"abcdefghjkmnqrstuvxyz123456789",
+		&color.RGBA{R: uint8(255), G: uint8(255), B: uint8(255), A: uint8(255)},
+		nil,
+		)
+	c := base64Captcha.NewCaptcha(driver, store)
+	id, url, err := c.Generate()
+	if err != nil {
+		return ""
 	}
-	for _, option := range opts {
-		option(config)
-	}
-	id, captchaInstance := base64Captcha.GenerateCaptcha("", *config)
-	url = base64Captcha.CaptchaWriteToBase64Encoding(captchaInstance)
 	session.Set(CaptchaID, id)
-	return
+	return url
 }

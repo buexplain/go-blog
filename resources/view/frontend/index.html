@@ -1,0 +1,173 @@
+{{define "extend"}}
+	frontend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+	{{.config.Get "Name"}}
+{{end}}
+
+{{define "css"}}
+
+{{end}}
+
+{{define "content"}}
+	<!--头部-->
+	<div class="header">
+		<!--logo-->
+		<div class="logo float-left">
+			<a href="/">
+				<img src="/resources/asset/frontend/images/logo.png" alt="" class="image">
+				<span class="text">{{.config.Get "Name"}}</span>
+			</a>
+		</div>
+		<!--导航-->
+		<div class="nav float-right">
+			<ul class="layui-nav">
+				{{range $_, $v := .categoryTree}}
+					<li class="layui-nav-item">
+						{{if len $v.Children | eq 0}}
+							<a href="{{if eq $v.Redirect ""}}/?categoryID={{$v.ID}}{{else}}{{$v.Redirect}}{{end}}">{{$v.Name}}</a>
+						{{else}}
+							<a href="javascript:;">{{$v.Name}}</a>
+								<dl class="layui-nav-child">
+									{{range $_, $children := $v.Children}}
+										<dd>
+											<a href="{{if eq $children.Redirect ""}}/?categoryID={{$children.ID}}{{else}}{{$children.Redirect}}{{end}}">{{$children.Name}}</a>
+										</dd>
+									{{end}}
+								</dl>
+						{{end}}
+					</li>
+				{{end}}
+			</ul>
+		</div>
+		<!--汉堡按钮-->
+		<a href="javascript:;" class="hamburger-btn float-right">
+			<i class="layui-icon layui-icon-more"></i>
+		</a>
+		<!--汉堡导航-->
+		<ul class="layui-nav layui-nav-tree hamburger-nav">
+			{{range $_, $v := .categoryTree}}
+				<li class="layui-nav-item">
+					{{if len $v.Children | eq 0}}
+						<a href="{{if eq $v.Redirect ""}}/?categoryID={{$v.ID}}{{else}}{{$v.Redirect}}{{end}}">{{$v.Name}}</a>
+					{{else}}
+						<a href="javascript:;">{{$v.Name}}</a>
+						<dl class="layui-nav-child">
+							{{range $_, $children := $v.Children}}
+								<dd>
+									<a href="{{if eq $children.Redirect ""}}/?categoryID={{$children.ID}}{{else}}{{$children.Redirect}}{{end}}">{{$children.Name}}</a>
+								</dd>
+							{{end}}
+						</dl>
+					{{end}}
+				</li>
+			{{end}}
+		</ul>
+	</div>
+	<!--主体内容-->
+	<div class="container">
+		<div class="wrap">
+			<!--左侧数据-->
+			<div class="article">
+				<!--面包屑导航-->
+				<div class="nav">
+					<span class="layui-breadcrumb" lay-separator=">">
+						<a href="/">首页</a>
+					</span>
+				</div>
+				<!--文章列表-->
+				<ul class="list">
+					{{range $_, $v := .contentList}}
+						<li>
+							<div class="title">
+								<a href="{{$v.IDStr}}">
+									{{$v.Title}}
+									{{if len $v.Origin | eq 0}}
+										<span class="layui-badge layui-bg-green">原创</span>
+									{{else}}
+										<span class="layui-badge layui-bg-orange">转载</span>
+									{{end}}
+								</a>
+							</div>
+							<div class="extra">
+								<span class="layui-badge layui-bg-gray">
+									<svg class="icon icon-w15" aria-hidden="true">
+										<use xlink:href="#icon-shizhong"></use>
+									</svg>
+									{{$v.CreatedAtText}}
+								</span>
+								<span class="layui-badge layui-bg-gray">
+									<svg class="icon" aria-hidden="true">
+										<use xlink:href="#icon-eye"></use>
+									</svg>
+									{{$v.Hits}}
+								</span>
+							</div>
+						</li>
+					{{end}}
+				</ul>
+				<!--文章分页-->
+				<div class="more">
+					{{.pageHtml}}
+				</div>
+			</div>
+			<!--右侧数据-->
+			<div class="aside">
+				<!--搜索框-->
+				<div class="search">
+					<form class="layui-form" action="/">
+						<i class="layui-icon layui-icon-search"></i>
+						<input type="text" name="keyword" value="{{.keyword}}" placeholder="Search …" autocomplete="off" class="layui-input">
+					</form>
+				</div>
+				<!--标签-->
+				<div class="tag">
+					<h2>
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#icon-biaoqian"></use>
+						</svg>
+						标签
+					</h2>
+					{{range $_, $v := .tagList}}
+						{{if eq $v.Total 0}}
+							<a href="javascript:;" style="cursor: text;" class="layui-btn layui-btn-primary layui-btn-sm">{{$v.Name}}({{$v.Total}})</a>
+						{{else}}
+							<a href="/?tagID={{$v.ID}}" class="layui-btn layui-btn-primary layui-btn-sm {{if eq $v.ID $.tagID}}current{{end}}">{{$v.Name}}({{$v.Total}})</a>
+						{{end}}
+					{{end}}
+				</div>
+				<div class="file">
+					<h2>
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#icon-guidang"></use>
+						</svg>
+						归档
+					</h2>
+					<ul>
+						{{range $_, $v := .contentPlace}}
+							<li>
+								{{if eq $v.Total 0}}
+									<a href="javascript:;" style="cursor: text;">{{$v.CreatedAtYm}}({{$v.Total}})</a>
+								{{else}}
+									<a class="{{if eq $v.CreatedAtYm $.place}}current{{end}}" href="/?place={{$v.CreatedAtYm}}">{{$v.CreatedAtYm}}({{$v.Total}})</a>
+								{{end}}
+							</li>
+						{{end}}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--底部-->
+	<div class="footer">
+		<p>
+			<span>&copy; 2018</span>
+			<span>MIT license</span>
+		</p>
+	</div>
+{{end}}
+
+{{define "js"}}
+
+{{end}}

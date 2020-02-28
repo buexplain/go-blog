@@ -14,6 +14,8 @@ type Category struct {
 	Name string `xorm:"TEXT"`
 	//跳转地址
 	Redirect string `xorm:"TEXT"`
+	//是否为前台导航
+	IsMenu int `xorm:"INTEGER"`
 	//排序id
 	SortID int `xorm:"INTEGER"`
 }

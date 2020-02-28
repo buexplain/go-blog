@@ -1,7 +1,9 @@
 package s_tag
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/dao"
+	m_content "github.com/buexplain/go-blog/models/content"
 	m_tag "github.com/buexplain/go-blog/models/tag"
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
@@ -10,7 +12,7 @@ import (
 
 type Tag struct {
 	m_tag.Tag `xorm:"extends"`
-	ContentNum int
+	Total int
 }
 
 type List []*Tag
@@ -24,7 +26,7 @@ func GetList(ctx *fool.Ctx)(counter int64, result List, err error)  {
 	//再连表查询得到每个标签的文章数量
 	query.Finder.Join(
 		"LEFT",
-		"(SELECT count(*) as ContentNum, TagID FROM ContentTag GROUP BY TagID) as ContentTag",
+		"(SELECT count(*) as Total, TagID FROM ContentTag GROUP BY TagID) as ContentTag",
 		"Tag.ID = ContentTag.TagID",
 		)
 	query.Find(&result)
@@ -32,13 +34,17 @@ func GetList(ctx *fool.Ctx)(counter int64, result List, err error)  {
 	return
 }
 
-func GetALL() (result List, err error) {
-	mod := dao.Dao.Table("Tag").Desc("ID").Join(
+func GetALL() (result List) {
+	countSql := fmt.Sprintf("(SELECT count(*) as Total, TagID FROM ContentTag INNER JOIN Content ON `ContentTag`.`ContentID`=`Content`.`ID` WHERE `Content`.`Online`=%d GROUP BY TagID) as ContentTag", m_content.OnlineYes)
+	mod := dao.Dao.Table("Tag").Desc("`Total`").Join(
 		"LEFT",
-		"(SELECT count(*) as ContentNum, TagID FROM ContentTag GROUP BY TagID) as ContentTag",
+		countSql,
 		"Tag.ID = ContentTag.TagID",
 	)
-	err = mod.Find(&result)
+	err := mod.Find(&result)
+	if err != nil {
+		panic(err)
+	}
 	return
 }
 

@@ -1,0 +1,57 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    系统日志
+{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <table class="layui-table">
+        <colgroup>
+            <col width="50%">
+            <col width="20%">
+            <col width="30%">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>日志</th>
+            <th>大小</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $k, $v := .result}}
+            <tr>
+                <td>{{$v}}</td>
+                <td>{{$.result.Size $v}}</td>
+                <td>
+                    <a class="layui-btn layui-btn-sm" href="javascript:preview('{{$v}}');">查看</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/sysLog/download?file={{$v}}">下载</a>
+                    {{if ne $k 0}}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" onclick="submit.confirm(this, 'form')" data-url="/backend/sysLog/delete" data-file="{{$v}}" data-_method="delete" data-csrf="{{$.csrf}}">删除</a>
+                    {{end}}
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+{{end}}
+
+{{define "js"}}
+    <script>
+        function preview(log) {
+            if(window.parent.skeleton === undefined) {
+                window.open("/backend/sysLog/show?file="+encodeURIComponent(log));
+            }else {
+                var index = log.replace(/[-\.]/g,'_');
+                if(window.parent.skeleton.tab.has(index) === false) {
+                    window.parent.skeleton.tab.add(log, "/backend/sysLog/show?file="+encodeURIComponent(log), index);
+                }
+                window.parent.skeleton.tab.change(index);
+            }
+        }
+    </script>
+{{end}}

@@ -1,0 +1,102 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}配置项目{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <script type="text/html" id="j-toolbar">
+        <div class="layui-btn-container">
+            <a class="layui-btn layui-btn-sm" href="/backend/config/item/create?groupID={{.groupID}}">新增</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" href="javascript:;" lay-event="del-batch">批量删除</a>
+        </div>
+    </script>
+    <table id="j-table" lay-filter="j-table"></table>
+    {{._token}}
+{{end}}
+
+{{define "js"}}
+    <script>
+        var groupID = {{.groupID}};
+        layui.use(['table', 'jquery', 'form'], function() {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var form = layui.form;
+
+            //渲染表格
+            var tableOption = {
+                elem: '#j-table'
+                ,url: '/backend/config/item?groupID='+groupID //数据接口
+                ,toolbar: '#j-toolbar' //开启头部工具栏，并为其绑定左侧模板
+                ,page: {
+                    curr: 1,
+                    where:{},
+                } //开启分页
+                ,cols: [[ //表头
+                    {field: 'ID', type: 'checkbox', fixed: 'left'}
+                    ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
+                    ,{field: 'Name', title: '名称'}
+                    ,{field: 'Key', title: '字段'}
+                    ,{field: 'Value', title: '值'}
+                    ,{field: 'Comment', title: '备注'}
+                    ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
+                            return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
+                        }}
+                    ,{fixed: 'right', title:'操作', templet:function (data) {
+                            let btn = '';
+                            btn += '<a class="layui-btn layui-btn-sm" href="/backend/config/item/edit/'+data['ID']+'">编辑</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['ContentNum'] > 0 ? 'none' : '')+';">删除</a>';
+                            return btn;
+                        }}
+                ]]
+            };
+            var tableIns = table.render(tableOption);
+
+            //监听表格头部操作按钮
+            table.on('toolbar(j-table)', function(obj) {
+                //批量删除
+                if(obj.event === 'del-batch') {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    if(checkStatus.data.length === 0) {
+                        layer.alert('请勾选数据', {icon: 2});
+                        return '';
+                    }
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        var param = {ids:[], _method:'put', _token:document.querySelector("input[name=_token]").value};
+                        checkStatus.data.forEach(function (v) {
+                            param.ids.push(v['ID']);
+                        });
+                        $.post('/backend/config/item/delete-batch', param, function (json) {
+                            if(json.code === 0) {
+                                layer.close(index);
+                                table.reload(obj.config.id, obj.config);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
+            });
+
+            //监听表格右侧操作按钮
+            table.on('tool(j-table)', function(obj) {
+                var data = obj.data;
+                //单个删除
+                if(obj.event === 'del') {
+                    layer.confirm('确定删除吗？', {icon: 3}, function(index) {
+                        $.get('/backend/config/item/delete/'+data['ID']+'?_method=delete', function (json) {
+                            if(json.code === 0) {
+                                obj.del();
+                                layer.close(index);
+                            }else {
+                                layer.alert(json.message, {icon: 2});
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+{{end}}

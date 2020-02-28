@@ -7,6 +7,6 @@ import (
 
 //显示验证码
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	url := s_captcha.Generate(r.Session())
+	url := s_captcha.Generate(r.Session(), 38, 104, 4)
 	return w.Success(url)
 }

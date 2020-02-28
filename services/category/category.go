@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
 	s_services "github.com/buexplain/go-blog/services"
+	"strings"
 	"xorm.io/builder"
 )
 
@@ -45,14 +46,17 @@ func (this List) String() string {
 }
 
 //返回所有的分类，返回平面结构
-func GetALL() (List, error) {
+func GetALL() List {
 	result := make(List, 0)
 	err := dao.Dao.
 		Table("Category").
 		Select("Category.*, Content.ContentNum").
 		Join("LEFT", "(SELECT count(*) as ContentNum, CategoryID FROM Content GROUP BY CategoryID) as Content", "Category.ID = Content.CategoryID").
 		Asc("SortID").Find(&result)
-	return result, err
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 type TreeItem struct {
@@ -63,11 +67,11 @@ type TreeItem struct {
 type TreeList []*TreeItem
 
 //获取所有分类，返回树状结构
-func GetTree() (TreeList, error) {
+func GetTree() TreeList {
 	lists := make(TreeList, 0)
-	err := dao.Dao.Table("Category").Desc("SortID").Find(&lists)
+	err := dao.Dao.Table("Category").Where("IsMenu=?", m_category.IsMenuYes).Desc("SortID").Find(&lists)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	m := make(map[int]*TreeItem)
 	for _,v := range lists {
@@ -84,11 +88,11 @@ func GetTree() (TreeList, error) {
 		}
 		i.Children = append(i.Children, v)
 	}
-	return result, nil
+	return result
 }
 
 //获取一个分类的父分类
-func GetParents(categoryID int) (m_category.List) {
+func GetParents(categoryID int) m_category.List {
 	if categoryID <= 0 {
 		return nil
 	}
@@ -98,4 +102,32 @@ func GetParents(categoryID int) (m_category.List) {
 		return nil
 	}
 	return list
+}
+
+//获取一个分类的子分类
+func GetSons(categoryID int)  m_category.List  {
+	if categoryID <= 0 {
+		return nil
+	}
+	list := make(m_category.List, 0)
+	recursion := &s_services.Recursion{}
+	recursion.IsDown = true
+	err := s_services.GetRecursion("category", categoryID, &list, recursion)
+	if err != nil {
+		return nil
+	}
+	return list
+}
+
+func Store(mod *m_category.Category) (affected int64, err error) {
+	if mod.IsMenu == 0 {
+		mod.IsMenu = m_category.IsMenuNo
+	} else {
+		mod.IsMenu = m_category.IsMenuYes
+	}
+	mod.Redirect = strings.Trim(mod.Redirect, " ")
+	if mod.ID == 0 {
+		return dao.Dao.MustCols("Pid", "Redirect").Insert(mod)
+	}
+	return dao.Dao.ID(mod.ID).MustCols("Pid", "Redirect").Update(mod)
 }

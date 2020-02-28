@@ -42,7 +42,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //创建
 func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	pid := r.ParamInt("pid", 0)
+	pid := r.QueryInt("pid", 0)
 	return ctx.Response().
 		Assign("pid", pid).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
@@ -55,6 +55,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
+	mod.ID = 0
 	mod.Methods = strings.Join(r.FormSlice("methods", make([]string, 0)), ",")
 
 	if r, err := v.Validate(mod); err != nil {
@@ -188,7 +189,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(r)
 	}
 
-	if _, err := mod.Update(); err != nil {
+	if _, err := s_node.Store(mod); err != nil {
 		return w.JumpBack(err)
 	}
 

@@ -4,9 +4,8 @@ import "github.com/buexplain/go-blog/models"
 
 //配置组表
 type ConfigItem struct {
-	models.IDField `xorm:"extends"`
-	//配置组的字段
-	Group string `xorm:"TEXT"`
+	models.Field `xorm:"extends"`
+	GroupID int `xorm:"INTEGER"`
 	//配置项名称
 	Name string `xorm:"TEXT"`
 	//字段名
@@ -16,3 +15,5 @@ type ConfigItem struct {
 	//备注
 	Comment string `xorm:"TEXT"`
 }
+
+type List []*ConfigItem
