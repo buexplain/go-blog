@@ -13,7 +13,7 @@ import (
 var Dao *xorm.Engine
 
 func init() {
-	db := filepath.Join(a_boot.ROOT_PATH, "database/database.db")
+	db := filepath.Join(a_boot.ROOT_PATH, "database/database.db?_synchronous=OFF&_journal=WAL")
 	var err error
 	Dao, err = NewDao(db)
 	if err != nil {
@@ -21,6 +21,7 @@ func init() {
 		os.Exit(1)
 	}
 	if a_boot.Config.App.Debug {
+		Dao.ShowExecTime(true)
 		Dao.ShowSQL(true)
 		Dao.Logger().SetLevel(core.LOG_INFO)
 	}
@@ -40,7 +41,11 @@ func NewDao(path string) (*xorm.Engine, error) {
 	dao.SetMaxIdleConns(10)
 	//设置最大打开连接数
 	dao.SetMaxOpenConns(20)
+	//开启sqlite3的缓存
+	_, err = dao.Exec("PRAGMA cache_size = 4000")
+	if err != nil {
+		_ = dao.Close()
+		return nil, err
+	}
 	return dao, nil
 }
-
-type CallBack func(session *xorm.Session) *xorm.Session
