@@ -176,10 +176,10 @@
                         html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+data.Name+'\');">'+html+'</a>';
                         return html;
                     }}
-                    ,{field: 'Size', title: '文件大小', width:150, templet: function (data) {
+                    ,{field: 'Size', title: '文件大小', templet: function (data) {
                         return myUtil.renderBytes(data['Size']);
                     }}
-                    ,{fixed: 'right', title:'操作', width:150, templet:function (data) {
+                    ,{fixed: 'right', title:'操作', templet:function (data) {
                         let text = '['+data.Name+'](/'+data.Path+' "'+data.Name+'")';
                         if(myUtil.isImage(data.Path)) {
                             text = '!'+text;
@@ -187,6 +187,9 @@
                         text = encodeURIComponent(text);
                         let btn = '';
                         btn += '<a class="layui-btn layui-btn-sm j-copy" data-clipboard-text="'+text+'">复制</a>';
+                        if(myUtil.isEditable(data.Path)) {
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/attachment/edit/'+data.ID+'">编辑</a>';
+                        }
                         btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
                         return btn;
                     }}
@@ -264,7 +267,6 @@
                     type: "POST",
                     url: "/backend/article/attachment/update/"+obj.data.ID,
                     data:{
-                        id: obj.data.ID,
                         name: obj.data.Name,
                         _method:'put',
                         _token:document.querySelector("input[name=_token]").value

@@ -1,0 +1,97 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    数据库管理
+{{end}}
+
+{{define "css"}}
+    <!--引入核心样式-->
+    <link rel="stylesheet" href="/resources/asset/codemirror/lib/codemirror.css">
+    <script src="/resources/asset/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/resources/asset/codemirror/theme/monokai.css">
+{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="/backend/database" method="post">
+        <div class="layui-form-item">
+            <input type="radio" name="sqlType" value="query" title="query" {{if .sqlType}}{{if eq .sqlType "query"}}checked{{end}}{{end}}>
+            <input type="radio" name="sqlType" value="exec" title="exec" {{if .sqlType }}{{if eq .sqlType "exec"}}checked{{end}}{{end}}>
+        </div>
+        <div class="layui-form-item">
+            <textarea id="j-sql" name="sql">{{.sql}}</textarea>
+        </div>
+        <div class="layui-form-item">
+            {{._token}}
+            <button class="layui-btn layui-btn-sm" lay-submit>
+                立即执行
+            </button>
+            {{if .execDuration}}
+                <span>耗时：{{.execDuration}}</span>
+            {{end}}
+        </div>
+    </form>
+    <div style="width: 99%; overflow: scroll;">
+        {{/* 输出错误信息 */}}
+        {{if .err}}
+            <pre class="layui-code" lay-title="执行错误" lay-height="" lay-skin="" lay-encode="">{{.err}}</pre>
+        {{end}}
+        {{/* 输出查询语句结果 */}}
+        {{if .rows}}
+            <table class="layui-table">
+                <thead>
+                {{if .fields}}
+                    <tr>
+                        {{range $_, $field := .fields}}
+                            <th>{{$field}}</th>
+                        {{end}}
+                    </tr>
+                {{end}}
+                </thead>
+                <tbody>
+                {{if .fields}}
+                    {{range $k, $row := .rows}}
+                        <tr>
+                            {{range $_, $field := $.fields}}
+                                <td>{{index $row $field | printf "%s"}}</td>
+                            {{end}}
+                        </tr>
+                    {{end}}
+                {{end}}
+                </tbody>
+            </table>
+        {{end}}
+        {{/* 输出变更语句结果 */}}
+        {{if .result}}
+            LastInsertId: {{.result.LastInsertId}}，RowsAffected: {{.result.RowsAffected}}
+        {{end}}
+    </div>
+{{end}}
+
+{{define "js"}}
+    <!--匹配括号-->
+    <script src="/resources/asset/codemirror/addon/edit/matchbrackets.js"></script>
+    <!--引入对应语言的支持-->
+    <script src="/resources/asset/codemirror/mode/sql/sql.js"></script>
+    <link rel="stylesheet" href="/resources/asset/codemirror/addon/hint/show-hint.css" />
+    <script src="/resources/asset/codemirror/addon/hint/show-hint.js"></script>
+    <script src="/resources/asset/codemirror/addon/hint/sql-hint.js"></script>
+    <!--初始化编辑器-->
+    <script>
+        var tables = {{.tables}};
+        var editor = CodeMirror.fromTextArea(document.getElementById("j-sql"), {
+            mode: "text/x-sql",
+            theme: "monokai",
+            indentWithTabs: true,
+            smartIndent: true,
+            lineNumbers: true,
+            matchBrackets : true,
+            autofocus: true,
+            extraKeys: {'Tab': 'autocomplete'},
+            hintOptions: {tables: tables}
+        });
+        //引入layui的form组件，渲染表单样式
+        layui.use('form');
+    </script>
+{{end}}

@@ -7,4 +7,6 @@ import (
 
 func frontend(mux *fool.Mux) {
 	mux.Get("/", c_frontend.Index)
+	mux.Get("/index-tag", c_frontend.IndexTag)
+	mux.Get("/index-place", c_frontend.IndexPlace)
 }

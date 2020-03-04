@@ -8,6 +8,7 @@ import (
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/attachment"
 	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"strings"
@@ -62,6 +63,57 @@ func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
+
+func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	result := new(m_attachment.Attachment)
+	result.ID = r.ParamInt("id", 0)
+	if result.ID <= 0 {
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, result.ID))
+	}
+
+	if has, err := dao.Dao.Get(result); err != nil {
+		return err
+	} else if !has {
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, result.ID))
+	}
+
+	if err := result.ReadFile(); err != nil {
+		return err
+	}
+	w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
+	return w.Assign("result", result).View(http.StatusOK, "backend/article/attachment/create.html")
+}
+
+func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	name := r.Form("name")
+	content := r.Form("content")
+	if name == "" && content == "" {
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "name or content"))
+	}
+
+	mod := new(m_attachment.Attachment)
+	mod.ID = r.ParamPositiveInt("id")
+	if mod.ID <= 0 {
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
+	}
+	if has, err := dao.Dao.Get(mod); err != nil {
+		return errors.MarkServer(err)
+	} else if !has {
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, mod.ID))
+	}
+	if name != "" {
+		mod.Name = name
+	}
+
+	mod.Content = content
+
+	if err := s_attachment.Update(mod); err != nil {
+		return err
+	}
+
+	return w.Success()
+}
+
 func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	file, err := r.File("file")
 	if err != nil {
@@ -77,21 +129,6 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	return w.Success(result)
-}
-
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	id := r.FormInt("id", 0)
-	name := r.Form("name", "")
-	if id == 0 || name == "" {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id or name"))
-	}
-	result := new(m_attachment.Attachment)
-	result.Name = name
-	affected, err := dao.Dao.Id(id).Update(result)
-	if err != nil {
-		return err
-	}
-	return w.Success(affected)
 }
 
 //单个删除

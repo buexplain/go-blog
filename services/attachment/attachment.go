@@ -1,12 +1,15 @@
 package s_attachment
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/attachment"
 	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-fool/upload"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -144,5 +147,74 @@ func Destroy(ids []int) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func Update(mod *m_attachment.Attachment) error {
+	content := mod.Content
+	mod.Content = ""
+	if content != "" {
+		//提取md5
+		hash := md5.New()
+		if size, err := io.WriteString(hash, content); err != nil {
+			return err
+		}else {
+			mod.Size = size
+		}
+		mod.MD5 = hex.EncodeToString(hash.Sum(nil))
+	}
+
+	//开启事务
+	session := dao.Dao.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		return err
+	}
+
+	//更新数据库
+	if _, err := session.ID(mod.ID).Update(mod); err != nil {
+		if err := session.Rollback(); err != nil {
+			return err
+		}
+		return err
+	}
+
+	//写入文件
+	if content != "" {
+		f, err := os.OpenFile(filepath.Join(a_boot.ROOT_PATH, mod.Path), os.O_WRONLY|os.O_TRUNC, 0666)
+		if err != nil {
+			//写入失败，回滚数据库
+			if err := session.Rollback(); err != nil {
+				return err
+			}
+			return err
+		}
+		defer func() {
+			err := f.Close()
+			if err != nil {
+				if err := session.Rollback(); err != nil {
+					panic(err)
+				}
+				panic(err)
+			}
+		}()
+		_, err = io.WriteString(f, content)
+		if err != nil {
+			if err := session.Rollback(); err != nil {
+				return err
+			}
+			return err
+		}
+	}
+
+	//提交事务
+	if err := session.Commit(); err != nil {
+		return err
+	}
+
+	if content != "" {
+		mod.Content = content
+	}
+
 	return nil
 }

@@ -10,40 +10,15 @@ layui.use(['element', 'jquery', 'layer', 'form'], function() {
 		});
 	/* 汉堡按钮 结束 */
 
-	/* 登录 开始*/
-		form.on('submit(j-f-signIn)', function(data) {
-			layer.msg("登录成功，页面即将刷新："+JSON.stringify(data.field), function() {
-				window.location.reload()
-			});
-			return false;
-		});
-	/* 登录 结束*/
-
-	/*注册 开始*/
-		form.on('submit(j-f-register)', function(data) {
-			layer.msg("注册成功，页面即将刷新："+JSON.stringify(data.field), function() {
-				window.location.reload()
-			});
-			return false;
-		});
-	/*注册 结束*/
-
-	/*忘记密码 开始*/
-	form.on('submit(j-f-forget)', function(data) {
-		layer.msg("修改成功，页面即将刷新："+JSON.stringify(data.field), function() {
-			window.location.reload()
-		});
-		return false;
+	/* 加载标签列表 */
+	var tagHTML = $("#j-tag");
+	$.get('/index-tag?tagID='+tagHTML.attr('data-tagID'), function (data) {
+		tagHTML.html(data);
 	});
-	/*忘记密码 结束*/
 
-	/*修改密码 开始*/
-	form.on('submit(j-f-changePassword)', function(data) {
-		layer.msg("修改成功，页面即将刷新："+JSON.stringify(data.field), function() {
-			window.location.reload()
-		});
-		return false;
+	/* 加载归档列表 */
+	var fileHTML = $("#j-file");
+	$.get('/index-place?place='+fileHTML.attr('data-place'), function (data) {
+		fileHTML.html(data);
 	});
-	/*修改密码 结束*/
-	
 });

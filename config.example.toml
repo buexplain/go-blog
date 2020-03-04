@@ -1,8 +1,11 @@
+[Database]
+DSN = "database.db?_synchronous=OFF&_journal=WAL"
+
 [App]
 Debug = true
 
 [App.Server]
-IP = "192.168.171.203"
+IP = "127.0.0.1"
 Port = 1991
 ReadTimeout = "60s"
 WriteTimeout = "60s"

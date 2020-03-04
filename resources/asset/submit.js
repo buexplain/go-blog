@@ -110,7 +110,7 @@ var submit = {
      * @param message
      */
     alertWarning: function(message) {
-        this._alert(message, {icon: 0});
+        this._alert(message, {icon: 0, shade: [0.1, '#fff']});
     },
 
     /**
@@ -118,7 +118,7 @@ var submit = {
      * @param message
      */
     alertSuccess: function(message) {
-        this._alert(message, {icon: 1});
+        this._alert(message, {icon: 1, shade: [0.1, '#fff']});
     },
 
     /**
@@ -126,7 +126,7 @@ var submit = {
      * @param message
      */
     alertError: function(message) {
-        this._alert(message, {icon: 2});
+        this._alert(message, {icon: 2, shade: [0.1, '#fff']});
     },
 
     /**

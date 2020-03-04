@@ -32,7 +32,7 @@ func Destroy(ids []int) (affected int64, err error) {
 
 type Category struct {
 	m_category.Category `xorm:"extends"`
-	ContentNum int
+	Total int
 }
 
 type List []*Category
@@ -50,8 +50,8 @@ func GetALL() List {
 	result := make(List, 0)
 	err := dao.Dao.
 		Table("Category").
-		Select("Category.*, Content.ContentNum").
-		Join("LEFT", "(SELECT count(*) as ContentNum, CategoryID FROM Content GROUP BY CategoryID) as Content", "Category.ID = Content.CategoryID").
+		Select("Category.*, Content.Total").
+		Join("LEFT", "(SELECT count(*) as Total, CategoryID FROM Content GROUP BY CategoryID) as Content", "Category.ID = Content.CategoryID").
 		Asc("SortID").Find(&result)
 	if err != nil {
 		panic(err)

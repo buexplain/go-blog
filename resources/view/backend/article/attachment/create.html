@@ -1,0 +1,280 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    编辑附件
+{{end}}
+
+{{define "css"}}
+    <!--引入核心样式-->
+    <link rel="stylesheet" href="/resources/asset/codemirror/lib/codemirror.css">
+    <script src="/resources/asset/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/resources/asset/codemirror/theme/monokai.css">
+{{end}}
+
+{{define "content"}}
+    <form class="layui-form" action="/backend/article/attachment/update/{{.result.ID}}" method="post">
+        <div class="layui-form-item">
+            <input type="text" name="name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入文件名" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-item">
+            <textarea id="j-attachment" name="content">{{.result.Content}}</textarea>
+        </div>
+        <div class="layui-form-item">
+            {{._token}}
+            {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">
+                立即提交
+            </button>
+            <a href="/backend/article/attachment" class="layui-btn layui-btn-sm layui-btn-primary">
+                取消
+            </a>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <!--匹配括号-->
+    <script src="/resources/asset/codemirror/addon/edit/matchbrackets.js"></script>
+    <!--初始化编辑器-->
+    <script>
+        //定义编辑器变量
+        var editor = null;
+
+        //表单提交
+        layui.use(['form', 'jquery', 'layer'], function () {
+            layui.form.on('submit(submit)', function(data) {
+                var loading = layui.layer.load(1, {
+                    shade: [0.1, '#fff']
+                });
+                data.field['content'] = editor.getValue();
+                layui.jquery.post(data.form.action, data.field, function (json) {
+                    layui.layer.close(loading);
+                    if(json.code === 0) {
+                        submit.alertSuccess(json.message);
+                    }else {
+                        submit.alertError(json.message);
+                    }
+                });
+                return false;
+            });
+        });
+
+        /**
+         * 根据文件后缀解析编辑器配置
+         * @param ext 文件后缀
+         */
+        function CodeMirrorOptionMap(ext) {
+            var option = {mode:''};
+            var depends = {css:[], js:[]};
+            //默认为clike的配置
+            option.mode = 'text/x-csrc';
+            depends.js = [
+                'addon/hint/show-hint.js',
+                'mode/clike/clike.js'
+            ];
+            depends.css = ['addon/hint/show-hint.css'];
+
+            //判断是否为clike文件
+            if(['h', 'c', 'cc', 'm', 'mm', 'cpp', 'java', 'scala', 'kt', 'ceylon'].indexOf(ext) !== -1) {
+                if(['cpp'].indexOf(ext) !== -1) {
+                    option.mode = 'text/x-c++src';
+                }
+                if(['m', 'mm'].indexOf(ext) !== -1) {
+                    option.mode = 'text/x-objectivec';
+                }
+                if(['scala'].indexOf(ext) !== -1) {
+                    option.mode = 'text/x-scala';
+                }
+                if(['kt'].indexOf(ext) !== -1) {
+                    option.mode = 'text/x-kotlin';
+                }
+                if(['ceylon'].indexOf(ext) !== -1) {
+                    option.mode = 'text/x-ceylon';
+                }
+            }
+            //判断是否为php文件
+            if(['php'].indexOf(ext) !== -1) {
+                option.mode = 'application/x-httpd-php';
+                depends.js = [
+                    'mode/htmlmixed/htmlmixed.js',
+                    'mode/xml/xml.js',
+                    'mode/javascript/javascript.js',
+                    'mode/css/css.js',
+                    'mode/clike/clike.js',
+                    'mode/php/php.js'
+                ];
+                depends.css = [];
+            }
+            //判断是否为go文件
+            if(['go'].indexOf(ext) !== -1) {
+                option.mode = 'text/x-go';
+                depends.js = [
+                    'mode/go/go.js'
+                ];
+                depends.css = [];
+            }
+            //判断是否为python文件
+            if(['py'].indexOf(ext) !== -1) {
+                option.mode = {name: "python",version: 3,singleLineStringErrors: false};
+                depends.js = [
+                    'mode/python/python.js'
+                ];
+                depends.css = [];
+            }
+            //判断是否为css文件
+            if(['css'].indexOf(ext) !== -1) {
+                option.mode = 'text/css';
+                depends.js = [
+                    'mode/css/css.js',
+                    'addon/hint/show-hint.js',
+                    'addon/hint/css-hint.js'
+                ];
+                depends.css = ['addon/hint/show-hint.css'];
+            }
+            if(['less'].indexOf(ext) !== -1) {
+                option.mode = 'text/x-less';
+                depends.js = [
+                    'mode/css/css.js'
+                ];
+                depends.css = [];
+            }
+            if(['scss'].indexOf(ext) !== -1) {
+                option.mode = 'text/x-scss';
+                depends.js = [
+                    'mode/css/css.js'
+                ];
+                depends.css = [];
+            }
+            if(['gss'].indexOf(ext) !== -1) {
+                option.mode = 'text/x-gss';
+                depends.js = [
+                    'mode/css/css.js',
+                    'addon/hint/show-hint.js',
+                    'addon/hint/css-hint.js'
+                ];
+                depends.css = ['addon/hint/show-hint.css'];
+            }
+            //判断是否为html文件
+            if(['html'].indexOf(ext) !== -1) {
+                option.mode = {
+                    name: "htmlmixed",
+                    scriptTypes: [
+                        {matches: /\/x-handlebars-template|\/x-mustache/i,mode: null},
+                        {matches: /(text|application)\/(x-)?vb(a|script)/i,mode: "vbscript"}
+                    ]
+                };
+                option['selectionPointer'] = true;
+                depends.js = [
+                    'addon/selection/selection-pointer.js',
+                    'mode/xml/xml.js',
+                    'mode/javascript/javascript.js',
+                    'mode/css/css.js',
+                    'mode/vbscript/vbscript.js',
+                    'mode/htmlmixed/htmlmixed.js'
+                ];
+
+                depends.css = [];
+            }
+            //判断是否为js文件
+            if(['js'].indexOf(ext) !== -1) {
+                option.mode = 'text/javascript';
+                option['continueComments'] = "Enter";
+                option['extraKeys'] = {"Ctrl-Q": "toggleComment"};
+                depends.js = [
+                    'addon/comment/continuecomment.js',
+                    'addon/comment/comment.js',
+                    'mode/javascript/javascript.js'
+                ];
+                depends.css = [];
+            }
+            if(['ts'].indexOf(ext) !== -1) {
+                option.mode = 'text/typescript';
+                depends.js = [
+                    'mode/javascript/javascript.js'
+                ];
+                depends.css = [];
+            }
+            if(['json'].indexOf(ext) !== -1) {
+                option.mode = 'application/ld+json';
+                option['autoCloseBrackets'] = true;
+                option['lineWrapping'] = true;
+                depends.js = [
+                    'addon/comment/continuecomment.js',
+                    'addon/comment/comment.js',
+                    'mode/javascript/javascript.js'
+                ];
+                depends.css = [];
+            }
+            //判断是否为vue文件
+            if(['vue'].indexOf(ext) !== -1) {
+                option.mode = {
+                    name: "vue"
+                };
+                option['selectionPointer'] = true;
+                depends.js = [
+                    "addon/mode/overlay.js",
+                    "addon/mode/simple.js",
+                    "addon/selection/selection-pointer.js",
+                    "mode/xml/xml.js",
+                    "mode/javascript/javascript.js",
+                    "mode/css/css.js",
+                    "mode/coffeescript/coffeescript.js",
+                    "mode/sass/sass.js",
+                    "mode/pug/pug.js",
+                    "mode/handlebars/handlebars.js",
+                    "mode/htmlmixed/htmlmixed.js",
+                    "mode/vue/vue.js"
+                ];
+                depends.css = [];
+            }
+            //判断是否为sql文件
+            if(['sql'].indexOf(ext) !== -1) {
+                option.mode = 'text/x-mariadb';
+                option['extraKeys'] = {"Ctrl-Space": "autocomplete"};
+                depends.js = [
+                    'mode/sql/sql.js',
+                    'addon/hint/show-hint.js',
+                    'addon/hint/sql-hint.js'
+                ];
+                depends.css = ['addon/hint/show-hint.css'];
+            }
+
+            return {option:option, depends:depends};
+        }
+
+        var ext = "{{.result.Ext}}";
+
+        layui.use(['jquery'], function () {
+            var $ = layui.jquery;
+            //根据文件后缀解析依赖
+            var codeMirrorOption = CodeMirrorOptionMap(ext);
+            //解析ss依赖
+            var depends = '';
+            for(var i in codeMirrorOption.depends.css) {
+                depends += '<link rel="stylesheet" href="/resources/asset/codemirror/'+codeMirrorOption.depends.css[i]+'">';
+            }
+            //解析js依赖
+            for(var i in codeMirrorOption.depends.js) {
+                depends += '<script src="/resources/asset/codemirror/'+codeMirrorOption.depends.js[i]+'"><\/script>';
+            }
+            //加载依赖
+            if(depends !== '') {
+                $('body').append(depends);
+            }
+            //初始化编辑器
+            editor = CodeMirror.fromTextArea(document.getElementById("j-attachment"), Object.assign({},codeMirrorOption.option,{
+                theme: "monokai",
+                indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets : true,
+                indentUnit: 4,
+                autofocus: true
+            }));
+            //设置宽高
+            editor.setSize('auto', ($(window).height() - 117)+'px');
+        });
+    </script>
+{{end}}

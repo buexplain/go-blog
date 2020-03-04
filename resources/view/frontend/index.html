@@ -81,7 +81,7 @@
 					{{range $_, $v := .contentList}}
 						<li>
 							<div class="title">
-								<a href="{{$v.IDStr}}">
+								<a href="{{$v.ID}}">
 									{{$v.Title}}
 									{{if len $v.Origin | eq 0}}
 										<span class="layui-badge layui-bg-green">原创</span>
@@ -122,40 +122,9 @@
 					</form>
 				</div>
 				<!--标签-->
-				<div class="tag">
-					<h2>
-						<svg class="icon" aria-hidden="true">
-							<use xlink:href="#icon-biaoqian"></use>
-						</svg>
-						标签
-					</h2>
-					{{range $_, $v := .tagList}}
-						{{if eq $v.Total 0}}
-							<a href="javascript:;" style="cursor: text;" class="layui-btn layui-btn-primary layui-btn-sm">{{$v.Name}}({{$v.Total}})</a>
-						{{else}}
-							<a href="/?tagID={{$v.ID}}" class="layui-btn layui-btn-primary layui-btn-sm {{if eq $v.ID $.tagID}}current{{end}}">{{$v.Name}}({{$v.Total}})</a>
-						{{end}}
-					{{end}}
-				</div>
-				<div class="file">
-					<h2>
-						<svg class="icon" aria-hidden="true">
-							<use xlink:href="#icon-guidang"></use>
-						</svg>
-						归档
-					</h2>
-					<ul>
-						{{range $_, $v := .contentPlace}}
-							<li>
-								{{if eq $v.Total 0}}
-									<a href="javascript:;" style="cursor: text;">{{$v.CreatedAtYm}}({{$v.Total}})</a>
-								{{else}}
-									<a class="{{if eq $v.CreatedAtYm $.place}}current{{end}}" href="/?place={{$v.CreatedAtYm}}">{{$v.CreatedAtYm}}({{$v.Total}})</a>
-								{{end}}
-							</li>
-						{{end}}
-					</ul>
-				</div>
+				<div class="tag" id="j-tag" data-tagID="{{.tagID}}"></div>
+				<!--归档-->
+				<div class="file" id="j-file" data-place="{{.place}}"></div>
 			</div>
 		</div>
 	</div>

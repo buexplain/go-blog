@@ -7,4 +7,5 @@ type Config struct {
 	CSRF     CSRF
 	Asset    Asset
 	Business Business
+	Database Database
 }

@@ -8,6 +8,7 @@ import (
 	c_backup "github.com/buexplain/go-blog/app/http/controllers/backend/backup"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/config/group"
 	c_configItem "github.com/buexplain/go-blog/app/http/controllers/backend/config/item"
+	c_database "github.com/buexplain/go-blog/app/http/controllers/backend/database"
 	c_home "github.com/buexplain/go-blog/app/http/controllers/backend/home"
 	c_profile "github.com/buexplain/go-blog/app/http/controllers/backend/profile"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
@@ -128,6 +129,7 @@ func backend(mux *fool.Mux) {
 			//附件管理
 			mux.Get("attachment", c_attachment.Index)
 			mux.Get("attachment/check/:md5", c_attachment.CheckMD5)
+			mux.Get("attachment/edit/:id", c_attachment.Edit)
 			mux.Post("attachment/upload", c_attachment.Upload)
 			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")
 			mux.Delete("attachment/delete/:id", c_attachment.Destroy)
@@ -167,6 +169,10 @@ func backend(mux *fool.Mux) {
 		mux.Get("sysLog/download", c_sysLog.Download)
 		mux.Get("sysLog/show", c_sysLog.Show)
 		mux.Delete("sysLog/delete", c_sysLog.Destroy)
+
+		//数据管理
+		mux.Get("database", c_database.Index)
+		mux.Post("database", c_database.SQL)
 	}).Use(middleware.RbacCheck)
 	//进程信息
 	mux.Get("/debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck)

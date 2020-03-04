@@ -16,11 +16,12 @@ import (
 func FormatSize(size int64) string {
 	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
 	var i int
-	for i = 0; size > 1024 && i < 5; i++ {
-		size /= 1024
+	f_size := float64(size)
+	for i = 0; f_size > 1024 && i < 5; i++ {
+		f_size /= 1024
 	}
 	if i >= 0 && i < len(units) {
-		return strconv.FormatInt(size, 10) + units[i]
+		return fmt.Sprintf("%.2f%s", f_size, units[i])
 	}
 	return ""
 }
@@ -119,16 +120,8 @@ func UnZIP(zipFile, path string) error {
 }
 
 //简单的分页处理
-func PageHtmlSimple(urlObj url.URL, currentPage int, total int, limit int) template.HTML {
-	if limit < 0 {
-		limit = 20
-	}
-	//计算总页数
-	tmp := float64(total)/float64(limit)
-	if tmp > float64(int(tmp)) {
-		tmp += 1
-	}
-	totalPage := int(tmp)
+func PageHtmlSimple(urlObj url.URL, currentPage int, currentTotal int, limit int) template.HTML {
+	nextPage := !(currentTotal == 0 || currentTotal < limit)
 	html := ""
 	query := urlObj.Query()
 	if currentPage > 1 {
@@ -136,7 +129,7 @@ func PageHtmlSimple(urlObj url.URL, currentPage int, total int, limit int) templ
 		urlObj.RawQuery = query.Encode()
 		html += fmt.Sprintf(`<a class="layui-btn layui-btn-primary layui-btn-sm" href="%s">上一页</a>`, urlObj.String())
 	}
-	if currentPage < totalPage {
+	if nextPage {
 		query.Set("page", strconv.Itoa(currentPage +1))
 		urlObj.RawQuery = query.Encode()
 		html += fmt.Sprintf(`<a class="layui-btn layui-btn-primary layui-btn-sm" href="%s">下一页</a>`, urlObj.String())

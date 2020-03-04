@@ -52,10 +52,35 @@ layui.define([], function(exports) {
                 return url.substr(0, index);
             }
         },
+        /**
+         * 判断是否为图片文件
+         * @param file_name
+         * @returns {boolean}
+         */
         isImage: function(file_name) {
+            if(typeof file_name !== 'string') {
+                throw "error file name: "+file_name;
+            }
             var images = ['jpeg', 'gif', 'jpg', 'png', 'bmp'];
             for(var i in images) {
                 if(file_name.substr(file_name.length - images[i].length, images[i].length).toLocaleLowerCase() === images[i]) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        /**
+         * 判断文件是否可编辑
+         * @param file_name
+         * @returns {boolean}
+         */
+        isEditable: function(file_name) {
+            if(typeof file_name !== 'string') {
+                throw "error file name: "+file_name;
+            }
+            var names = ["c", "cpp", "php", "java", "go", "py", "css", "html", "js", "vue", "txt"];
+            for(var i in names) {
+                if(file_name.substr(file_name.length - names[i].length, names[i].length).toLocaleLowerCase() === names[i]) {
                     return true;
                 }
             }

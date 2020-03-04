@@ -34,12 +34,6 @@
 
             <div class="layui-inline">
                 {{._token}}
-                <input type="hidden" value="idStr">
-                {{if .result}}
-                    <input type="hidden" name="IDStr" value="{{.result.IDStr}}">
-                {{else}}
-                    <input type="hidden" name="IDStr" value="{{.idStr}}">
-                {{end}}
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal layui-icon layui-icon-down" id="j-more-btn">
                     更多
                 </button>
@@ -246,7 +240,7 @@
                                 time:1000,
                                 end: function () {
                                     if(!contentID) {
-                                        window.location.href = '/backend/article/content/edit/'+json.data;
+                                        window.location.href = '/backend/article/content/create';
                                     }
                                 }
                             });

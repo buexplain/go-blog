@@ -5,7 +5,7 @@ go.sum
 build
 *.exe
 *.bin
-/database/database.db
+/database/database.db*
 database/backup/*
 /storage/cache/*
 !/storage/cache/git.keep

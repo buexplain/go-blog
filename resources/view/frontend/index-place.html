@@ -1,0 +1,17 @@
+<h2>
+    <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-guidang"></use>
+    </svg>
+    归档
+</h2>
+<ul>
+    {{range $_, $v := .contentPlace}}
+        <li>
+            {{if eq $v.Total 0}}
+                <a href="javascript:;" style="cursor: text;">{{$v.CreatedAtYm}}({{$v.Total}})</a>
+            {{else}}
+                <a class="{{if eq $v.CreatedAtYm $.place}}current{{end}}" href="/?place={{$v.CreatedAtYm}}">{{$v.CreatedAtYm}}({{$v.Total}})</a>
+            {{end}}
+        </li>
+    {{end}}
+</ul>

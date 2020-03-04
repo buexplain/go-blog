@@ -2,19 +2,14 @@ package m_content
 
 import (
 	"github.com/buexplain/go-blog/models"
-	"html/template"
 )
 
 type Content struct {
 	models.Field `xorm:"extends"`
-	//唯一id，字符串
-	IDStr        string        `xorm:"TEXT"`
 	//标题
 	Title        string        `xorm:"TEXT"`
 	//文章内容，markdown
 	Body         string        `xorm:"TEXT"`
-	//文章内容，转成html的
-	HTML         template.HTML `xorm:"TEXT"`
 	//点击量
 	Hits         int           `xorm:"INTEGER"`
 	//是否上线

@@ -6,11 +6,24 @@
     备份管理
 {{end}}
 
-{{define "css"}}{{end}}
+{{define "css"}}
+    <style>
+        .backup {
+            margin-top: 8px;
+            font-size: 12px;
+            display: none;
+            max-height: 150px;
+            overflow: auto;
+        }
+    </style>
+{{end}}
 
 {{define "content"}}
     <blockquote class="layui-elem-quote">
-        <button class="layui-btn layui-btn-sm" onclick="submit.ajax(this)" data-call-success="backup.success" data-url="/backend/backup/start">开始备份</button>
+        <button class="layui-btn layui-btn-sm" onclick="backup(this)">开始备份</button>
+        <div class="backup" >
+            <ul id="j-backup-message"></ul>
+        </div>
     </blockquote>
     <table class="layui-table">
         <thead>
@@ -40,19 +53,69 @@
 
 {{define "js"}}
     <script>
-        var backup = {
-            success: function (DOMObject, json) {
-                layui.use(['layer'], function () {
-                    var layer = layui.layer;
-                    if(json.code === 0) {
-                        layer.alert(json.message, {icon: 1, end: function () {
-                            window.location.href = "/backend/backup";
-                        }});
-                    }else {
-                        submit.alertError(json.message);
-                    }
-                });
+        /**
+         * 备份数据
+         */
+        function backup(o) {
+            o.lockBtn = function() {
+                o.innerHTML = '正在备份，请勿刷新页面...';
+                o.setAttribute('disabled', 'disabled');
+            };
+            o.unLockBtn = function () {
+                o.innerHTML = '开始备份';
+                o.removeAttribute('disabled');
+            };
+            o.isLockBtn = function () {
+                var disabled = this.getAttribute('disabled');
+                if(disabled === 'true' || disabled === 'disabled') {
+                    return true;
+                }
+                return false;
+            };
+
+            var messageContainer = document.querySelector('#j-backup-message');
+            messageContainer.clear = function() {
+                this.innerHTML = '';
+            };
+            messageContainer.show = function(message, color) {
+                this.parentNode.style.display = 'block';
+                var newElement = document.createElement("li");
+                newElement.style.color = color;
+                newElement.textContent = message;
+                this.appendChild(newElement);
+                this.parentNode.scrollTop = this.parentNode.scrollHeight;
+            };
+            messageContainer.hide = function() {
+                this.parentNode.style.display = 'none';
+            };
+            messageContainer.clear();
+
+            if(o.isLockBtn()) {
+                return;
             }
-        };
+
+            o.lockBtn();
+
+            var es = new EventSource('/backend/backup/start');
+            es.onerror = function() {
+                //关闭连接，不再重试连接
+                es.close();
+                o.unLockBtn();
+                messageContainer.show('连接已被服务端关闭', '#c82424');
+            };
+            es.addEventListener('tips', function (e) {
+                messageContainer.show(e.data, '#c89a24');
+            });
+            es.addEventListener("success", function (e) {
+                messageContainer.show(e.data+'，请刷新页面。', '#267f56');
+                es.close();
+                o.unLockBtn();
+            });
+            es.addEventListener('fail', function (e) {
+                messageContainer.show(e.data, '#c82424');
+                es.close();
+                o.unLockBtn();
+            });
+        }
     </script>
 {{end}}

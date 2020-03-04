@@ -1,0 +1,13 @@
+<h2>
+    <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-biaoqian"></use>
+    </svg>
+    标签
+</h2>
+{{range $_, $v := .tagList}}
+    {{if eq $v.Total 0}}
+        <a href="javascript:;" style="cursor: text;" class="layui-btn layui-btn-primary layui-btn-sm">{{$v.Name}}({{$v.Total}})</a>
+    {{else}}
+        <a href="/?tagID={{$v.ID}}" class="layui-btn layui-btn-primary layui-btn-sm {{if eq $v.ID $.tagID}}current{{end}}">{{$v.Name}}({{$v.Total}})</a>
+    {{end}}
+{{end}}
