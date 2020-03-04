@@ -1,5 +1,5 @@
 [Database]
-DSN = "database.db?_synchronous=OFF&_journal=WAL"
+DSN = "database.db?_synchronous=OFF&_journal=WAL&_loc=auto&cache=shared&mode=rwc"
 
 [App]
 Debug = true
