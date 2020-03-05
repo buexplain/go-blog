@@ -90,7 +90,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
 	}
-	mod.ID = r.ParamInt("id", 0)
+	mod.ID = r.ParamPositiveInt("id")
 
 	vClone := v.Clone()
 	vClone.Field("ID").Rule("required", "ID错误")

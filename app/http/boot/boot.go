@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot/method"
 	"github.com/buexplain/go-blog/app/http/boot/session"
 	"github.com/buexplain/go-blog/app/http/boot/staticFile"
+	"github.com/buexplain/go-blog/app/http/boot/trimForm"
 	"github.com/buexplain/go-blog/app/http/boot/viewFunc"
 	"github.com/buexplain/go-event"
 	"github.com/buexplain/go-flog"
@@ -107,6 +108,9 @@ func init() {
 	if a_boot.Config.App.Method.Enable {
 		APP.Use(method.Filter, http.MethodGet, http.MethodPost)
 	}
+
+	//设置前后空白字符清理
+	APP.Use(trimForm.Filter)
 }
 
 // http 服务器

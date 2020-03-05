@@ -157,7 +157,7 @@ func GetPlace() PlaceList {
 }
 
 //获取列表
-func GetList(page int, limit int, categoryID int, keyword string, tagID int, place string) (result m_content.List) {
+func GetList(page int, limit int, categoryID int, tagID int, place string, keyword string) (result m_content.List) {
 	if page <= 0 {
 		page = 1
 	}
@@ -186,6 +186,11 @@ func GetList(page int, limit int, categoryID int, keyword string, tagID int, pla
 			}
 		}
 	}
+	//标签查询
+	if tagID > 0 {
+		mod.Join("left", "ContentTag", "`Content`.`ID`=`ContentTag`.`ContentID`")
+		mod.Where("`ContentTag`.`TagID`=?", tagID)
+	}
 	//查询归档时间内的列表，place的格式：2006年01月
 	if place != "" {
 		if t, err := time.ParseInLocation("2006年01月", place, time.Local); err == nil {
@@ -197,11 +202,6 @@ func GetList(page int, limit int, categoryID int, keyword string, tagID int, pla
 	//查询关键字
 	if keyword != "" {
 		mod.Where("`Content`.`Title` LIKE ?", fmt.Sprintf("%s%s%s", "%", keyword, "%"))
-	}
-	//标签查询
-	if tagID > 0 {
-		mod.Join("left", "ContentTag", "`Content`.`ID`=`ContentTag`.`ContentID`")
-		mod.Where("`ContentTag`.`TagID`=?", tagID)
 	}
 	if err := mod.Find(&result); err != nil {
 		panic(err)

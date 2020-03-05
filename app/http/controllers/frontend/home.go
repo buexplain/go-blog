@@ -1,7 +1,9 @@
 package c_frontend
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/helpers"
 	s_category "github.com/buexplain/go-blog/services/category"
 	s_configItem "github.com/buexplain/go-blog/services/config/item"
@@ -41,28 +43,33 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	categoryTree := s_category.GetTree()
 	debug.Get("导航")
 	//获取列表
+	categoryID := r.QueryPositiveInt("categoryID")
+	tagID := r.QueryPositiveInt("tagID")
+	place := r.Query("place")
+	keyword := r.Query("keyword")
 	currentPage := r.QueryPositiveInt("page", 1)
 	limit := r.QueryPositiveInt("limit", 10)
-	keyword := r.Query("keyword")
-	place := r.Query("place")
-	tagID := r.QueryPositiveInt("tagID")
-	categoryID := r.QueryPositiveInt("categoryID")
 	debug.Set("列表")
-	contentList := s_content.GetList(currentPage, limit, categoryID, keyword, tagID, place)
+	contentList := s_content.GetList(currentPage, limit, categoryID, tagID, place, keyword)
 	debug.Get("列表")
 	//注入数据
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
 	w.Assign("contentList", contentList)
 	w.Assign("pageHtml", helpers.PageHtmlSimple(*r.Raw().URL, currentPage, len(contentList), limit))
+	w.Assign("categoryID", categoryID)
 	w.Assign("tagID", tagID)
-	w.Assign("keyword", keyword)
 	w.Assign("place", place)
+	w.Assign("keyword", keyword)
 	//渲染模板
 	return w.View(http.StatusOK, "frontend/index.html")
 }
 
-func IndexTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+//首页的部件
+func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	buff := &bytes.Buffer{}
+	result := map[string]string{}
+	//渲染标签
 	tagID := r.QueryPositiveInt("tagID")
 	debug := NewDebug()
 	debug.Set("标签")
@@ -70,16 +77,21 @@ func IndexTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	debug.Get("标签")
 	w.Assign("tagList", tagList)
 	w.Assign("tagID", tagID)
-	return w.View(http.StatusOK, "frontend/index-tag.html")
-}
-
-func IndexPlace(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	buff.Reset()
+	if err := w.Render(buff, w.Store().Pop(), "frontend/index-widget-tag.html"); err != nil {
+		return w.Error(code.SERVER, err.Error())
+	}
+	result["tag"] = buff.String()
+	//渲染归档
 	place := r.Query("place")
-	debug := NewDebug()
-	debug.Set("归档")
 	contentPlace := s_content.GetPlace()
-	debug.Get("归档")
 	w.Assign("place", place)
 	w.Assign("contentPlace", contentPlace)
-	return w.View(http.StatusOK, "frontend/index-place.html")
+	buff.Reset()
+	if err := w.Render(buff, w.Store().Pop(), "frontend/index-widget-place.html"); err != nil {
+		return w.Error(code.SERVER, err.Error())
+	}
+	result["place"] = buff.String()
+	//返回结果
+	return w.Success(result)
 }

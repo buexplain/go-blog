@@ -7,6 +7,7 @@ import (
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
+	"html/template"
 )
 
 func GetList(ctx *fool.Ctx)(counter int64, result m_configItem.List, err error)  {
@@ -41,6 +42,15 @@ func (this List) Get(key string) string {
 	for _, v := range this.data {
 		if v.Key == key {
 			return v.Value
+		}
+	}
+	panic(errors.MarkServer(fmt.Errorf("not found config: %s.%s", this.group, key)))
+}
+
+func (this List) GetToHTML(key string) template.HTML {
+	for _, v := range this.data {
+		if v.Key == key {
+			return template.HTML(v.Value)
 		}
 	}
 	panic(errors.MarkServer(fmt.Errorf("not found config: %s.%s", this.group, key)))

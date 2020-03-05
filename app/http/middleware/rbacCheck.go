@@ -29,7 +29,7 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 			}
 			if ctx.Route() != nil && ctx.Route().HasLabel("json") {
 				//存在路由，并且路由有json标签，则响应json格式
-				ctx.Throw(ctx.Response().Assign("code", code.INVALID_AUTH).Assign("message", message).Assign("data", "").JSON(http.StatusOK))
+				ctx.Throw(w.Error(code.INVALID_AUTH, message))
 			} else {
 				ctx.Throw(ctx.Response().JumpBack(message))
 			}
