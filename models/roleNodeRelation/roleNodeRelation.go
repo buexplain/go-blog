@@ -4,7 +4,7 @@ import "github.com/buexplain/go-blog/models"
 
 //rbac 角色与节点的关系表
 type RoleNodeRelation struct {
-	models.Field `xorm:"extends"`
+	models.IDField `xorm:"extends"`
 	//角色id
 	RoleID int `xorm:"INTEGER"`
 	//节点
