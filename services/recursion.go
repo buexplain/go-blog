@@ -4,69 +4,69 @@ import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
 	"strings"
+	"xorm.io/builder"
 )
 
-type Recursion struct {
-	IdField string
-	PidField string
-	SortField string
-	Select []string
-	IsDown bool
-}
-
-//递归查找父子结构的表
-func GetRecursion(table string, id int, rowsSlicePtr interface{}, recursion *Recursion) error {
-	if recursion == nil {
-		recursion = new(Recursion)
-	}
-	if recursion.IdField == "" {
-		recursion.IdField = "ID"
-	}
-	if recursion.PidField == "" {
-		recursion.PidField = "Pid"
-	}
-	if recursion.SortField == "" {
-		recursion.SortField = "SortID"
-	}
-	if recursion.Select == nil || len(recursion.Select) == 0 {
-		if recursion.Select == nil {
-			recursion.Select = make([]string, 0)
-		}
+//获取父级
+func GetParents(table string, id int, rowsSlicePtr interface{}, field ...string) error {
+	if len(field) == 0 {
 		t, err := GetTableInfo(dao.Dao, table)
 		if err != nil {
 			return err
 		}else {
 			for _, v := range t.Columns() {
-				recursion.Select = append(recursion.Select, v.Name)
+				field = append(field, v.Name)
 			}
 		}
 	}
-	b := "`"+strings.Join(recursion.Select, "`,`")+"`"
-	a := "`A`.`"+strings.Join(recursion.Select, "`,`A`.`")+"`"
-	var sql string
-	if recursion.IsDown {
-		//向下查找所有的子级
-		sql = `WITH tmp(%s)
+	b := "`"+strings.Join(field, "`,`")+"`"
+	a := "`A`.`"+strings.Join(field, "`,`A`.`")+"`"
+	//向上查找所有的父级
+	sql := `WITH tmp(%s)
 		AS
 		(
-		SELECT %s FROM %s WHERE %s=%d
+		SELECT %s FROM %s WHERE ID=%d
 		UNION ALL
-		SELECT %s FROM %s A, tmp B ON B.%s=A.%s ORDER BY %s ASC
+		SELECT %s FROM %s A, tmp B ON A.ID=B.Pid
+		)
+		select * from tmp ORDER BY ID ASC`
+	sql = fmt.Sprintf(sql, b, b, table, id, a, table)
+	return dao.Dao.NewSession().SQL(sql).Find(rowsSlicePtr)
+}
+
+//获取子级
+func GetSons(table string, id int, rowsSlicePtr interface{}, sortField string, where builder.Cond, field ...string) error {
+	if sortField == "" {
+		sortField = "ID"
+	}
+	if len(field) == 0 {
+		t, err := GetTableInfo(dao.Dao, table)
+		if err != nil {
+			return err
+		}else {
+			for _, v := range t.Columns() {
+				field = append(field, v.Name)
+			}
+		}
+	}
+	b := "`"+strings.Join(field, "`,`")+"`"
+	a := "`A`.`"+strings.Join(field, "`,`A`.`")+"`"
+	//向下查找所有的子级
+	sql := `WITH tmp(%s)
+		AS
+		(
+		SELECT %s FROM %s WHERE ID=%d
+		UNION ALL
+		SELECT %s FROM %s A, tmp B ON B.ID=A.Pid ORDER BY %s ASC
 		)
 		select * from tmp`
-		sql = fmt.Sprintf(sql, b, b, table, recursion.IdField, id, a, table, recursion.IdField, recursion.PidField, recursion.SortField)
-	}else {
-		//向上查找所有的父级
-		sql = `WITH tmp(%s)
-		AS
-		(
-		SELECT %s FROM %s WHERE %s=%d
-		UNION ALL
-		SELECT %s FROM %s A, tmp B ON A.%s=B.%s
-		)
-		select * from tmp ORDER BY %s ASC`
-		sql = fmt.Sprintf(sql, b, b, table, recursion.IdField, id, a, table, recursion.IdField, recursion.PidField, recursion.IdField)
+	sql = fmt.Sprintf(sql, b, b, table, id, a, table, sortField)
+	if where != nil {
+		if s, err := builder.ToBoundSQL(where); err != nil {
+			return err
+		}else {
+			sql += " where " + s
+		}
 	}
-	err := dao.Dao.NewSession().SQL(sql).Find(rowsSlicePtr)
-	return err
+	return dao.Dao.NewSession().SQL(sql).Find(rowsSlicePtr)
 }

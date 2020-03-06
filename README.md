@@ -34,12 +34,7 @@ go run main.go
 go build -o artisan.exe artisan.go && artisan.exe db sync
 ```
 
-### 初始化一个管理员用户
-```bash
-go build -o artisan.exe artisan.go && artisan.exe db addAdmin -a admin -p 123456
-```
-
-### `database/init.sql`制作
+### 制作 `database/init.sql`
 ```bash
 go build -o artisan.exe artisan.go && artisan.exe db dump -f database/init.sql
 ```

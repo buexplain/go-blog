@@ -2,6 +2,7 @@ package m_content
 
 import (
 	"github.com/buexplain/go-blog/models"
+	"html/template"
 )
 
 type Content struct {
@@ -10,6 +11,8 @@ type Content struct {
 	Title        string        `xorm:"TEXT"`
 	//文章内容，markdown
 	Body         string        `xorm:"TEXT"`
+	//
+	HTML        template.HTML `xorm:"-"`
 	//点击量
 	Hits         int           `xorm:"INTEGER"`
 	//是否上线

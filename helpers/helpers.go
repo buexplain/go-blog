@@ -3,13 +3,10 @@ package helpers
 import (
 	"archive/zip"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 //字节换算
@@ -117,22 +114,4 @@ func UnZIP(zipFile, path string) error {
 		}
 	}
 	return nil
-}
-
-//简单的分页处理
-func PageHtmlSimple(urlObj url.URL, currentPage int, currentTotal int, limit int) template.HTML {
-	nextPage := !(currentTotal == 0 || currentTotal < limit)
-	html := ""
-	query := urlObj.Query()
-	if currentPage > 1 {
-		query.Set("page", strconv.Itoa(currentPage -1))
-		urlObj.RawQuery = query.Encode()
-		html += fmt.Sprintf(`<a class="layui-btn layui-btn-primary layui-btn-sm" href="%s">上一页</a>`, urlObj.String())
-	}
-	if nextPage {
-		query.Set("page", strconv.Itoa(currentPage +1))
-		urlObj.RawQuery = query.Encode()
-		html += fmt.Sprintf(`<a class="layui-btn layui-btn-primary layui-btn-sm" href="%s">下一页</a>`, urlObj.String())
-	}
-	return template.HTML(html)
 }

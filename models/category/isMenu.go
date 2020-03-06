@@ -4,8 +4,8 @@ func (this Category) IsMenuText() string {
 	return IsMenuText[this.IsMenu]
 }
 
-func CheckIsMenu(isNav int) bool {
-	if isNav >= IsMenuYes && isNav <= IsMenuNo {
+func CheckIsMenu(IsMenu int) bool {
+	if IsMenu >= IsMenuYes && IsMenu <= IsMenuNo {
 		return true
 	}
 	return false

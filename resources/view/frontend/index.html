@@ -31,7 +31,7 @@
 			<i class="layui-icon layui-icon-more"></i>
 		</a>
 		<!--汉堡导航-->
-		<ul class="layui-nav layui-nav-tree hamburger-nav">
+		<ul class="layui-nav layui-nav-tree hamburger-nav" id="j-categoryID" data-categoryID="{{.categoryID}}">
 			{{template "frontend/index-menu.html" .}}
 		</ul>
 	</div>
@@ -43,7 +43,10 @@
 				<!--面包屑导航-->
 				<div class="nav">
 					<span class="layui-breadcrumb" lay-separator=">">
-						<a href="/">首页</a>
+						<a href="/">
+							首页
+
+						</a>
 					</span>
 				</div>
 				<!--文章列表-->
@@ -79,7 +82,13 @@
 				</ul>
 				<!--文章分页-->
 				<div class="more">
-					{{.pageHtml}}
+					{{$url := URL $.currentURL}}
+					{{if gt .prePage 0}}
+						<a class="layui-btn layui-btn-primary layui-btn-sm" href="{{$url.SetParam "page" .prePage}}">上一页</a>
+					{{end}}
+					{{if eq (len .contentList) .limit}}
+						<a class="layui-btn layui-btn-primary layui-btn-sm" href="{{$url.SetParam "page" .nextPage}}">下一页</a>
+					{{end}}
 				</div>
 			</div>
 			<!--右侧数据-->
@@ -87,7 +96,7 @@
 				<!--搜索框-->
 				<div class="search">
 					<form class="layui-form" action="/">
-						<i class="layui-icon layui-icon-search"></i>
+						<i class="layui-icon layui-icon-search" onclick="this.parentNode.submit();"></i>
 						<input type="text" name="keyword" value="{{.keyword}}" placeholder="Search …" autocomplete="off" class="layui-input">
 					</form>
 				</div>

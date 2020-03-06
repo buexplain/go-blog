@@ -23,7 +23,7 @@ func init() {
 			a_boot.Logger.InfoF("开始导出数据库到文件: %s", fpath)
 			tables, err := dao.Dao.DBMetas()
 			if err != nil {
-				a_boot.Logger.ErrorF("打开导出到的目标文件失败: %s", err)
+				a_boot.Logger.ErrorF("获取数据库表信息失败: %s", err)
 				os.Exit(1)
 			}
 			var f *os.File

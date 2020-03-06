@@ -13,7 +13,7 @@ layui.use(['element', 'jquery', 'layer', 'form'], function() {
 	/* 加载部件 */
 	var tagHTML = $("#j-tag");
 	var fileHTML = $("#j-file");
-	$.get('/index-widget', {tagID:tagHTML.attr('data-tagID'), place:fileHTML.attr('data-place')}, function (json) {
+	$.get('/index-widget', {categoryID:$("#j-categoryID").attr("data-categoryID"), tagID:tagHTML.attr('data-tagID'), place:fileHTML.attr('data-place')}, function (json) {
 		if(json.code === 0) {
 			tagHTML.html(json.data.tag);
 			fileHTML.html(json.data.place);

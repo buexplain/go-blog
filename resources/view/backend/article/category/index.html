@@ -90,7 +90,6 @@
                         title: '操作',
                         width: '200px',
                         template: function(item) {
-                            console.log(item);
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/article/category/create?pid='+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/category/edit/'+item.ID+'">编辑</a>';
                             if(item.ContentNum === 0 && !result.hasChildren(item.ID)) {

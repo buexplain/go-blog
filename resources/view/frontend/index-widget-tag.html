@@ -4,10 +4,11 @@
     </svg>
     标签
 </h2>
+{{$url := (URL $.currentURL).SetPath "/"}}
 {{range $_, $v := .tagList}}
     {{if eq $v.Total 0}}
         <a href="javascript:;" style="cursor: text;" class="layui-btn layui-btn-primary layui-btn-sm">{{$v.Name}}({{$v.Total}})</a>
     {{else}}
-        <a href="/?tagID={{$v.ID}}" class="layui-btn layui-btn-primary layui-btn-sm {{if eq $v.ID $.tagID}}current{{end}}">{{$v.Name}}({{$v.Total}})</a>
+        <a href="{{$url.SetParam "tagID" $v.ID}}" class="layui-btn layui-btn-primary layui-btn-sm {{if eq $v.ID $.tagID}}current{{end}}">{{$v.Name}}({{$v.Total}})</a>
     {{end}}
 {{end}}

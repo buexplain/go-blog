@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	"github.com/buexplain/go-blog/helpers"
 	s_category "github.com/buexplain/go-blog/services/category"
 	s_configItem "github.com/buexplain/go-blog/services/config/item"
 	s_content "github.com/buexplain/go-blog/services/content"
@@ -56,11 +55,15 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
 	w.Assign("contentList", contentList)
-	w.Assign("pageHtml", helpers.PageHtmlSimple(*r.Raw().URL, currentPage, len(contentList), limit))
+	w.Assign("limit", limit)
+	w.Assign("prePage", currentPage-1)
+	w.Assign("currentPage", currentPage)
+	w.Assign("nextPage", currentPage+1)
 	w.Assign("categoryID", categoryID)
 	w.Assign("tagID", tagID)
 	w.Assign("place", place)
 	w.Assign("keyword", keyword)
+	w.Assign("currentURL", *r.Raw().URL)
 	//渲染模板
 	return w.View(http.StatusOK, "frontend/index.html")
 }
@@ -77,6 +80,7 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	debug.Get("标签")
 	w.Assign("tagList", tagList)
 	w.Assign("tagID", tagID)
+	w.Assign("currentURL", *r.Raw().URL)
 	buff.Reset()
 	if err := w.Render(buff, w.Store().Pop(), "frontend/index-widget-tag.html"); err != nil {
 		return w.Error(code.SERVER, err.Error())
@@ -87,6 +91,7 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	contentPlace := s_content.GetPlace()
 	w.Assign("place", place)
 	w.Assign("contentPlace", contentPlace)
+	w.Assign("currentURL", *r.Raw().URL)
 	buff.Reset()
 	if err := w.Render(buff, w.Store().Pop(), "frontend/index-widget-place.html"); err != nil {
 		return w.Error(code.SERVER, err.Error())

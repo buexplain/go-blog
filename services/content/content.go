@@ -6,6 +6,7 @@ import (
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
+	m_category "github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
 	s_category "github.com/buexplain/go-blog/services/category"
@@ -172,7 +173,7 @@ func GetList(page int, limit int, categoryID int, tagID int, place string, keywo
 	mod.Limit(limit, offset)
 	//查询分类
 	if categoryID > 0 {
-		if tmp := s_category.GetSons(categoryID); tmp == nil {
+		if tmp := s_category.GetSons(categoryID, m_category.IsMenuYes); tmp == nil {
 			mod.Where("`Content`.`categoryID`=?", categoryID)
 		}else {
 			if len(tmp) == 1 {

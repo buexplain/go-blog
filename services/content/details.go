@@ -8,6 +8,7 @@ import (
 	"github.com/buexplain/go-blog/models/tag"
 	s_category "github.com/buexplain/go-blog/services/category"
 	"github.com/buexplain/go-fool/errors"
+	"html/template"
 )
 
 type Details struct {
@@ -25,6 +26,13 @@ func GetDetails(id int) (*Details, error) {
 		return nil, err
 	} else if !has {
 		return nil, errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
+	}
+
+	//渲染html成
+	if s, err := Render(details.Content.Body); err != nil {
+		return nil, err
+	}else {
+		details.Content.HTML = template.HTML(s)
 	}
 
 	err := dao.Dao.

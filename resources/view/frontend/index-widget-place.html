@@ -5,12 +5,13 @@
     归档
 </h2>
 <ul>
+    {{$url := (URL $.currentURL).SetPath "/"}}
     {{range $_, $v := .contentPlace}}
         <li>
             {{if eq $v.Total 0}}
                 <a href="javascript:;" style="cursor: text;">{{$v.CreatedAtYm}}({{$v.Total}})</a>
             {{else}}
-                <a class="{{if eq $v.CreatedAtYm $.place}}current{{end}}" href="/?place={{$v.CreatedAtYm}}">{{$v.CreatedAtYm}}({{$v.Total}})</a>
+                <a class="{{if eq $v.CreatedAtYm $.place}}current{{end}}" href="{{$url.SetParam "place" $v.CreatedAtYm}}">{{$v.CreatedAtYm}}({{$v.Total}})</a>
             {{end}}
         </li>
     {{end}}

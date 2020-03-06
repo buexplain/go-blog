@@ -69,7 +69,7 @@ type TreeList []*TreeItem
 //获取所有分类，返回树状结构
 func GetTree() TreeList {
 	lists := make(TreeList, 0)
-	err := dao.Dao.Table("Category").Where("IsMenu=?", m_category.IsMenuYes).Desc("SortID").Find(&lists)
+	err := dao.Dao.Table("Category").Where("IsMenu=?", m_category.IsMenuYes).Asc("SortID").Find(&lists)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func GetParents(categoryID int) m_category.List {
 		return nil
 	}
 	list := make(m_category.List, 0)
-	err := s_services.GetRecursion("category", categoryID, &list, nil)
+	err := s_services.GetParents("category", categoryID, &list)
 	if err != nil {
 		return nil
 	}
@@ -105,14 +105,17 @@ func GetParents(categoryID int) m_category.List {
 }
 
 //获取一个分类的子分类
-func GetSons(categoryID int)  m_category.List  {
+func GetSons(categoryID int, isMenu int)  m_category.List  {
 	if categoryID <= 0 {
 		return nil
 	}
 	list := make(m_category.List, 0)
-	recursion := &s_services.Recursion{}
-	recursion.IsDown = true
-	err := s_services.GetRecursion("category", categoryID, &list, recursion)
+	var err error
+	if m_category.CheckIsMenu(isMenu) {
+		err = s_services.GetSons("category", categoryID, &list, "SortID", builder.Eq{"IsMenu": isMenu})
+	}else {
+		err = s_services.GetSons("category", categoryID, &list, "SortID", nil)
+	}
 	if err != nil {
 		return nil
 	}

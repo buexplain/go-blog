@@ -75,6 +75,7 @@ func init() {
 	APP.View().SetCache(!APP.Debug())
 	//设置模板函数
 	APP.View().AddFunc("message", viewFunc.Message)
+	APP.View().AddFunc("URL", viewFunc.URL)
 }
 
 //设置session

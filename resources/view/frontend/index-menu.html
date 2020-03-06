@@ -1,13 +1,14 @@
+{{$url := (URL $.currentURL).SetPath "/"}}
 {{range $_, $v := .categoryTree}}
     <li class="layui-nav-item {{if $.categoryID}}{{if eq $.categoryID $v.ID}}layui-this{{end}}{{end}}">
         {{if len $v.Children | eq 0}}
-            <a href="{{if eq $v.Redirect ""}}/?categoryID={{$v.ID}}{{else}}{{$v.Redirect}}{{end}}">{{$v.Name}}</a>
+            <a href="{{if eq $v.Redirect ""}}{{$url.SetParam "categoryID" $v.ID}}{{else}}{{$v.Redirect}}{{end}}">{{$v.Name}}</a>
         {{else}}
             <a href="javascript:;">{{$v.Name}}</a>
             <dl class="layui-nav-child">
                 {{range $_, $children := $v.Children}}
                     <dd class="{{if $.categoryID}}{{if eq $.categoryID $children.ID}}layui-this{{end}}{{end}}">
-                        <a href="{{if eq $children.Redirect ""}}/?categoryID={{$children.ID}}{{else}}{{$children.Redirect}}{{end}}">{{$children.Name}}</a>
+                        <a href="{{if eq $children.Redirect ""}}{{$url.SetParam "categoryID" $children.ID}}{{else}}{{$children.Redirect}}{{end}}">{{$children.Name}}</a>
                     </dd>
                 {{end}}
             </dl>
