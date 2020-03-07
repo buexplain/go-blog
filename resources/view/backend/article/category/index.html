@@ -92,7 +92,7 @@
                         template: function(item) {
                             var btn = '<a class="layui-btn layui-btn-sm" href="/backend/article/category/create?pid='+item.ID+'">新增</a>';
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/category/edit/'+item.ID+'">编辑</a>';
-                            if(item.ContentNum === 0 && !result.hasChildren(item.ID)) {
+                            if(item.Total === 0 && !result.hasChildren(item.ID)) {
                                 btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" href="/backend/article/category/delete/1?_method=delete&ids[]='+item.ID+'">删除</a>';
                             }
                             return btn;

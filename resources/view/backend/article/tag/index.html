@@ -8,6 +8,18 @@
 
 {{define "content"}}
     <blockquote class="layui-elem-quote">
+        <form class="layui-form" method="post" action="/backend/article/tag">
+            <div class="layui-inline" style="width: 70%">
+                <input type="text" name="names" value="" required lay-verify="required" placeholder="请输入新的标签，多个标签用逗号隔开" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-inline">
+                {{._token}}
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">
+                    新增标签
+                </button>
+            </div>
+        </form>
+        <br>
         <form class="layui-form">
             <div class="layui-inline">
                 <input type="text" name="whereLike[Name]" value="{{.Name}}" placeholder="请输入搜索的标签名" autocomplete="off" class="layui-input">
@@ -48,15 +60,14 @@
                 ,cols: [[ //表头
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
                     ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
-                    ,{field: 'Name', title: '标签名'}
+                    ,{field: 'Name', edit: 'text', title: '标签名'}
                     ,{field: 'Total', title: '文章数量',sort: true, width:120}
                     ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
                         return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
                     }}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
                         let btn = '';
-                        btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/tag/edit/'+data['ID']+'">编辑</a>';
-                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['ContentNum'] > 0 ? 'none' : '')+';">删除</a>';
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['Total'] > 0 ? 'none' : '')+';">删除</a>';
                         return btn;
                     }}
                 ]]
@@ -69,7 +80,7 @@
                 if(obj.event === 'del-batch') {
                     var checkStatus = table.checkStatus(obj.config.id);
                     if(checkStatus.data.length === 0) {
-                        layer.alert('请勾选数据', {icon: 2});
+                        submit.alertWarning('请勾选数据');
                         return '';
                     }
                     layer.confirm('确定删除吗？', {icon: 3}, function(index) {
@@ -82,7 +93,7 @@
                                 layer.close(index);
                                 table.reload(obj.config.id, obj.config);
                             }else {
-                                layer.alert(json.message, {icon: 2});
+                                submit.alertError(json.message);
                             }
                         });
                     });
@@ -100,11 +111,32 @@
                                 obj.del();
                                 layer.close(index);
                             }else {
-                                layer.alert(json.message, {icon: 2});
+                                submit.alertError(json.message);
                             }
                         });
                     });
                 }
+            });
+
+            //监听单元格编辑
+            table.on('edit(j-table)', function(obj) {
+                $.ajax({
+                    type: "POST",
+                    url: "/backend/article/tag/update/"+obj.data.ID,
+                    data:{
+                        name: obj.data.Name,
+                        _method:'put',
+                        _token:_token()
+                    },
+                    success: function(json) {
+                        if(json.code !== 0) {
+                            submit.alertError(json.message);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        submit.callError(jqXHR);
+                    }
+                });
             });
 
             //搜索

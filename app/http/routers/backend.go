@@ -98,14 +98,12 @@ func backend(mux *fool.Mux) {
 			)
 
 			//标签管理
+			mux.Get("tag", c_tag.Index)
 			mux.Restful("tag",
-				c_tag.Index,
-				c_tag.Create,
 				c_tag.Store,
-				c_tag.Edit,
 				c_tag.Update,
 				c_tag.Destroy,
-			)
+			).AddLabel("json")
 			mux.Put("tag/delete-batch", c_tag.DestroyBatch)
 
 			//内容管理

@@ -7,6 +7,8 @@ import (
 	m_tag "github.com/buexplain/go-blog/models/tag"
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
+	"strings"
+	"time"
 	"xorm.io/builder"
 )
 
@@ -64,20 +66,42 @@ func Destroy(ids []int) (int64, error) {
 	}
 }
 
-func Store(name string) (int, error) {
+func Store(name string) (*m_tag.Tag, error) {
 	mod := &m_tag.Tag{}
 	mod.Name = name
 	has, err := dao.Dao.Get(mod)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	if has {
-		return mod.ID, nil
+		return mod, nil
 	}
 
 	if _, err := dao.Dao.Insert(mod); err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return mod.ID, nil
+	return mod, nil
+}
+
+func Stores(names []string) (int64, error) {
+	t := time.Now().Format("2006-01-02 15:04:05")
+	args := make([]interface{}, 0, len(names)*3)
+	for _, name := range names {
+		args = append(args, t, t, name)
+	}
+	values, err := builder.ConvertToBoundSQL(strings.Repeat("(?,?,?),",len(names)), args)
+	if err != nil {
+		return 0, err
+	}
+	sql := "INSERT OR IGNORE INTO `Tag` (`CreatedAt`,`UpdatedAt`,`Name`) VALUES " + values[0:len(values)-1]
+	result, err := dao.Dao.Exec(sql)
+	if err != nil {
+		return 0, err
+	}
+	if affected, err := result.RowsAffected(); err != nil {
+		return 0, err
+	}else {
+		return affected, nil
+	}
 }

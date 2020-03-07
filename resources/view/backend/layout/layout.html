@@ -16,6 +16,21 @@
 <script type="text/javascript" src="/resources/asset/layui-config.js"></script>
 <script type="text/javascript" src="/resources/asset/moment.min.js"></script>
 <script type="text/javascript" src="/resources/asset/submit.js"></script>
+{{if ._token}}{{._token}}{{end}}
+<script>
+    /**
+     * 返回 csrf token
+     * @returns {*}
+     * @private
+     */
+    function _token() {
+        var o = document.querySelector("input[name=_token]");
+        if(!o) {
+            throw 'w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))';
+        }
+        return o.value;
+    }
+</script>
 <script>
     layui.use('util', function(){
         var util = layui.util;

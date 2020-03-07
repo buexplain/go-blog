@@ -37,7 +37,7 @@ func init() {
 		Dao.ShowSQL(true)
 	}
 	//开启sqlite3的缓存
-	_, err = Dao.Exec("PRAGMA default_cache_size = 5000")
+	_, err = Dao.Exec("PRAGMA cache_size = 5000")
 	if err != nil {
 		_ = Dao.Close()
 		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())

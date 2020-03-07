@@ -89,7 +89,7 @@
                         return result;
                     }(checkData);
                     var param = {
-                        _token:$("input[name='_token']").val(),
+                        _token:_token(),
                         ids:ids
                     };
                     $.post(window.location.pathname, param, function (json) {
@@ -97,7 +97,7 @@
                         if(json.code === 0) {
                             window.location.href = url+"&url="+window.location.pathname;
                         }else {
-                            layer.alert(json.message, {icon: 2});
+                            submit.alertError(json.message);
                         }
                     });
                 }catch (e) {

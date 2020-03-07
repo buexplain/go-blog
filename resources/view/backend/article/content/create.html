@@ -115,18 +115,21 @@
                         show: true,
                     },
                     tips:'请选择标签',
-                    filterable: true,
                     paging: true,
                     size: 'small',
                     pageSize: 10,
                     max: 3,
                     data: result.tagList,
-                    create: function(name) {
-                        var value = name;
+                    filterable: true,
+                    create: function(val, arr) {
+                        if(arr.length > 0) {
+                            return ;
+                        }
+                        var value = val;
                         $.ajax({
                             url: "/backend/article/content/tag",
                             async:false,
-                            data: {name: name, _token: document.querySelector("input[name=_token]").value},
+                            data: {name: val, _token: _token()},
                             type: "post",
                             success: function (json) {
                                 if (json.code !== 0) {
@@ -141,7 +144,7 @@
                             }
                         });
                         return {
-                            name: name,
+                            name: val,
                             value: value
                         }
                     }
@@ -171,7 +174,7 @@
                         accept: acceptMimeTypes,
                         handler (files) {
                             var formDataArr = [];
-                            var token = document.querySelector("input[name=_token]").value;
+                            var token = _token();
                             for(var i in files) {
                                 var formData = new FormData();
                                 formData.append('_token', token);
@@ -181,7 +184,7 @@
                             Uploads.getInstance(formDataArr).then(function (result) {
                                 vEditorObj.insertValue(result.getMarkdownText());
                             }).catch(function(rej) {
-                                layer.alert(rej.toString(), {icon: 2});
+                                submit.alertWarning(rej.toString());
                             });
                         },
                     },
@@ -229,7 +232,7 @@
                     request.onload = function(oEvent) {
                         let currentTarget = oEvent.currentTarget;
                         if(currentTarget.status !== 200) {
-                            layer.alert(currentTarget.status+' '+currentTarget.statusText, {icon: 2});
+                            submit.alertError(currentTarget.status+' '+currentTarget.statusText);
                             return '';
                         }
                         let json = JSON.parse(currentTarget.response);
@@ -245,7 +248,7 @@
                                 }
                             });
                         }else {
-                            layer.alert(json.message, {icon: 2});
+                            submit.alertError(json.message);
                         }
                     };
                     request.send(formData);
@@ -253,7 +256,7 @@
                 });
             }).catch(function (rej) {
                 console.error(rej);
-                layer.alert(rej.toString(), {icon: 2});
+                submit.alertError(rej.toString())
             });
         });
     </script>

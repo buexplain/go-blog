@@ -228,12 +228,12 @@ func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //新增tag
 func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	name := r.Form("name", "")
-	id, err := s_tag.Store(name)
+	name := r.Form("name")
+	mod, err := s_tag.Store(name)
 	if err != nil {
 		return err
 	}
-	return w.Success(id)
+	return w.Success(mod.ID)
 }
 
 //上传附件

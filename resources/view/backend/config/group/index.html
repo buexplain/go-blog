@@ -14,7 +14,6 @@
         </div>
     </script>
     <table id="j-table" lay-filter="j-table"></table>
-    {{._token}}
 {{end}}
 
 {{define "js"}}
@@ -59,11 +58,11 @@
                 if(obj.event === 'del-batch') {
                     var checkStatus = table.checkStatus(obj.config.id);
                     if(checkStatus.data.length === 0) {
-                        layer.alert('请勾选数据', {icon: 2});
+                        submit.alertWarning('请勾选数据');
                         return '';
                     }
                     layer.confirm('确定删除吗？', {icon: 3}, function(index) {
-                        var param = {ids:[], _method:'put', _token:document.querySelector("input[name=_token]").value};
+                        var param = {ids:[], _method:'put', _token:_token()};
                         checkStatus.data.forEach(function (v) {
                             param.ids.push(v['ID']);
                         });
@@ -72,7 +71,7 @@
                                 layer.close(index);
                                 table.reload(obj.config.id, obj.config);
                             }else {
-                                layer.alert(json.message, {icon: 2});
+                                submit.alertError(json.message);
                             }
                         });
                     });
@@ -90,7 +89,7 @@
                                 obj.del();
                                 layer.close(index);
                             }else {
-                                layer.alert(json.message, {icon: 2});
+                                submit.alertError(json.message);
                             }
                         });
                     });

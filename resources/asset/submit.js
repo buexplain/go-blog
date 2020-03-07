@@ -130,6 +130,66 @@ var submit = {
     },
 
     /**
+     * 默认的成功处理函数
+     * @param data
+     */
+    callSuccess: function(data) {
+        var that = this;
+        //默认的回调逻辑
+        if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
+            //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
+            var message = '';
+            if(data.msg !== undefined) {
+                message = data.msg;
+            }else {
+                message = data.message;
+            }
+            //如果没有任何消息提示，则不做弹出
+            if(message !== '') {
+                if(data.code === 0) {
+                    //操作成功
+                    that.alertSuccess(message);
+                }else {
+                    //操作失败
+                    that.alertError(message);
+                }
+            }
+        }else {
+            //未知返回，直接弹出
+            that._alert(data);
+        }
+    },
+
+    /**
+     * 默认的错误处理函数
+     * @param jqXHR
+     */
+    callError: function(jqXHR) {
+        var that = this;
+        if(jqXHR.hasOwnProperty('responseJSON')) {
+            var data = jqXHR['responseJSON'];
+            if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
+                //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
+                var message = '';
+                if(data.msg !== undefined) {
+                    message = data.msg;
+                }else {
+                    message = data.message;
+                }
+                //如果没有任何消息提示，则不做弹出
+                if(message !== '') {
+                    that.alertError(message);
+                }
+            }else {
+                //未知返回，直接弹出
+                that.alertError(data);
+            }
+        }else {
+            that.alertError(jqXHR['responseText']);
+        }
+    },
+
+    /**
      * 以表单方式进行提交
      * @param DOMObject
      */
@@ -318,29 +378,7 @@ var submit = {
                     if(success !== undefined && success.length > 0) {
                         that._callUserFunc(success, DOMObject, data);
                     }else {
-                        //默认的回调逻辑
-                        if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
-                            //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
-                            var message = '';
-                            if(data.msg !== undefined) {
-                                message = data.msg;
-                            }else {
-                                message = data.message;
-                            }
-                            //如果没有任何消息提示，则不做弹出
-                            if(message !== '') {
-                                if(data.code === 0) {
-                                    //操作成功
-                                    that.alertSuccess(message);
-                                }else {
-                                    //操作失败
-                                    that.alertError(message);
-                                }
-                            }
-                        }else {
-                            //未知返回，直接弹出
-                            that._alert(data);
-                        }
+                        that.callSuccess(data);
                     }
                 },
                 error: function (jqXHR) {
@@ -354,27 +392,7 @@ var submit = {
                             that._callUserFunc(error, DOMObject, jqXHR['responseText']);
                         }
                     }else {
-                        if(jqXHR.hasOwnProperty('responseJSON')) {
-                            var data = jqXHR['responseJSON'];
-                            if(typeof data === 'object' && data.code !== undefined && (data.msg !== undefined || data.message !== undefined)) {
-                                //假设返回结构是一个 {code:1,message:"xx"} 或 {code:1,msg:"xx"} 的对象
-                                var message = '';
-                                if(data.msg !== undefined) {
-                                    message = data.msg;
-                                }else {
-                                    message = data.message;
-                                }
-                                //如果没有任何消息提示，则不做弹出
-                                if(message !== '') {
-                                    that.alertError(message);
-                                }
-                            }else {
-                                //未知返回，直接弹出
-                                that.alertError(data);
-                            }
-                        }else {
-                            that.alertError(jqXHR['responseText']);
-                        }
+                        that.callError(jqXHR);
                     }
                 }
             });

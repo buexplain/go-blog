@@ -73,6 +73,9 @@ class TagList {
 
     process (content) {
         var result = [];
+        if(!this.data) {
+            return result;
+        }
         this.data.forEach(function (v, k) {
             result.push({name: v.Name, value: v.ID, selected: content.hasTag(v.ID)});
         });
