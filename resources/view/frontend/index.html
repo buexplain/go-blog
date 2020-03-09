@@ -3,7 +3,9 @@
 {{end}}
 
 {{define "title"}}
-	{{.config.Get "Name"}}
+	<title>{{.config.Get "Name"}}</title>
+	<meta name="keywords" content="{{.config.Get "Keywords"}}">
+	<meta name="description" content="{{.config.Get "Description"}}">
 {{end}}
 
 {{define "css"}}
@@ -40,21 +42,12 @@
 		<div class="wrap">
 			<!--左侧数据-->
 			<div class="article">
-				<!--面包屑导航-->
-				<div class="nav">
-					<span class="layui-breadcrumb" lay-separator=">">
-						<a href="/">
-							首页
-
-						</a>
-					</span>
-				</div>
 				<!--文章列表-->
 				<ul class="list">
 					{{range $_, $v := .contentList}}
 						<li>
 							<div class="title">
-								<a href="{{$v.ID}}">
+								<a href="/article/{{$v.ID}}.html">
 									{{$v.Title}}
 									{{if len $v.Origin | eq 0}}
 										<span class="layui-badge layui-bg-green">原创</span>
@@ -103,7 +96,7 @@
 				<!--标签-->
 				<div class="tag" id="j-tag" data-tagID="{{.tagID}}"></div>
 				<!--归档-->
-				<div class="file" id="j-file" data-place="{{.place}}"></div>
+				<div class="place" id="j-place" data-place="{{.place}}"></div>
 			</div>
 		</div>
 	</div>

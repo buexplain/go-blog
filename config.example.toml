@@ -46,7 +46,7 @@ Path = "storage/logs"
 Buffer = 4096
 Flush = "5s"
 
-[CSRF] # github.com/gorilla/csrf
+[CSRF] # https://github.com/gorilla/csrf
 Enable = true
 Key = "32-byte-long-auth-key"
 Name = "CSRF"
@@ -59,6 +59,10 @@ Domain = ""
 MaxAge = 86400
 Secure = false
 HttpOnly = true
+
+[GZIP] # https://github.com/nytimes/gziphandler
+Enable = true
+Level = -1
 
 [Asset]
 Dir = ["resources/..."]

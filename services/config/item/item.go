@@ -10,12 +10,12 @@ import (
 	"html/template"
 )
 
-func GetList(ctx *fool.Ctx)(counter int64, result m_configItem.List, err error)  {
+func GetList(ctx *fool.Ctx) (counter int64, result m_configItem.List, err error) {
 	query := s_services.NewQuery("ConfigItem", ctx).Limit()
 	query.Finder.Desc("ID")
 	query.Where()
 	groupID := ctx.Request().QueryPositiveInt("groupID")
-	if(groupID > 0) {
+	if groupID > 0 {
 		query.Finder.Where("GroupID=?", groupID)
 	}
 	//先获取分页所需的总条数
@@ -35,7 +35,7 @@ func Destroy(ids []int) (int64, error) {
 
 type List struct {
 	group string
-	data m_configItem.List
+	data  m_configItem.List
 }
 
 func (this List) Get(key string) string {
@@ -70,5 +70,5 @@ func GetByGroup(groupName string) *List {
 	if len(*result) == 0 {
 		panic(errors.MarkServer(fmt.Errorf("not found config: %s", groupName)))
 	}
-	return &List{data:*result,group:groupName}
+	return &List{data: *result, group: groupName}
 }

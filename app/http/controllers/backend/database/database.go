@@ -25,9 +25,9 @@ func SQL(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	sql = strings.Trim(sql, " ")
 	sqlType := r.Form("sqlType", "")
 	if sqlType == "" {
-		if(len(sql) > 6 && strings.EqualFold(sql[0:6], "select") == true) {
+		if len(sql) > 6 && strings.EqualFold(sql[0:6], "select") == true {
 			sqlType = "query"
-		}else {
+		} else {
 			sqlType = "exec"
 		}
 	}
@@ -61,20 +61,20 @@ func SQL(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			w.Assign("fields", fields)
 		}
 		w.Assign("rows", rows)
-	}else if sqlType == "exec" {
+	} else if sqlType == "exec" {
 		b4ExecTime := time.Now()
 		result, err := dao.Dao.Exec(sql)
 		if err != nil {
-			w.Assign("err",err)
+			w.Assign("err", err)
 			goto loop
 		}
 		execDuration := time.Since(b4ExecTime)
 		w.Assign("execDuration", execDuration)
 		w.Assign("result", result)
-	}else {
+	} else {
 		w.Assign("err", code.Text(code.INVALID_ARGUMENT, sqlType))
 		goto loop
 	}
-	loop:
+loop:
 	return w.View(http.StatusOK, "backend/database/index.html")
 }

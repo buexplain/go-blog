@@ -42,12 +42,12 @@ func init() {
 			}
 			//删除所有的表
 			for _, table := range tables {
-				if _, err := dao.Dao.NewSession().Exec("DROP TABLE "+table.Name); err != nil {
+				if _, err := dao.Dao.NewSession().Exec("DROP TABLE " + table.Name); err != nil {
 					a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
 					os.Exit(1)
 				}
 			}
-			_,err = s_services.ImportDB(dao.Dao, file)
+			_, err = s_services.ImportDB(dao.Dao, file)
 			if err != nil {
 				a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
 				os.Exit(1)
@@ -58,4 +58,3 @@ func init() {
 	importCmd.Flags().StringVarP(&fpath, "fpath", "f", "", "导入到数据库的sql文件")
 	dbCmd.AddCommand(importCmd)
 }
-

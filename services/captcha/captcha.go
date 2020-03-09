@@ -5,11 +5,11 @@ import (
 	"github.com/mojocn/base64Captcha"
 	"image/color"
 )
+
 //
 const CaptchaID = "captchaID"
 
 var store base64Captcha.Store = base64Captcha.DefaultMemStore
-
 
 //校验验证码
 func Verify(session fool.Session, captcha string) bool {
@@ -27,7 +27,7 @@ func Generate(session fool.Session, height int, width int, length int) string {
 		"abcdefghjkmnqrstuvxyz123456789",
 		&color.RGBA{R: uint8(255), G: uint8(255), B: uint8(255), A: uint8(255)},
 		nil,
-		)
+	)
 	c := base64Captcha.NewCaptcha(driver, store)
 	id, url, err := c.Generate()
 	if err != nil {

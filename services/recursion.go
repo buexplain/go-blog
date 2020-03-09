@@ -13,14 +13,14 @@ func GetParents(table string, id int, rowsSlicePtr interface{}, field ...string)
 		t, err := GetTableInfo(dao.Dao, table)
 		if err != nil {
 			return err
-		}else {
+		} else {
 			for _, v := range t.Columns() {
 				field = append(field, v.Name)
 			}
 		}
 	}
-	b := "`"+strings.Join(field, "`,`")+"`"
-	a := "`A`.`"+strings.Join(field, "`,`A`.`")+"`"
+	b := "`" + strings.Join(field, "`,`") + "`"
+	a := "`A`.`" + strings.Join(field, "`,`A`.`") + "`"
 	//向上查找所有的父级
 	sql := `WITH tmp(%s)
 		AS
@@ -43,14 +43,14 @@ func GetSons(table string, id int, rowsSlicePtr interface{}, sortField string, w
 		t, err := GetTableInfo(dao.Dao, table)
 		if err != nil {
 			return err
-		}else {
+		} else {
 			for _, v := range t.Columns() {
 				field = append(field, v.Name)
 			}
 		}
 	}
-	b := "`"+strings.Join(field, "`,`")+"`"
-	a := "`A`.`"+strings.Join(field, "`,`A`.`")+"`"
+	b := "`" + strings.Join(field, "`,`") + "`"
+	a := "`A`.`" + strings.Join(field, "`,`A`.`") + "`"
 	//向下查找所有的子级
 	sql := `WITH tmp(%s)
 		AS
@@ -64,7 +64,7 @@ func GetSons(table string, id int, rowsSlicePtr interface{}, sortField string, w
 	if where != nil {
 		if s, err := builder.ToBoundSQL(where); err != nil {
 			return err
-		}else {
+		} else {
 			sql += " where " + s
 		}
 	}

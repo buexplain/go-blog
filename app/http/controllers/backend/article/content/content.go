@@ -86,13 +86,6 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 
-	go func() {
-		for i:=0; i <10000; i++ {
-			mod.ID = 0
-			_ = s_content.Save(mod, tagsID, 0)
-		}
-	}()
-
 	return w.Success(mod.ID)
 }
 

@@ -3,6 +3,7 @@ package h_boot
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-gracehttp"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +14,7 @@ import (
 //启动http服务器
 func Run() {
 	addr := a_boot.Config.App.Server.IP + ":" + strconv.Itoa(int(a_boot.Config.App.Server.Port))
-	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr)
+	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 	server := gracehttp.NewServer(
 		addr,
 		Server,
@@ -31,13 +32,19 @@ func Run() {
 		Logger.Info(fmt.Sprintf(format, args...))
 	})
 	go func() {
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Second * 1)
 		fmt.Println(APP.Mux().DumpRouteMap())
 	}()
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())
 	}
-	if err := APP.Close(); err != nil {
+	//等待事件调度器结束
+	Bus.Close()
+	//等待日志收集器结束
+	if err := a_boot.Logger.Close(); err != nil {
+		log.Println(err)
+	}
+	if err := Logger.Close(); err != nil {
 		log.Println(err)
 	}
 }

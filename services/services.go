@@ -27,7 +27,6 @@ func CheckUnique(tableName string, field string, value interface{}, selfID ...in
 	return !has
 }
 
-
 //获取表信息
 func GetTableInfo(dao *xorm.Engine, tableName string) (*core.Table, error) {
 	tables, err := dao.Dialect().GetTables()

@@ -158,7 +158,7 @@ func Update(mod *m_attachment.Attachment) error {
 		hash := md5.New()
 		if size, err := io.WriteString(hash, content); err != nil {
 			return err
-		}else {
+		} else {
 			mod.Size = size
 		}
 		mod.MD5 = hex.EncodeToString(hash.Sum(nil))

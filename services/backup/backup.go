@@ -76,6 +76,7 @@ func LastBackupTime() *time.Time {
 }
 
 type Message chan string
+
 func (this Message) Success(message string) {
 	message = strings.ReplaceAll(message, "\n", " ")
 	message = strings.ReplaceAll(message, "\r", " ")
@@ -94,15 +95,15 @@ func (this Message) Fail(err error) {
 }
 
 //备份数据
-func Start() <- chan string {
+func Start() <-chan string {
 	message := make(Message)
 	go func() {
 		defer func() {
 			close(message)
 		}()
-		baseName := time.Now().Format("backup-2006年01月02日15时04分05秒")+".zip"
+		baseName := time.Now().Format("backup-2006年01月02日15时04分05秒") + ".zip"
 		backup := filepath.Join(PATH, baseName)
-		message.Tips("创建备份文件: "+baseName)
+		message.Tips("创建备份文件: " + baseName)
 		f, err := os.Create(backup)
 		if err != nil {
 			message.Fail(err)
@@ -147,7 +148,7 @@ func Start() <- chan string {
 			}()
 			message.Tips("导出数据库到临时文件")
 			for k, table := range tables {
-				message.Tips(fmt.Sprintf("正在导出表: %s 剩余 %d 张表",table.Name, len(tables)-k-1))
+				message.Tips(fmt.Sprintf("正在导出表: %s 剩余 %d 张表", table.Name, len(tables)-k-1))
 				err = s_services.DumpDB(dao.Dao, []*core.Table{table}, tempSqlFile)
 				if err != nil {
 					message.Fail(err)

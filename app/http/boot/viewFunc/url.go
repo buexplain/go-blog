@@ -7,12 +7,12 @@ import (
 
 //url生成函数
 type url struct {
-	data libUrl.URL
+	data  libUrl.URL
 	query libUrl.Values
 }
 
 func (this url) String() string {
-	if this.query !=  nil {
+	if this.query != nil {
 		this.data.RawQuery = this.query.Encode()
 	}
 	return this.data.String()
@@ -41,7 +41,7 @@ func (this *url) GetParam(key string) string {
 	return this.query.Get(key)
 }
 
-func (this *url)  DelParam(key string) *url {
+func (this *url) DelParam(key string) *url {
 	if this.query == nil {
 		this.query = this.data.Query()
 	}
@@ -55,5 +55,5 @@ func (this *url) SetPath(path string) *url {
 }
 
 func URL(urlObj libUrl.URL) *url {
-	return &url{data:urlObj}
+	return &url{data: urlObj}
 }

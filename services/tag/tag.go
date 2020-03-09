@@ -14,12 +14,12 @@ import (
 
 type Tag struct {
 	m_tag.Tag `xorm:"extends"`
-	Total int
+	Total     int
 }
 
 type List []*Tag
 
-func GetList(ctx *fool.Ctx)(counter int64, result List, err error)  {
+func GetList(ctx *fool.Ctx) (counter int64, result List, err error) {
 	query := s_services.NewQuery("Tag", ctx).Limit()
 	query.Finder.Desc("ID")
 	query.Where()
@@ -30,7 +30,7 @@ func GetList(ctx *fool.Ctx)(counter int64, result List, err error)  {
 		"LEFT",
 		"(SELECT count(*) as Total, TagID FROM ContentTag GROUP BY TagID) as ContentTag",
 		"Tag.ID = ContentTag.TagID",
-		)
+	)
 	query.Find(&result)
 	err = query.Error
 	return
@@ -61,7 +61,7 @@ func Destroy(ids []int) (int64, error) {
 	}
 	if result, err := dao.Dao.Exec(sql); err != nil {
 		return 0, err
-	}else {
+	} else {
 		return result.RowsAffected()
 	}
 }
@@ -90,7 +90,7 @@ func Stores(names []string) (int64, error) {
 	for _, name := range names {
 		args = append(args, t, t, name)
 	}
-	values, err := builder.ConvertToBoundSQL(strings.Repeat("(?,?,?),",len(names)), args)
+	values, err := builder.ConvertToBoundSQL(strings.Repeat("(?,?,?),", len(names)), args)
 	if err != nil {
 		return 0, err
 	}
@@ -101,7 +101,7 @@ func Stores(names []string) (int64, error) {
 	}
 	if affected, err := result.RowsAffected(); err != nil {
 		return 0, err
-	}else {
+	} else {
 		return affected, nil
 	}
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <title>{{template "title" .}}</title>
+    {{template "title" .}}
     <link rel="icon" href="data:image/ico;base64,aWNv">
     <link rel="stylesheet" href="/resources/asset/layui/css/layui.css">
     <link rel="stylesheet" href="/resources/asset/frontend/css/main.css">
@@ -21,5 +21,11 @@
 <script src="/resources/asset/layui/layui.js"></script>
 <script src="/resources/asset/frontend/js/main.js"></script>
 {{template "js" .}}
+<script>
+    layui.use('util', function(){
+        var util = layui.util;
+        util.fixbar();
+    });
+</script>
 </body>
 </html>

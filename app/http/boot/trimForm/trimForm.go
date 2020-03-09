@@ -7,7 +7,7 @@ import (
 )
 
 //前后空白字符清理
-func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request)  {
+func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	if err := r.ParseForm(fool.DefaultMaxMemory); err != nil {
 		if ctx.Route() != nil && ctx.Route().HasLabel("json") {
 			//存在路由，并且路由有json标签，则响应json格式
@@ -15,7 +15,7 @@ func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request)  {
 		} else {
 			ctx.Throw(ctx.Response().JumpBack(err.Error()))
 		}
-	}else {
+	} else {
 		trim(r.Raw().Form)
 		trim(r.Raw().PostForm)
 		if r.Raw().MultipartForm != nil {
@@ -25,10 +25,10 @@ func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request)  {
 	}
 }
 
-func trim(data map[string][]string)  {
+func trim(data map[string][]string) {
 	if data != nil {
 		for key, values := range data {
-			for k,v := range values {
+			for k, v := range values {
 				values[k] = strings.TrimSpace(v)
 			}
 			data[key] = values

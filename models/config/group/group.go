@@ -14,4 +14,3 @@ type ConfigGroup struct {
 }
 
 type List []*ConfigGroup
-

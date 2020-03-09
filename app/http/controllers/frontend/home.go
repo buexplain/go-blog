@@ -10,6 +10,8 @@ import (
 	s_tag "github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,7 +19,7 @@ type Debug struct {
 	data map[string]time.Time
 }
 
-func NewDebug() *Debug  {
+func NewDebug() *Debug {
 	return &Debug{data: map[string]time.Time{}}
 }
 
@@ -27,10 +29,11 @@ func (this *Debug) Set(name string) {
 
 func (this Debug) Get(name string) {
 	if t, ok := this.data[name]; ok {
-		fmt.Printf("%s 耗时: %d 毫秒\n", name, (time.Now().UnixNano() - t.UnixNano())/1e6)
+		fmt.Printf("%s 耗时: %d 毫秒\n", name, (time.Now().UnixNano()-t.UnixNano())/1e6)
 	}
 }
 
+//首页
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	debug := NewDebug()
 	//获取站点配置
@@ -99,4 +102,18 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result["place"] = buff.String()
 	//返回结果
 	return w.Success(result)
+}
+
+func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	id, _ := strconv.Atoi(strings.TrimRight(r.Param("id.html"), ".html"))
+	result, err := s_content.GetDetails(id)
+	if err != nil {
+		return err
+	}
+	config := s_configItem.GetByGroup("SiteInfo")
+	categoryTree := s_category.GetTree()
+	w.Assign("currentURL", *r.Raw().URL)
+	w.Assign("config", config)
+	w.Assign("categoryTree", categoryTree)
+	return w.Assign("result", result).View(http.StatusOK, "frontend/article.html")
 }

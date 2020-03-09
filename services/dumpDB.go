@@ -2,6 +2,7 @@ package s_services
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -10,7 +11,6 @@ import (
 	"time"
 	"xorm.io/core"
 	"xorm.io/xorm"
-	"errors"
 )
 
 // dumpTables dump database all table structs and data to w with specify db type
@@ -152,4 +152,3 @@ func DumpDB(dao *xorm.Engine, tables []*core.Table, w io.Writer, tp ...core.DbTy
 	}
 	return nil
 }
-

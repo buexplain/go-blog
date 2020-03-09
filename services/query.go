@@ -42,7 +42,7 @@ func (this *Query) TableInfo() *core.Table {
 		this.tableInfo, this.Error = GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
 			this.tableName = this.tableInfo.Name
-		}else {
+		} else {
 			this.Error = errors.MarkServer(this.Error)
 		}
 	}

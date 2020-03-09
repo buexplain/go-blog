@@ -35,6 +35,3 @@ type Field struct {
 	CreatedAtField `xorm:"extends"`
 	UpdatedAtField `xorm:"extends"`
 }
-
-
-

@@ -3,7 +3,6 @@ package s_content
 import (
 	"fmt"
 	"github.com/88250/lute"
-	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	m_category "github.com/buexplain/go-blog/models/category"
@@ -138,7 +137,7 @@ func Render(markdown string) (string, error) {
 }
 
 type Place struct {
-	Total int
+	Total       int
 	CreatedAtYm string
 }
 type PlaceList []*Place
@@ -175,12 +174,12 @@ func GetList(page int, limit int, categoryID int, tagID int, place string, keywo
 	if categoryID > 0 {
 		if tmp := s_category.GetSons(categoryID, m_category.IsMenuYes); tmp == nil {
 			mod.Where("`Content`.`categoryID`=?", categoryID)
-		}else {
+		} else {
 			if len(tmp) == 1 {
 				mod.Where("`Content`.`categoryID`=?", tmp[0].ID)
-			}else {
+			} else {
 				in := []int{}
-				for _, v:= range tmp {
+				for _, v := range tmp {
 					in = append(in, v.ID)
 				}
 				mod.In("`Content`.`categoryID`", in)
@@ -196,8 +195,6 @@ func GetList(page int, limit int, categoryID int, tagID int, place string, keywo
 	if place != "" {
 		if t, err := time.ParseInLocation("2006年01月", place, time.Local); err == nil {
 			mod.Where("`Content`.`CreatedAt`>=?", t.String()).Where("`Content`.`CreatedAt`<?", t.AddDate(0, 1, 1).String())
-		}else {
-			h_boot.Logger.InfoF("parse time error: %s", err)
 		}
 	}
 	//查询关键字

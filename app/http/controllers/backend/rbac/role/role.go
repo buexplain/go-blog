@@ -116,7 +116,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	if affected, err := s_role.Destroy(ids); err != nil {
 		return w.JumpBack(err)
-	}else {
+	} else {
 		return w.Jump("/backend/rbac/role", fmt.Sprintf("操作 %d 条数据成功", affected))
 	}
 }

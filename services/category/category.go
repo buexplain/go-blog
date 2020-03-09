@@ -25,14 +25,14 @@ func Destroy(ids []int) (affected int64, err error) {
 	}
 	if result, err := dao.Dao.Exec(sql); err != nil {
 		return 0, err
-	}else {
+	} else {
 		return result.RowsAffected()
 	}
 }
 
 type Category struct {
 	m_category.Category `xorm:"extends"`
-	Total int
+	Total               int
 }
 
 type List []*Category
@@ -61,7 +61,7 @@ func GetALL() List {
 
 type TreeItem struct {
 	m_category.Category `xorm:"extends"`
-	Children []*TreeItem `xorm:"-"`
+	Children            []*TreeItem `xorm:"-"`
 }
 
 type TreeList []*TreeItem
@@ -74,11 +74,11 @@ func GetTree() TreeList {
 		panic(err)
 	}
 	m := make(map[int]*TreeItem)
-	for _,v := range lists {
+	for _, v := range lists {
 		m[v.ID] = v
 	}
 	result := make(TreeList, 0)
-	for _,v := range lists {
+	for _, v := range lists {
 		if v.Pid == 0 {
 			result = append(result, v)
 		}
@@ -105,7 +105,7 @@ func GetParents(categoryID int) m_category.List {
 }
 
 //获取一个分类的子分类
-func GetSons(categoryID int, isMenu int)  m_category.List  {
+func GetSons(categoryID int, isMenu int) m_category.List {
 	if categoryID <= 0 {
 		return nil
 	}
@@ -113,7 +113,7 @@ func GetSons(categoryID int, isMenu int)  m_category.List  {
 	var err error
 	if m_category.CheckIsMenu(isMenu) {
 		err = s_services.GetSons("category", categoryID, &list, "SortID", builder.Eq{"IsMenu": isMenu})
-	}else {
+	} else {
 		err = s_services.GetSons("category", categoryID, &list, "SortID", nil)
 	}
 	if err != nil {

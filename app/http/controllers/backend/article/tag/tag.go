@@ -54,7 +54,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "names"))
 	}
 	_, err := s_tag.Stores(names)
-	if err !=nil {
+	if err != nil {
 		return w.JumpBack(err.Error())
 	}
 	return w.RedirectBack()

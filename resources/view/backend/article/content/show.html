@@ -93,11 +93,11 @@
         {{ end }}
         <h2 class="title">
             {{.result.Content.Title}}
-            {{ if .result.Content.Origin }}
-                <span class="layui-badge layui-bg-green">转载</span>
-            {{ else }}
+            {{if eq (len .result.Content.Origin) 0}}
                 <span class="layui-badge layui-bg-green">原创</span>
-            {{ end }}
+            {{else}}
+                <span class="layui-badge layui-bg-orange">转载</span>
+            {{end}}
         </h2>
         <div class="extra">
             <span class="layui-badge-rim">
@@ -152,7 +152,7 @@
         //为特定链接分别渲染为视频、音频、嵌入的 iframe
         Vditor.mediaRender(preview);
         //对使用 Lute 渲染的数学公式进行渲染
-        Vditor.mathRenderByLute(preview);
+        Vditor.mathRender(preview);
         //消除第一个元素的上边空白
         setTimeout(function () {
             var childNodes = document.getElementById('j-preview').childNodes;

@@ -52,17 +52,18 @@ func GetList() (List, error) {
 
 //日志文件排序
 type stringSlice []string
-func (p stringSlice) Len() int           { return len(p) }
+
+func (p stringSlice) Len() int { return len(p) }
 func (p stringSlice) Less(i, j int) bool {
 	tmpI := strings.SplitN(p[i], ".", 3)
 	tmpJ := strings.SplitN(p[j], ".", 3)
 	if len(tmpI) == 2 {
 		tmpI = append(tmpI, "-1")
-		tmpI[1],tmpI[2] = tmpI[2],tmpI[1]
+		tmpI[1], tmpI[2] = tmpI[2], tmpI[1]
 	}
 	if len(tmpJ) == 2 {
 		tmpJ = append(tmpJ, "-1")
-		tmpJ[1],tmpJ[2] = tmpJ[2],tmpJ[1]
+		tmpJ[1], tmpJ[2] = tmpJ[2], tmpJ[1]
 	}
 	if len(tmpI) == len(tmpJ) && len(tmpI) == 3 {
 		if tmpI[0] == tmpJ[0] {
@@ -76,5 +77,4 @@ func (p stringSlice) Less(i, j int) bool {
 	}
 	return p[i] < p[j]
 }
-func (p stringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
+func (p stringSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }

@@ -44,7 +44,7 @@ func Destroy(ids []int) (int64, error) {
 			return 0, err
 		}
 		return 0, err
-	}else {
+	} else {
 		//获取受影响的行数
 		var affected int64
 		if affected, err = result.RowsAffected(); err != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/buexplain/go-fool"
 )
 
-func GetList(ctx *fool.Ctx)(counter int64, result m_configGroup.List, err error)  {
+func GetList(ctx *fool.Ctx) (counter int64, result m_configGroup.List, err error) {
 	query := s_services.NewQuery("ConfigGroup", ctx).Limit()
 	query.Finder.Desc("ID")
 	query.Where()
@@ -18,7 +18,6 @@ func GetList(ctx *fool.Ctx)(counter int64, result m_configGroup.List, err error)
 	err = query.Error
 	return
 }
-
 
 func Destroy(ids []int) (int64, error) {
 	affected, err := dao.Dao.In("ID", ids).Delete(new(m_configGroup.ConfigGroup))

@@ -1,0 +1,151 @@
+{{define "extend"}}
+    frontend/layout/layout.html
+{{end}}
+
+{{define "title"}}
+    <title>{{.result.Content.Title}} - {{.config.Get "Name"}}</title>
+    {{if gt (len .result.Content.Keywords) 0}}
+        <meta name="keywords" content="{{.result.Content.Keywords}}">
+    {{else}}
+        <meta name="keywords" content="{{.config.Get "Keywords"}}">
+    {{end}}
+    {{if gt (len .result.Content.Description) 0}}
+        <meta name="description" content="{{.result.Content.Description}}">
+    {{else}}
+        <meta name="description" content="{{.config.Get "Description"}}">
+    {{end}}
+{{end}}
+
+{{define "css"}}
+    <!--引入markdown基础样式-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.classic.css">
+{{end}}
+
+{{define "content"}}
+    <!--头部-->
+    <div class="header">
+        <!--logo-->
+        <div class="logo float-left">
+            <a href="/">
+                <img src="/resources/asset/frontend/images/logo.png" alt="" class="image">
+                <span class="text">{{.config.Get "Name"}}</span>
+            </a>
+        </div>
+        <!--导航-->
+        <div class="nav float-right">
+            <ul class="layui-nav">
+                {{template "frontend/index-menu.html" .}}
+            </ul>
+        </div>
+        <!--汉堡按钮-->
+        <a href="javascript:;" class="hamburger-btn float-right">
+            <i class="layui-icon layui-icon-more"></i>
+        </a>
+        <!--汉堡导航-->
+        <ul class="layui-nav layui-nav-tree hamburger-nav" id="j-categoryID" data-categoryID="{{.categoryID}}">
+            {{template "frontend/index-menu.html" .}}
+        </ul>
+    </div>
+    <!--主体内容-->
+    <div class="container">
+        <div class="wrap">
+            <div class="details">
+                {{ if .result.Category }}
+                    <span class="layui-breadcrumb nav" lay-separator=">">
+                        <a href="/">首页</a>
+                        {{range $_, $v := .result.Category}}
+                            <a href="/?categoryID={{$v.ID}}">{{$v.Name}}</a>
+                        {{end}}
+                        <a><cite>正文</cite></a>
+                    </span>
+                {{ end }}
+                <h2 class="title">
+                    {{.result.Content.Title}}
+                    {{if eq (len .result.Content.Origin) 0}}
+                        <span class="layui-badge layui-bg-green">原创</span>
+                    {{else}}
+                        <span class="layui-badge layui-bg-orange">转载</span>
+                    {{end}}
+                </h2>
+                <div class="extra">
+					<span class="layui-badge-rim">
+						<svg class="icon icon-w15" aria-hidden="true">
+							<use xlink:href="#icon-shizhong"></use>
+						</svg>
+						{{.result.Content.UpdatedAtText}}
+					</span>
+                    <span class="layui-badge-rim">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#icon-eye"></use>
+						</svg>
+						{{.result.Content.Hits}}
+					</span>
+                </div>
+                <div class="tag">
+                    {{range $_, $v := .result.Tag}}
+                        <a href="/?tagID={{$v.ID}}">
+                            <span class="layui-badge layui-bg-gray">{{$v.Name}}</span>
+                        </a>
+                    {{end}}
+                </div>
+                <div class="content">
+                    {{if gt (len .result.Content.Origin) 0}}
+                        <blockquote class="layui-elem-quote layui-quote-nm origin">
+                            <a target="_blank" href="{{.result.Content.Origin}}">原文地址：{{.result.Content.Origin}}</a>
+                        </blockquote>
+                    {{end}}
+                    <div id="j-preview" style="padding: 0;" class="preview vditor-reset vditor-reset--anchor">
+                        {{.result.Content.HTML}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <div class="footer">
+        {{.config.GetToHTML "Footer"}}
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js"></script>
+    <script>
+        //渲染分类
+        layui.use(['element'], function() {
+            var element = layui.element;
+        });
+        //高亮显示代码部分
+        var preview = document.getElementById('j-preview');
+        Vditor.highlightRender({
+            enable:true,
+            style:'monokai',
+            lineNumber:true
+        }, preview);
+        //为 element 中的代码块添加复制按钮
+        Vditor.codeRender(preview);
+        //转换 preview 中的文本为数学公式
+        Vditor.mathRender(preview);
+        //转换 preview 中 class 为 className 的元素为流程图/时序图/甘特图
+        Vditor.mermaidRender(preview);
+        //图表渲染
+        Vditor.chartRender(preview);
+        //五线谱渲染
+        Vditor.abcRender(preview);
+        //为特定链接分别渲染为视频、音频、嵌入的 iframe
+        Vditor.mediaRender(preview);
+        //对使用 Lute 渲染的数学公式进行渲染
+        Vditor.mathRender(preview);
+        //消除第一个元素的上边空白
+        setTimeout(function () {
+            var childNodes = document.getElementById('j-preview').childNodes;
+            for(var i in childNodes) {
+                var first = childNodes[i];
+                if(first.style !== undefined && first.style.marginTop !== undefined) {
+                    first.style.marginTop = 0;
+                    first.style.paddingTop = 0;
+                    break;
+                }
+            }
+        }, 100);
+    </script>
+{{end}}

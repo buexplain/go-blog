@@ -1,6 +1,7 @@
 package h_boot
 
 import (
+	"github.com/NYTimes/gziphandler"
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/method"
 	"github.com/buexplain/go-blog/app/http/boot/session"
@@ -16,6 +17,7 @@ import (
 	"github.com/gorilla/csrf"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -118,6 +120,7 @@ func init() {
 var Server http.Handler
 
 func init() {
+	//设置csrf防御
 	if a_boot.Config.CSRF.Enable {
 		Server = csrf.Protect([]byte(a_boot.Config.CSRF.Key),
 			csrf.ErrorHandler(defaultCSRFErrorHandler),
@@ -131,5 +134,14 @@ func init() {
 			csrf.FieldName(a_boot.Config.CSRF.Field))(APP)
 	} else {
 		Server = APP
+	}
+	//gzip压缩
+	if a_boot.Config.GZIP.Enable {
+		if wrap, err := gziphandler.NewGzipLevelHandler(a_boot.Config.GZIP.Level); err != nil {
+			a_boot.Logger.ErrorF("gzip压缩的level配置错误: %s", err.Error())
+			os.Exit(1)
+		} else {
+			Server = wrap(Server)
+		}
 	}
 }

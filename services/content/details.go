@@ -31,7 +31,7 @@ func GetDetails(id int) (*Details, error) {
 	//渲染html成
 	if s, err := Render(details.Content.Body); err != nil {
 		return nil, err
-	}else {
+	} else {
 		details.Content.HTML = template.HTML(s)
 	}
 

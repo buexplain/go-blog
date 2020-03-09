@@ -5,6 +5,7 @@ type Config struct {
 	Log      Log
 	Session  Session
 	CSRF     CSRF
+	GZIP     GZIP
 	Asset    Asset
 	Business Business
 	Database Database

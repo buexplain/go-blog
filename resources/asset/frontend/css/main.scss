@@ -57,7 +57,7 @@ body {
         .logo {
             height: 100%;
             .text {
-                font-size: $font-size-title*2;
+                font-size: $font-size-title*1.6;
                 color: $font-color-white;
             }
             .image {
@@ -77,8 +77,8 @@ body {
                 .layui-nav-item {
                     a {
                         font-size: $font-size-nav;
-                        height: 100px;
-                        line-height: 100px;
+                        height: 99px;
+                        line-height: 99px;
                     }
                     .layui-nav-child {
                         top: 100px;
@@ -149,7 +149,7 @@ body {
     
     /*响应式*/
     @media only screen and (max-width: 1024px) {
-        .header .nav {
+        .logo img, .header .nav {
             display: none;
         }
         .header .hamburger-btn {
@@ -206,17 +206,6 @@ body {
 		width: 759px;
         border-radius: 2px;
         margin-bottom: 15px;
-        .nav {
-            padding: 15px;
-            padding-bottom: 0;
-            a {
-                &:hover {
-                    color: $font-color-hover !important;
-                }
-                color: $font-color-black !important;
-                font-size: $font-size-nav;
-            }
-        }
         .list {
             li {
                 padding: 15px;
@@ -319,7 +308,7 @@ body {
                 }
             }
         }
-        .file {
+        .place {
             li {
                 padding: 8px 0;
                 border-bottom: 1px solid $border-color;
@@ -398,6 +387,7 @@ body {
         .content {
             .origin {
                 a {
+                    overflow-wrap: break-word;
                     &:hover {
                         color: $font-color-hover !important;
                     }
@@ -407,10 +397,8 @@ body {
     }
     @media only screen and (max-width: 1024px) {
         .details {
-            width: 86%;
             margin-left: 4% !important;
             margin-right: 4% !important;
-            padding: 3%;
         }
     }
 }

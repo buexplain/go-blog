@@ -204,7 +204,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	if affected, err := s_node.Destroy(ids); err != nil {
 		return w.JumpBack(err)
-	}else {
+	} else {
 		if affected > 0 {
 			//触发超级角色的节点同步
 			h_boot.Bus.Append(e_syncRbacNode.EVENT_NAME, a_boot.Config.Business.SuperRoleID)

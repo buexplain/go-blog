@@ -13,7 +13,6 @@ import (
 	"net/http"
 )
 
-
 //表单校验器
 var v *validator.Validator
 
@@ -41,7 +40,6 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/config/group/create.html")
 }
-
 
 func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	mod := new(m_configGroup.ConfigGroup)

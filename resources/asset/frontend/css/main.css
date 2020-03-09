@@ -58,7 +58,7 @@ body {
 }
 
 .blog .header .logo .text {
-  font-size: 40px;
+  font-size: 32px;
   color: #fff;
 }
 
@@ -81,8 +81,8 @@ body {
 
 .blog .header .nav .layui-nav .layui-nav-item a {
   font-size: 18px;
-  height: 100px;
-  line-height: 100px;
+  height: 99px;
+  line-height: 99px;
 }
 
 .blog .header .nav .layui-nav .layui-nav-item .layui-nav-child {
@@ -146,7 +146,7 @@ body {
 }
 
 @media only screen and (max-width: 1024px) {
-  .blog .header .nav {
+  .blog .logo img, .blog .header .nav {
     display: none;
   }
   .blog .header .hamburger-btn {
@@ -211,20 +211,6 @@ body {
   width: 759px;
   border-radius: 2px;
   margin-bottom: 15px;
-}
-
-.blog .article .nav {
-  padding: 15px;
-  padding-bottom: 0;
-}
-
-.blog .article .nav a {
-  color: #424242 !important;
-  font-size: 18px;
-}
-
-.blog .article .nav a:hover {
-  color: #4183c4 !important;
 }
 
 .blog .article .list li {
@@ -349,20 +335,20 @@ body {
   color: #4183c4;
 }
 
-.blog .aside .file li {
+.blog .aside .place li {
   padding: 8px 0;
   border-bottom: 1px solid #c2c2c2;
 }
 
-.blog .aside .file li:last-child {
+.blog .aside .place li:last-child {
   border-bottom: 0;
 }
 
-.blog .aside .file li a {
+.blog .aside .place li a {
   font-size: 16px;
 }
 
-.blog .aside .file li a:hover, .blog .aside .file li a.current {
+.blog .aside .place li a:hover, .blog .aside .place li a.current {
   color: #4183c4;
 }
 
@@ -441,16 +427,18 @@ body {
   color: #4183c4 !important;
 }
 
+.blog .details .content .origin a {
+  overflow-wrap: break-word;
+}
+
 .blog .details .content .origin a:hover {
   color: #4183c4 !important;
 }
 
 @media only screen and (max-width: 1024px) {
   .blog .details {
-    width: 86%;
     margin-left: 4% !important;
     margin-right: 4% !important;
-    padding: 3%;
   }
 }
 /*# sourceMappingURL=main.css.map */

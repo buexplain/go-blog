@@ -14,7 +14,6 @@ import (
 	"net/http"
 )
 
-
 //表单校验器
 var v *validator.Validator
 

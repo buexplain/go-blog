@@ -57,12 +57,12 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			return nil
 		}
 	}
-	if  bufrw.Flush() != nil {
+	if bufrw.Flush() != nil {
 		return nil
 	}
 
 	//设置心跳，避免客户端超时
-	heart := time.NewTicker(time.Second*30)
+	heart := time.NewTicker(time.Second * 30)
 	defer func() {
 		heart.Stop()
 	}()
@@ -73,7 +73,7 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		//丢弃所有的消息
 		for {
 			select {
-			case _, ok := <- message:
+			case _, ok := <-message:
 				if !ok {
 					return
 				}
@@ -84,14 +84,14 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//监听备份进度
 	for {
 		select {
-		case s, ok := <- message:
+		case s, ok := <-message:
 			if ok {
 				if _, err := io.WriteString(bufrw, s); err != nil || bufrw.Flush() != nil {
 					//可能是客户端主动关闭了连接，丢弃所有的备份消息
 					discard()
 					return nil
 				}
-			}else {
+			} else {
 				//任务完成，服务端主动关闭连接
 				return nil
 			}

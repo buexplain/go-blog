@@ -63,7 +63,6 @@ func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-
 func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_attachment.Attachment)
 	result.ID = r.ParamInt("id", 0)
