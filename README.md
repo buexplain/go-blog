@@ -2,45 +2,35 @@
 
 ## 从源代码安装
 
-### 代码下载
 ```bash
+# 代码下载
 git clone https://github.com/buexplain/go-blog.git
-```
-
-### 准备配置文件
-```bash
+# 准备配置文件
 cd go-blog && copy config.example.toml config.toml
-```
-
-### 初始化数据库
-```bash
+# 初始化数据库，初始的账号密码是 admin，123456
 go build -o artisan.exe artisan.go && artisan.exe db import -f database/init.sql
-```
-
-### 跑起来
-```bash
+# 编译运行
 go run main.go
 ```
 
-### 进入博客后台
-1. 后台地址 http://localhost:1991/backend/sign
-2. 账号 admin
-3. 密码 123456
+## 发布程序
 
-## 二次开发相关的命令
-
-### 同步models结构体到数据库
 ```bash
-go build -o artisan.exe artisan.go && artisan.exe db sync
+# 编译程序 linux下是 build-linux.bin
+build-windows.bat
 ```
 
-### 制作 `database/init.sql`
-```bash
-go build -o artisan.exe artisan.go && artisan.exe db dump -f database/init.sql
-```
+## 其它
 
-### 静态文件打包
+### 二次开发相关命令
+
 ```bash
+# 导出 database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
+# 导入  database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql
+
+# 静态文件打包
 go build -o artisan.exe artisan.go && artisan.exe asset pack
 ```
 
@@ -48,6 +38,7 @@ go build -o artisan.exe artisan.go && artisan.exe asset pack
 ```bash
 go mod edit -replace=github.com/buexplain/go-fool=F:/go-fool
 go mod edit -replace=github.com/buexplain/go-fool=C:\Edisk\code\go-fool
+go mod edit -replace=github.com/buexplain/go-fool=/mnt/winEdisk/code/go-fool
 ```
 
 ### 包升级到最新版本
@@ -63,4 +54,5 @@ go get -u github.com/mattn/go-sqlite3@latest
 go get -u github.com/BurntSushi/toml@latest
 go get -u github.com/gorilla/securecookie@latest
 go get -u github.com/buexplain/go-flog@latest
+go get -u github.com/buexplain/go-fool@latest
 ```

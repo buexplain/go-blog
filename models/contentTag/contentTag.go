@@ -1,9 +1,7 @@
 package m_contentTag
 
-import "github.com/buexplain/go-blog/models"
-
 type ContentTag struct {
-	models.IDField `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
 	ContentID      int `xorm:"index(ContentID_TagID) INTEGER"`
 	TagID          int `xorm:"index(ContentID_TagID) INTEGER"`
 }

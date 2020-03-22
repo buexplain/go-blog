@@ -3,6 +3,7 @@ package s_sysLog
 import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/helpers"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -15,6 +16,9 @@ var PATH string
 
 func init() {
 	PATH = filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Log.Path)
+	if err := os.MkdirAll(PATH, 0666); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 type List []string

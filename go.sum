@@ -32,6 +32,8 @@ github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5 h1:58wsnclxk0Po
 github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5/go.mod h1:W+MHfbKRRMX1Fze4yuOMs0SCztaVLA8INOL49NPHjk8=
 github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c h1:5TB8/MqaFyGNG/i2l0fQ/JckYr9nPgCmLkztBHRMUcg=
 github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c/go.mod h1:XgCBm3a3Pgkejjk/UjKm5Yu+g21jzo30SqDNLq7gtjU=
+github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2 h1:JIVjIjmDhfV4VGcyG7M4vBAWjToaGtEmi/zXUi5a9FM=
+github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2/go.mod h1:dt5uk5609eVlEjBdet6U4WNKB4fEN0BEIUiJtdKsIuA=
 github.com/buexplain/go-gracehttp v0.1.0 h1:ca8qPOEKQQs3BxA87jwQ6jvH3uL+uPUttMA5Fca/WS4=
 github.com/buexplain/go-gracehttp v0.1.0/go.mod h1:gWNbLLBVZlRwRiq7U0VzLwzBxo93FDAOsN3sw/Sgh1A=
 github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2 h1:4WAINszJ3oraoq/LljQQE0LrsEp78/d1ZeWI+hxNjIQ=
@@ -113,8 +115,6 @@ github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANyt
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
-github.com/kevinburke/go-bindata v3.17.0+incompatible h1:eXG58bFD2FVMYilP6PfjjSwKy4YTHmifsI8TURmlVVg=
-github.com/kevinburke/go-bindata v3.17.0+incompatible/go.mod h1:/pEEZ72flUW2p0yi30bslSp9YqD9pysLxunQDdb2CPM=
 github.com/kevinburke/go-bindata v3.18.0+incompatible h1:NfOP49jFW7KyBl7UwTg0xkhSfHjESEwe2VMrcnSHG20=
 github.com/kevinburke/go-bindata v3.18.0+incompatible/go.mod h1:/pEEZ72flUW2p0yi30bslSp9YqD9pysLxunQDdb2CPM=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
@@ -139,6 +139,8 @@ github.com/mattn/go-isatty v0.0.12 h1:wuysRhFDzyxgEmMf5xjvJ2M9dZoWAXNNr5LSBS7uHX
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-runewidth v0.0.7 h1:Ei8KR0497xHyKJPAv59M1dkC+rOZCMBJ+t3fZ+twI54=
 github.com/mattn/go-runewidth v0.0.7/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
+github.com/mattn/go-runewidth v0.0.8 h1:3tS41NlGYSmhhe/8fhGRzc+z3AYCw1Fe1WAyLuujKs0=
+github.com/mattn/go-runewidth v0.0.8/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mattn/go-sqlite3 v1.10.0 h1:jbhqpg7tQe4SupckyijYiy0mJJ/pRyHvXf7JdWK860o=
 github.com/mattn/go-sqlite3 v1.10.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-sqlite3 v2.0.3+incompatible h1:gXHsfypPkaMZrKbD5209QV9jbUTJKjyR5WD3HYQSd+U=

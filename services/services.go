@@ -3,8 +3,8 @@ package s_services
 import (
 	"fmt"
 	"github.com/buexplain/go-blog/dao"
-	"github.com/buexplain/go-blog/models"
 	"strings"
+	"time"
 	"xorm.io/core"
 	"xorm.io/xorm"
 )
@@ -18,7 +18,7 @@ func CheckUnique(tableName string, field string, value interface{}, selfID ...in
 	}
 	type Tmp struct {
 		ID                    int `xorm:"INTEGER"`
-		models.CreatedAtField `xorm:"extends"`
+		CreatedAt time.Time `xorm:"DATETIME created"`
 	}
 	has, err := d.Exist(new(Tmp))
 	if err != nil {

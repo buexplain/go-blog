@@ -1,12 +1,14 @@
 package m_content
 
 import (
-	"github.com/buexplain/go-blog/models"
 	"html/template"
+	"time"
 )
 
 type Content struct {
-	models.Field `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt time.Time `xorm:"DateTime created"`
+	UpdatedAt time.Time `xorm:"DateTime updated"`
 	//标题
 	Title string `xorm:"TEXT"`
 	//文章内容，markdown

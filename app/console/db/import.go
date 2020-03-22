@@ -6,7 +6,6 @@ import (
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/spf13/cobra"
 	"os"
-	"xorm.io/core"
 )
 
 //从sql文件中导入数据
@@ -33,20 +32,6 @@ func init() {
 			defer func() {
 				_ = file.Close()
 			}()
-			//获取表信息
-			var tables []*core.Table
-			tables, err = dao.Dao.DBMetas()
-			if err != nil {
-				a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
-				os.Exit(1)
-			}
-			//删除所有的表
-			for _, table := range tables {
-				if _, err := dao.Dao.NewSession().Exec("DROP TABLE " + table.Name); err != nil {
-					a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
-					os.Exit(1)
-				}
-			}
 			_, err = s_services.ImportDB(dao.Dao, file)
 			if err != nil {
 				a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)

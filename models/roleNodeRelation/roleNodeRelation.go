@@ -1,10 +1,8 @@
 package m_roleNodeRelation
 
-import "github.com/buexplain/go-blog/models"
-
 //rbac 角色与节点的关系表
 type RoleNodeRelation struct {
-	models.IDField `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
 	//角色id
 	RoleID int `xorm:"INTEGER"`
 	//节点

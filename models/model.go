@@ -1,37 +1,31 @@
 package models
 
-import "time"
+import (
+	"encoding/gob"
+	"time"
+)
 
-//id
-type IDField struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
+type Time struct {
+	T time.Time
 }
 
-func (this IDField) GetID() int {
-	return this.ID
+func init() {
+	gob.Register(&Time{})
 }
 
-//创建时间
-type CreatedAtField struct {
-	CreatedAt time.Time `xorm:"DATETIME created"`
+func (this Time) MarshalJSON() ([]byte, error) {
+	if this.T.IsZero() {
+		return []byte(`""`), nil
+	}
+	return []byte(`"`+this.T.Format("2006-01-02 15:04:05")+`"`), nil
 }
 
-func (this CreatedAtField) CreatedAtText() string {
-	return this.CreatedAt.Format("2006-01-02 15:04:05")
+func (this *Time) UnmarshalJSON(data []byte) (error) {
+	now, err := time.ParseInLocation(`"2006-01-02 15:04:05"`, string(data), time.Local)
+	this.T = now
+	return err
 }
 
-//更新时间
-type UpdatedAtField struct {
-	UpdatedAt time.Time `xorm:"DATETIME updated"`
-}
-
-func (this UpdatedAtField) UpdatedAtText() string {
-	return this.UpdatedAt.Format("2006-01-02 15:04:05")
-}
-
-//公共字段
-type Field struct {
-	IDField        `xorm:"extends"`
-	CreatedAtField `xorm:"extends"`
-	UpdatedAtField `xorm:"extends"`
+func (this Time) String() string {
+	return this.T.Format("2006-01-02 15:04:05")
 }

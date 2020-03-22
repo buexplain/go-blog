@@ -10,12 +10,22 @@ import (
 	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-fool/upload"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 )
+
+var PATH string
+
+func init() {
+	PATH = filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Business.Upload.Save)
+	if err := os.MkdirAll(PATH, 0666); err != nil {
+		log.Fatalln(err)
+	}
+}
 
 type ExtList []string
 

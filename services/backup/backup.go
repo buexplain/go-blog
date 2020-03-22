@@ -8,6 +8,7 @@ import (
 	"github.com/buexplain/go-blog/helpers"
 	s_services "github.com/buexplain/go-blog/services"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -21,7 +22,7 @@ var PATH string
 func init() {
 	PATH = filepath.Join(a_boot.ROOT_PATH, "database/backup")
 	if err := os.MkdirAll(PATH, 0666); err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 }
 
@@ -149,7 +150,7 @@ func Start() <-chan string {
 			message.Tips("导出数据库到临时文件")
 			for k, table := range tables {
 				message.Tips(fmt.Sprintf("正在导出表: %s 剩余 %d 张表", table.Name, len(tables)-k-1))
-				err = s_services.DumpDB(dao.Dao, []*core.Table{table}, tempSqlFile)
+				err = s_services.DumpDB(dao.Dao, []*core.Table{table}, tempSqlFile, s_services.DUMP_DB_DATA)
 				if err != nil {
 					message.Fail(err)
 					return

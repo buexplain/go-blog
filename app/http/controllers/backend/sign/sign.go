@@ -21,6 +21,17 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
 }
 
+//表单校验器
+var v *validator.Validator
+
+func init() {
+	v = validator.New()
+	v.Field("Account").Rule("required", "请输入账号")
+	v.Field("Password").Rule("required", "请输入密码")
+	v.Field("CaptchaVal").Rule("VerifyCaptcha", "请输入验证码", "验证码错误")
+}
+
+
 //登录
 func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	type In struct {
@@ -33,11 +44,8 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(err)
 	}
 
-	v := validator.New()
-	v.Field("Account").Rule("required", "请输入账号")
-	v.Field("Password").Rule("required", "请输入密码")
-	v.Field("CaptchaVal").Rule("VerifyCaptcha", "请输入验证码", "验证码错误")
-	v.Custom("VerifyCaptcha", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
+	vClone := v.Clone()
+	vClone.Custom("VerifyCaptcha", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
 		if !ok {
 			str = fmt.Sprintf("%v", v)
@@ -52,7 +60,7 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return "", nil
 	})
 
-	if r, err := v.Validate(mod); err != nil {
+	if r, err := vClone.Validate(mod); err != nil {
 		return errors.MarkServer(err)
 	} else if !r.IsEmpty() {
 		return w.JumpBack(r)

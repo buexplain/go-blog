@@ -1,12 +1,8 @@
 package m_userRoleRelation
 
-import (
-	"github.com/buexplain/go-blog/models"
-)
-
 //rbac 用户与角色的关系表
 type UserRoleRelation struct {
-	models.IDField `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
 	//用户id
 	UserID int `xorm:"INTEGER"`
 	//角色id

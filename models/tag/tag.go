@@ -1,10 +1,14 @@
 package m_tag
 
-import "github.com/buexplain/go-blog/models"
+import (
+	"time"
+)
 
 //文章标签表
 type Tag struct {
-	models.Field `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt time.Time `xorm:"DateTime created"`
+	UpdatedAt time.Time `xorm:"DateTime updated"`
 	Name         string `xorm:"unique TEXT"`
 }
 

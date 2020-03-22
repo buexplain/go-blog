@@ -2,13 +2,14 @@ package m_user
 
 import (
 	"github.com/buexplain/go-blog/dao"
-	"github.com/buexplain/go-blog/models"
 	"time"
 )
 
 //用户表
 type User struct {
-	models.Field `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt time.Time `xorm:"DateTime created"`
+	UpdatedAt time.Time `xorm:"DateTime updated"`
 	//账号
 	Account string `xorm:"index TEXT"`
 	//密码

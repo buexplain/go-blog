@@ -14,7 +14,7 @@ func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	for _, v := range a_boot.Config.App.StaticFile.Path {
 		if strings.HasPrefix(path, v) {
 			if a_boot.Config.App.StaticFile.Referer {
-				if referer := r.Raw().Header.Get("Referer"); referer != "" && strings.Index(referer, r.Domain()) == -1 {
+				if referer := r.Raw().Header.Get("Referer"); referer != "" && strings.Index(referer, r.Host()) == -1 {
 					ctx.Throw(w.Plain(http.StatusForbidden, http.StatusText(http.StatusForbidden)))
 				} else {
 					ctx.Throw(w.File(filepath.Join(a_boot.ROOT_PATH, path)))

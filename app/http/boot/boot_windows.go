@@ -1,7 +1,6 @@
 package h_boot
 
 import (
-	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"log"
 	"net/http"
@@ -20,10 +19,6 @@ func Run() {
 		ReadTimeout:  time.Duration(a_boot.Config.App.Server.ReadTimeout.Nanoseconds()),
 		WriteTimeout: time.Duration(a_boot.Config.App.Server.WriteTimeout.Nanoseconds()),
 	}
-	go func() {
-		time.Sleep(time.Second * 1)
-		fmt.Println(APP.Mux().DumpRouteMap("github.com/buexplain/go-blog/"))
-	}()
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())
 	}

@@ -90,13 +90,17 @@ func init() {
 		APP.SetSessionHandler(h)
 		break
 	case "file":
-		h := session.NewFilesystemStoreManager(filepath.Join(a_boot.ROOT_PATH, "storage/session"), a_boot.Config.Session.Key)
+		path := filepath.Join(a_boot.ROOT_PATH, "storage/session")
+		if err := os.MkdirAll(path, 0666); err != nil {
+			log.Fatalln(err)
+		}
+		h := session.NewFilesystemStoreManager(path, a_boot.Config.Session.Key)
 		h.Options = a_boot.Config.Session.Options
 		h.Name = a_boot.Config.Session.Name
 		APP.SetSessionHandler(h)
 		break
 	default:
-		log.Panicln("Config.Session.Store must set cookie|file")
+		log.Fatalln("Config.Session.Store must set cookie|file")
 	}
 }
 

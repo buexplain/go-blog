@@ -19,7 +19,7 @@ var ROOT_PATH string
 func init() {
 	dir, err := filepath.Abs(os.Args[0])
 	if err != nil {
-		log.Panicln(err)
+		log.Fatalln(err)
 	}
 	ROOT_PATH = filepath.ToSlash(filepath.Dir(dir))
 	//兼容GoLand编辑器下的go run命令
@@ -34,7 +34,7 @@ var Config *config.Config
 func init() {
 	Config = new(config.Config)
 	if _, err := toml.DecodeFile(filepath.Join(ROOT_PATH, "config.toml"), Config); err != nil {
-		log.Panicln(err)
+		log.Fatalln(err)
 	}
 }
 

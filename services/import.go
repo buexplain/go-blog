@@ -15,6 +15,7 @@ func ImportDB(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 	var results []sql.Result
 	var lastError error
 	scanner := bufio.NewScanner(r)
+
 	semiColSpliter := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {
 			return 0, nil, nil
@@ -35,11 +36,14 @@ func ImportDB(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 	for scanner.Scan() {
 		query := strings.Trim(scanner.Text(), " \t\n\r")
 		if len(query) > 0 {
-			if strings.HasPrefix(query, "INSERT") {
-				tmp := strings.LastIndex(query, "(")
-				b, err := base64.StdEncoding.DecodeString(query[tmp+1 : len(query)-1])
+			//解析insert语句的base64编码
+			if strings.Index(query, "INSERT INTO") != -1 {
+				tmp := strings.LastIndex(query, "VALUES (")
+				b, err := base64.StdEncoding.DecodeString(query[tmp + 8 : len(query)-1])
 				if err == nil {
-					query = query[0:tmp+1] + string(b) + ")"
+					query = query[0:tmp+8] + string(b) + ")"
+				}else {
+					return nil, err
 				}
 			}
 			result, err := dao.DB().Exec(query)
@@ -49,5 +53,6 @@ func ImportDB(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 			}
 		}
 	}
+
 	return results, lastError
 }

@@ -31,10 +31,6 @@ func Run() {
 		format = "[pid " + pid + "] " + format
 		Logger.Info(fmt.Sprintf(format, args...))
 	})
-	go func() {
-		time.Sleep(time.Second * 1)
-		fmt.Println(APP.Mux().DumpRouteMap())
-	}()
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		Logger.Error(err.Error())
 	}

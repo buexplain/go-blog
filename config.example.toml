@@ -1,29 +1,33 @@
 [Database]
-DSN = "database.db?_synchronous=OFF&_journal=WAL&_loc=auto&cache=shared&mode=rwc"
+DSN = "database.db?_synchronous=OFF&_journal=WAL&cache=shared&mode=rwc"
 
 [App]
 Debug = true
 
 [App.Server]
 IP = "127.0.0.1"
-Port = 1991
+Port = 80
 ReadTimeout = "60s"
 WriteTimeout = "60s"
 
+# 事件调度器配置
 [App.Event]
 Async = true
 Worker = 1
 Capacity = 1000
 
+# http请求方法欺骗配置
 [App.Method]
 Enable = true
 Field = "_method"
 
+# 静态文件服务配置
 [App.StaticFile]
 Enable = true
 Path = ["/resources/asset", "/uploads"]
 Referer = true
 
+# session配置
 [Session] # https://github.com/gorilla/sessions
 Store = "cookie" # cookie|file
 Name = "SESSION"
@@ -37,6 +41,7 @@ Secure = false
 HttpOnly = true
 SameSite = 1
 
+# http服务的日志器配置
 [Log]
 Async = true
 Capacity = 1000
@@ -46,7 +51,9 @@ Path = "storage/logs"
 Buffer = 4096
 Flush = "5s"
 
-[CSRF] # https://github.com/gorilla/csrf
+# csrf防御配置
+# https://github.com/gorilla/csrf
+[CSRF]
 Enable = true
 Key = "32-byte-long-auth-key"
 Name = "CSRF"
@@ -60,17 +67,24 @@ MaxAge = 86400
 Secure = false
 HttpOnly = true
 
-[GZIP] # https://github.com/nytimes/gziphandler
+# gzip压缩配置
+# https://github.com/nytimes/gziphandler
+[GZIP]
 Enable = true
 Level = -1
 
+# 静态资源打包配置
 [Asset]
-Dir = ["resources/..."]
+Dir = ["resources/...", "database/init.sql"]
 
+# 业务相关配置
 [Business]
+# 超级管理员角色，添加节点的时候自动添加给当前角色
 SuperRoleID = 1
 
+# 上传配置
 [Business.Upload]
+# 允许是上传的文件的后缀
 Ext = [
     "jpg", "jpeg",
     "gif",
@@ -85,6 +99,7 @@ Ext = [
     "pdf",
     "zip"
 ]
+# 允许上传的文件的media类型
 # https://www.iana.org/assignments/media-types/media-types.xhtml
 MimeTypes = [
     "image/jpeg",
@@ -100,4 +115,5 @@ MimeTypes = [
     "application/pdf",
     "application/zip"
 ]
+# 上传文件的保存目录
 Save = "/uploads"

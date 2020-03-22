@@ -1,10 +1,14 @@
 package m_configGroup
 
-import "github.com/buexplain/go-blog/models"
+import (
+	"time"
+)
 
 //配置组表
 type ConfigGroup struct {
-	models.Field `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt time.Time `xorm:"DateTime created"`
+	UpdatedAt time.Time `xorm:"DateTime updated"`
 	//配置项名称
 	Name string `xorm:"TEXT"`
 	//字段名

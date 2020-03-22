@@ -2,12 +2,14 @@ package m_category
 
 import (
 	"encoding/json"
-	"github.com/buexplain/go-blog/models"
+	"time"
 )
 
 //文章分类表
 type Category struct {
-	models.Field `xorm:"extends"`
+	ID int `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt time.Time `xorm:"DateTime created"`
+	UpdatedAt time.Time `xorm:"DateTime updated"`
 	//父id
 	Pid int `xorm:"INTEGER"`
 	//分类名
