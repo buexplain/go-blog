@@ -85,7 +85,7 @@ func Store(name string) (*m_tag.Tag, error) {
 }
 
 func Stores(names []string) (int64, error) {
-	t := time.Now().Format("2006-01-02 15:04:05")
+	t := time.Now().UTC().Format("2006-01-02 15:04:05")
 	args := make([]interface{}, 0, len(names)*3)
 	for _, name := range names {
 		args = append(args, t, t, name)

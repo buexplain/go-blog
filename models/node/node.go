@@ -3,15 +3,15 @@ package m_node
 import (
 	"encoding/json"
 	"github.com/buexplain/go-blog/dao"
+	"github.com/buexplain/go-blog/models"
 	"strings"
-	"time"
 )
 
 //rbac 节点表
 type Node struct {
 	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt time.Time `xorm:"DateTime created"`
-	UpdatedAt time.Time `xorm:"DateTime updated"`
+	CreatedAt models.Time `xorm:"DateTime created"`
+	UpdatedAt models.Time `xorm:"DateTime updated"`
 	//父id
 	Pid int `xorm:"INTEGER"`
 	//节点名称

@@ -2,16 +2,16 @@ package m_attachment
 
 import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/models"
 	"io/ioutil"
 	"path/filepath"
-	"time"
 )
 
 //文章附件表
 type Attachment struct {
 	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt time.Time `xorm:"DateTime created"`
-	UpdatedAt time.Time `xorm:"DateTime updated"`
+	CreatedAt models.Time `xorm:"DateTime created"`
+	UpdatedAt models.Time `xorm:"DateTime updated"`
 	Name         string `xorm:"TEXT"`
 	Path         string `xorm:"TEXT"`
 	Ext          string `xorm:"TEXT"`

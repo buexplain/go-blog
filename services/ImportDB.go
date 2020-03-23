@@ -2,7 +2,6 @@ package s_services
 
 import (
 	"bufio"
-	"bytes"
 	"database/sql"
 	"encoding/base64"
 	"io"
@@ -11,17 +10,23 @@ import (
 )
 
 // Import SQL DDL from io.Reader
-func ImportDB(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
+func ImportDB(engine *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 	var results []sql.Result
 	var lastError error
 	scanner := bufio.NewScanner(r)
 
+	var inSingleQuote bool
 	semiColSpliter := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {
 			return 0, nil, nil
 		}
-		if i := bytes.IndexByte(data, ';'); i >= 0 {
-			return i + 1, data[0:i], nil
+		for i, b := range data {
+			if b == '\'' {
+				inSingleQuote = !inSingleQuote
+			}
+			if !inSingleQuote && b == ';' {
+				return i + 1, data[0:i], nil
+			}
 		}
 		// If we're at EOF, we have a final, non-terminated line. Return it.
 		if atEOF {
@@ -46,7 +51,7 @@ func ImportDB(dao *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 					return nil, err
 				}
 			}
-			result, err := dao.DB().Exec(query)
+			result, err := engine.Exec(query)
 			results = append(results, result)
 			if err != nil {
 				return nil, err

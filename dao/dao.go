@@ -9,13 +9,14 @@ import (
 	"time"
 	"xorm.io/core"
 	"xorm.io/xorm"
+	"xorm.io/xorm/log"
 )
 
 var Dao *xorm.Engine
 
 func init() {
 	if strings.Index(a_boot.Config.Database.DSN, "_loc") != -1 {
-		a_boot.Logger.ErrorF("初始化dao失败: 请不要设置参数_loc")
+		a_boot.Logger.ErrorF("初始化dao失败: 请不要设置参数`_loc`, 数据库默认按UTC时区存储时间")
 		os.Exit(1)
 	}
 	db := filepath.Join(a_boot.ROOT_PATH, "database", a_boot.Config.Database.DSN)
@@ -26,6 +27,7 @@ func init() {
 			os.Exit(1)
 		}
 	}
+
 	//打开数据库
 	var err error
 	Dao, err = xorm.NewEngine("sqlite3", db)
@@ -34,8 +36,8 @@ func init() {
 		os.Exit(1)
 	}
 
-	//设置数据库时区
-	Dao.DatabaseTZ, _ = time.LoadLocation("Asia/Shanghai")
+	//默认为UTC时区存储时间
+	Dao.DatabaseTZ = time.UTC
 
 	//设置结构体与表字段一致
 	Dao.SetMapper(core.SameMapper{})
@@ -47,8 +49,7 @@ func init() {
 	Dao.SetMaxOpenConns(20)
 
 	if a_boot.Config.App.Debug {
-		Dao.Logger().SetLevel(core.LOG_DEBUG)
-		Dao.ShowExecTime(true)
+		Dao.Logger().SetLevel(log.LOG_DEBUG)
 		Dao.ShowSQL(true)
 	}
 
@@ -59,4 +60,5 @@ func init() {
 		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
 		os.Exit(1)
 	}
+
 }

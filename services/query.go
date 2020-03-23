@@ -7,8 +7,8 @@ import (
 	"github.com/buexplain/go-fool/errors"
 	"strings"
 	"time"
-	"xorm.io/core"
 	"xorm.io/xorm"
+	"xorm.io/xorm/schemas"
 )
 
 type where []string
@@ -27,7 +27,7 @@ type Query struct {
 	//表名称
 	tableName string
 	//表信息
-	tableInfo *core.Table
+	tableInfo *schemas.Table
 	//统计器
 	Counter *xorm.Session
 	//查询器
@@ -37,7 +37,7 @@ type Query struct {
 }
 
 //返回表信息
-func (this *Query) TableInfo() *core.Table {
+func (this *Query) TableInfo() *schemas.Table {
 	if this.Error == nil && this.tableInfo == nil {
 		this.tableInfo, this.Error = GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
