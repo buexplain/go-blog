@@ -8,7 +8,7 @@ git clone https://github.com/buexplain/go-blog.git
 # 准备配置文件
 cd go-blog && copy config.example.toml config.toml
 # 初始化数据库，初始的账号密码是 admin，123456
-go build -o artisan.exe artisan.go && artisan.exe db import -f database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql
 # 编译运行
 go run main.go
 ```

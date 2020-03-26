@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"strings"
 	"xorm.io/xorm"
@@ -54,7 +55,7 @@ func ImportDB(engine *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 			result, err := engine.Exec(query)
 			results = append(results, result)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("%s: %w", query, err)
 			}
 		}
 	}

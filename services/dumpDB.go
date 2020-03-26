@@ -51,6 +51,9 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 
 	for i, table := range tables {
 		tableName := table.Name
+		if !strings.EqualFold("RoleNodeRelation", tableName) {
+			continue;
+		}
 		if dstDialect.URI().Schema != "" {
 			tableName = fmt.Sprintf("%s.%s", dstDialect.URI().Schema, table.Name)
 		}
@@ -118,6 +121,7 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 				var temp string
 				for i, d := range dest {
 					col := table.GetColumn(cols[i])
+					fmt.Printf("%s %+T\n", col.Name, d)
 					if col == nil {
 						return errors.New("unknow column error")
 					}
