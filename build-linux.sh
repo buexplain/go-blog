@@ -47,12 +47,12 @@ isError
 ./artisan.bin asset pack
 isError
 
-# 复制artisan.bin
-mv artisan.bin build/artisan.bin
+# 删除artisan.bin
+rm -fr ./artisan.bin
 isError
 
 # 编译发布程序
-go build -ldflags "-s -w" -o ./build/blog.bin main.go
+go build -ldflags "-s -w" -o ./build/blog.bin main.go && go build -ldflags "-s -w" -o ./build/artisan.bin artisan.go
 if [ $? == 0 ]; then
   echo "build successfully"
   ls build

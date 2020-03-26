@@ -28,7 +28,7 @@ func init() {
 	v = validator.New()
 	v.Field("Title").Rule("required", "请填写标题")
 	v.Field("Category").Rule("required", "请选择分类")
-	v.Field("Online").Rule(fmt.Sprintf("in:in=%d,%d", m_content.OnlineYes, m_content.OnlineNo), "请选择上下线")
+	v.Field("Online").Rule(fmt.Sprintf("in:in=%s,%s", m_content.OnlineYes, m_content.OnlineNo), "请选择上下线")
 	v.Field("Body").Rule("required", "请填写内容")
 }
 
@@ -127,7 +127,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
+		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "tagsID"))
 	}
 
 	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
@@ -159,7 +159,7 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //查看
 func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	result, err := s_content.GetDetails(r.ParamInt("id"))
+	result, err := s_content.GetDetails(r.ParamInt("id"), 0)
 	if r.IsAjax() {
 		if err != nil {
 			return err
@@ -181,7 +181,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if result.ID <= 0 {
 		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
-	result.Online = r.FormInt("online", 0)
+	result.Online = m_content.Online(r.FormInt("online", 0))
 
 	if result.Online == m_content.OnlineYes {
 		result.Online = m_content.OnlineNo

@@ -6,10 +6,10 @@ import (
 
 //配置组表
 type ConfigItem struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt models.Time `xorm:"DateTime created"`
-	UpdatedAt models.Time `xorm:"DateTime updated"`
-	GroupID      int `xorm:"INTEGER"`
+	ID        int           `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt m_models.Time `xorm:"DateTime created"`
+	UpdatedAt m_models.Time `xorm:"DateTime updated"`
+	GroupID   int           `xorm:"INTEGER"`
 	//配置项名称
 	Name string `xorm:"TEXT"`
 	//字段名

@@ -11,7 +11,6 @@ require (
 	github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2
 	github.com/buexplain/go-gracehttp v0.1.0
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2
-	github.com/go-xorm/sqlfiddle v0.0.0-20180821085327-62ce714f951a // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/csrf v1.6.0
 	github.com/gorilla/securecookie v1.1.1

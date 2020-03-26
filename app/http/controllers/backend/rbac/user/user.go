@@ -27,8 +27,8 @@ func init() {
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
 		"密码格式有误，数字、字母、符号至少两种")
-	v.Field("Status").Rule("in:in=1,2", "请选择状态")
-	v.Field("Identity").Rule("in:in=1,2", "请选择身份")
+	v.Field("Status").Rule(fmt.Sprintf("in:in=%s,%s", m_user.StatusAllow, m_user.StatusDeny), "请选择状态")
+	v.Field("Identity").Rule(fmt.Sprintf("in:in=%s,%s", m_user.IdentityCitizen, m_user.IdentityOfficial), "请选择身份")
 	//校验账号是否存在
 	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)
@@ -43,10 +43,11 @@ func init() {
 }
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	query := s_services.NewQuery("User", ctx).Where().Limit()
-	query.Finder.Desc("ID")
-	//设置查询条件后，先进行分页统计，//然后再进行连表查询，获取用户所有角色，避免跨表count
-	count := query.Count()
+	query := s_services.NewQuery("User", ctx)
+	//设置查询条件后，先进行分页统计
+	count := query.Where().Count()
+	//然后再进行连表查询，获取用户所有角色，避免跨表count
+	query.Where().Limit().Finder.Desc("User.ID")
 	query.Finder.Join("LEFT", "`UserRoleRelation`", "`User`.`ID` = `UserRoleRelation`.`UserID`")
 	query.Finder.Join("LEFT", "`Role`", "`UserRoleRelation`.`RoleID` = `Role`.`ID`")
 	query.Finder.GroupBy("User.ID")
@@ -157,7 +158,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 	}
 
-	if _, err := dao.Dao.ID(mod.ID).Update(mod); err != nil {
+	if _, err := dao.Dao.ID(mod.ID).Omit("LastTime").Update(mod); err != nil {
 		return errors.MarkServer(err)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"github.com/88250/lute"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
+	"github.com/buexplain/go-blog/helpers"
 	m_category "github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
@@ -143,11 +144,14 @@ type Place struct {
 type PlaceList []*Place
 
 //获取归档信息
-func GetPlace() PlaceList {
+func GetPlace(online m_content.Online) PlaceList {
 	mod := dao.Dao.Table("Content").
-		Select("COUNT(*) as total, strftime('%Y年%m月', CreatedAt) as CreatedAtYm").
-		Where("Online=?", m_content.OnlineYes).
 		GroupBy("CreatedAtYm").OrderBy("CreatedAt DESC")
+	//sqlite3存储的是UTC时间，所以要对其进行偏移
+	mod.Select("COUNT(*) as total, strftime('%Y年%m月', CreatedAt, '"+helpers.LocalTimeOffsetSeconds+" seconds') as CreatedAtYm")
+	if m_content.CheckOnline(online) {
+		mod.Where("Online=?", int(online));
+	}
 	result := make(PlaceList, 0)
 	err := mod.Find(&result)
 	if err != nil {
@@ -157,7 +161,7 @@ func GetPlace() PlaceList {
 }
 
 //获取列表
-func GetList(page int, limit int, categoryID int, tagID int, place string, keyword string) (result m_content.List) {
+func GetList(page int, limit int, categoryID int, tagID int, place string, keyword string, online m_content.Online) (result m_content.List) {
 	if page <= 0 {
 		page = 1
 	}
@@ -166,7 +170,9 @@ func GetList(page int, limit int, categoryID int, tagID int, place string, keywo
 	}
 	mod := dao.Dao.Table("Content").Desc("`Content`.`ID`")
 	mod.Select("`Content`.`ID`, `Content`.`Title`, `Content`.`CreatedAt`, `Content`.`Hits`, `Content`.`Origin`")
-	mod.Where("Content.`Online`=?", m_content.OnlineYes)
+	if m_content.CheckOnline(online) {
+		mod.Where("Content.`Online`=?", int(online))
+	}
 	//设置分页
 	offset := (page - 1) * limit
 	mod.Limit(limit, offset)
@@ -193,8 +199,10 @@ func GetList(page int, limit int, categoryID int, tagID int, place string, keywo
 	}
 	//查询归档时间内的列表，place的格式：2006年01月
 	if place != "" {
+		//按本地时间进行解析
 		if t, err := time.ParseInLocation("2006年01月", place, time.Local); err == nil {
-			mod.Where("`Content`.`CreatedAt`>=?", t.String()).Where("`Content`.`CreatedAt`<?", t.AddDate(0, 1, 1).String())
+			//按UTC时间进行查询
+			mod.Where("`Content`.`CreatedAt`>=?", t.UTC().String()).Where("`Content`.`CreatedAt`<?", t.AddDate(0, 1, 1).String())
 		}
 	}
 	//查询关键字

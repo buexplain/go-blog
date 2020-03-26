@@ -2,8 +2,9 @@ package c_frontend
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
+	m_category "github.com/buexplain/go-blog/models/category"
+	m_content "github.com/buexplain/go-blog/models/content"
 	s_category "github.com/buexplain/go-blog/services/category"
 	s_configItem "github.com/buexplain/go-blog/services/config/item"
 	s_content "github.com/buexplain/go-blog/services/content"
@@ -12,38 +13,14 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
-
-type Debug struct {
-	data map[string]time.Time
-}
-
-func NewDebug() *Debug {
-	return &Debug{data: map[string]time.Time{}}
-}
-
-func (this *Debug) Set(name string) {
-	this.data[name] = time.Now()
-}
-
-func (this Debug) Get(name string) {
-	if t, ok := this.data[name]; ok {
-		fmt.Printf("%s 耗时: %d 毫秒\n", name, (time.Now().UnixNano()-t.UnixNano())/1e6)
-	}
-}
 
 //首页
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	debug := NewDebug()
 	//获取站点配置
-	debug.Set("配置")
 	config := s_configItem.GetByGroup("SiteInfo")
-	debug.Get("配置")
 	//获取站点菜单栏
-	debug.Set("导航")
-	categoryTree := s_category.GetTree()
-	debug.Get("导航")
+	categoryTree := s_category.GetTree(m_category.IsMenuYes)
 	//获取列表
 	categoryID := r.QueryPositiveInt("categoryID")
 	tagID := r.QueryPositiveInt("tagID")
@@ -51,9 +28,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	keyword := r.Query("keyword")
 	currentPage := r.QueryPositiveInt("page", 1)
 	limit := r.QueryPositiveInt("limit", 10)
-	debug.Set("列表")
-	contentList := s_content.GetList(currentPage, limit, categoryID, tagID, place, keyword)
-	debug.Get("列表")
+	contentList := s_content.GetList(currentPage, limit, categoryID, tagID, place, keyword, m_content.OnlineYes)
 	//注入数据
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
@@ -77,10 +52,7 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := map[string]string{}
 	//渲染标签
 	tagID := r.QueryPositiveInt("tagID")
-	debug := NewDebug()
-	debug.Set("标签")
 	tagList := s_tag.GetALL()
-	debug.Get("标签")
 	w.Assign("tagList", tagList)
 	w.Assign("tagID", tagID)
 	w.Assign("currentURL", *r.Raw().URL)
@@ -91,7 +63,7 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result["tag"] = buff.String()
 	//渲染归档
 	place := r.Query("place")
-	contentPlace := s_content.GetPlace()
+	contentPlace := s_content.GetPlace(m_content.OnlineYes)
 	w.Assign("place", place)
 	w.Assign("contentPlace", contentPlace)
 	w.Assign("currentURL", *r.Raw().URL)
@@ -106,12 +78,12 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	id, _ := strconv.Atoi(strings.TrimRight(r.Param("id.html"), ".html"))
-	result, err := s_content.GetDetails(id)
+	result, err := s_content.GetDetails(id, m_content.OnlineYes)
 	if err != nil {
 		return err
 	}
 	config := s_configItem.GetByGroup("SiteInfo")
-	categoryTree := s_category.GetTree()
+	categoryTree := s_category.GetTree(0)
 	w.Assign("currentURL", *r.Raw().URL)
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)

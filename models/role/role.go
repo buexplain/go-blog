@@ -8,9 +8,9 @@ import (
 
 //rbac 角色表
 type Role struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt models.Time `xorm:"DateTime created"`
-	UpdatedAt models.Time `xorm:"DateTime updated"`
+	ID        int           `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt m_models.Time `xorm:"DateTime created"`
+	UpdatedAt m_models.Time `xorm:"DateTime updated"`
 	//父id
 	Pid int `xorm:"INTEGER"`
 	//角色名

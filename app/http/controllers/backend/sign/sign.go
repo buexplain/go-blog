@@ -31,7 +31,6 @@ func init() {
 	v.Field("CaptchaVal").Rule("VerifyCaptcha", "请输入验证码", "验证码错误")
 }
 
-
 //登录
 func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	type In struct {

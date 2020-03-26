@@ -1,12 +1,22 @@
 package m_user
 
-//用户身份，用于区分是否可用登录后台
+import m_models "github.com/buexplain/go-blog/models"
+
+//用户身份，用于区分是否可以登录后台
+type Identity m_models.Enum
+
 const (
-	IdentityOfficial = iota + 1
+	IdentityOfficial Identity = iota + 1
 	IdentityCitizen
 )
 
-var IdentityText = map[int]string{
-	IdentityOfficial: "管理人员",
-	IdentityCitizen:  "普通用户",
+func (this Identity) String() string {
+	switch this {
+	case IdentityOfficial:
+		return "管理人员"
+	case IdentityCitizen:
+		return "普通用户"
+	default:
+		return "UNKNOWN"
+	}
 }

@@ -1,12 +1,12 @@
 [Database]
-DSN = "database.db?_synchronous=OFF&_journal=WAL&cache=shared&mode=rwc"
+DSN = "database.db?_synchronous=OFF&_journal=WAL&cache=shared&_loc=auto&mode=rwc"
 
 [App]
 Debug = true
 
 [App.Server]
 IP = "127.0.0.1"
-Port = 80
+Port = 1991
 ReadTimeout = "60s"
 WriteTimeout = "60s"
 

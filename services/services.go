@@ -16,7 +16,7 @@ func CheckUnique(tableName string, field string, value interface{}, selfID ...in
 		d.Where("`ID`!=?", selfID[0])
 	}
 	type Tmp struct {
-		ID                    int `xorm:"INTEGER"`
+		ID        int       `xorm:"INTEGER"`
 		CreatedAt time.Time `xorm:"DATETIME created"`
 	}
 	has, err := d.Exist(new(Tmp))

@@ -27,6 +27,7 @@ const (
 
 // dumpTables dump database all table structs and data to w with specify db type
 //@link https://gitea.com/xorm/xorm/issues/1231
+//@link https://gitea.com/xorm/xorm/issues/1612
 func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, tp ...schemas.DBType) error {
 	var dstDialect dialects.Dialect
 	if len(tp) == 0 {
@@ -74,7 +75,7 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 				}
 			}
 			if len(table.PKColumns()) > 0 && dstDialect.URI().DBType == schemas.MSSQL {
-				_,_ = fmt.Fprintf(w, "SET IDENTITY_INSERT [%s] ON;\n", table.Name)
+				_, _ = fmt.Fprintf(w, "SET IDENTITY_INSERT [%s] ON;\n", table.Name)
 			}
 		}
 
@@ -124,12 +125,26 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 					if d == nil {
 						temp += ", NULL"
 					} else if col.SQLType.IsText() || col.SQLType.IsTime() {
-						var v = fmt.Sprintf("%s", d)
-						if strings.HasSuffix(v, " +0000 UTC") {
-							temp += fmt.Sprintf(", '%s'", v[0:len(v)-len(" +0000 UTC")])
+						var v string
+						if col.SQLType.IsTime() {
+							//engine.DatabaseTZ设置为UTC时区，所以入库的都是UTC时间
+							//sqlite3设置为本地时区，所以出库口时间都由UTC时间转为本地时区
+							//所以时区应该再次格式化为UTC时间，这样导入的时候依然是UTC时间
+							if t, ok := d.(time.Time); ok {
+								v = t.UTC().Format("2006-01-02 15:04:05")
+								temp += fmt.Sprintf(", '%s'", v)
+							} else {
+								return fmt.Errorf("column %s type %+T convert to time.Time error", col.Name, d)
+							}
 						} else {
+							v = fmt.Sprintf("%s", d)
 							temp += ", '" + strings.Replace(v, "'", "''", -1) + "'"
 						}
+						//if strings.HasSuffix(v, " +0000 UTC") {
+						//	temp += fmt.Sprintf(", '%s'", v[0:len(v)-len(" +0000 UTC")])
+						//} else {
+						//	temp += ", '" + strings.Replace(v, "'", "''", -1) + "'"
+						//}
 					} else if col.SQLType.IsBlob() {
 						if reflect.TypeOf(d).Kind() == reflect.Slice {
 							temp += fmt.Sprintf(", %s", dstDialect.FormatBytes(d.([]byte)))
@@ -192,4 +207,5 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 		}
 	}
 	return nil
+
 }

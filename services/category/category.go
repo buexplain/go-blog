@@ -67,9 +67,13 @@ type TreeItem struct {
 type TreeList []*TreeItem
 
 //获取所有分类，返回树状结构
-func GetTree() TreeList {
+func GetTree(isMenu m_category.IsMenu) TreeList {
 	lists := make(TreeList, 0)
-	err := dao.Dao.Table("Category").Where("IsMenu=?", m_category.IsMenuYes).Asc("SortID").Find(&lists)
+	mod := dao.Dao.Table("Category").Asc("SortID")
+	if m_category.CheckIsMenu(isMenu) {
+		mod.Where("IsMenu=?", int(isMenu))
+	}
+	err := mod.Find(&lists)
 	if err != nil {
 		panic(err)
 	}
@@ -105,14 +109,14 @@ func GetParents(categoryID int) m_category.List {
 }
 
 //获取一个分类的子分类
-func GetSons(categoryID int, isMenu int) m_category.List {
+func GetSons(categoryID int, isMenu m_category.IsMenu) m_category.List {
 	if categoryID <= 0 {
 		return nil
 	}
 	list := make(m_category.List, 0)
 	var err error
 	if m_category.CheckIsMenu(isMenu) {
-		err = s_services.GetSons("category", categoryID, &list, "SortID", builder.Eq{"IsMenu": isMenu})
+		err = s_services.GetSons("category", categoryID, &list, "SortID", builder.Eq{"IsMenu": int(isMenu)})
 	} else {
 		err = s_services.GetSons("category", categoryID, &list, "SortID", nil)
 	}

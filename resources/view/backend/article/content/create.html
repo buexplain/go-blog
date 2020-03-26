@@ -9,8 +9,9 @@
 {{define "css"}}
     <link rel="stylesheet" href="/resources/asset/layext/dtree/dtree.css">
     <link rel="stylesheet" href="/resources/asset/layext/dtree/font/dtreefont.css">
-    <!--引入markdown基础样式-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css" />
+    <!--引入markdown编辑器-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.min.js"></script>
 {{end}}
 
 {{define "content"}}
@@ -66,12 +67,10 @@
             </div>
         </div>
     </form>
-    <div id="j-editor"></div>
+    <div id="j-vditor"></div>
 {{end}}
 
 {{define "js"}}
-    <!--引入markdown编辑器-->
-    <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
     <script type="text/javascript" src="/resources/asset/backend/article/content/common.js"></script>
     <script>
         var acceptMimeTypes = "{{.acceptMimeTypes}}";
@@ -161,15 +160,20 @@
                 });
 
                 //渲染编辑器
+                //@link https://hacpai.com/article/1549638745630 文档地址
+                //@link https://github.com/Vanessa219/vditor/blob/master/CHANGELOG.md?utm_source=hacpai.com 升级日志
                 let vEditorObj = null;
-                vEditorObj = new Vditor('j-editor', {
-                    placeholder:'请输入文章内容',
-                    cache:false,
+                vEditorObj = new Vditor('j-vditor', {
+                    debugger: true,
+                    typewriterMode: true,
+                    placeholder: '请输入文章内容',
                     counter: 65535,
-                    height: $(window).height() - 93,
+                    height: ($(window).height() - 93),
                     width:"100%",
+                    cache:false,
                     tab: '\t',
-                    mode:'markdown-show',
+                    theme: 'classic',
+                    mode:'sv',
                     upload: {
                         accept: acceptMimeTypes,
                         handler (files) {
@@ -189,6 +193,9 @@
                         },
                     },
                     preview: {
+                        markdown: {
+                            toc: true,
+                        },
                         hljs:{
                             enable:true,
                             style:'monokai',
@@ -201,6 +208,7 @@
                     },
                     after: function () {
                         //压入文章内容
+                        console.log(vEditorObj);
                         vEditorObj.setValue(result.content.getBody());
                     }
                 });

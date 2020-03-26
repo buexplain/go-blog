@@ -20,12 +20,11 @@ type Tag struct {
 type List []*Tag
 
 func GetList(ctx *fool.Ctx) (counter int64, result List, err error) {
-	query := s_services.NewQuery("Tag", ctx).Limit()
-	query.Finder.Desc("ID")
-	query.Where()
+	query := s_services.NewQuery("Tag", ctx)
 	//先获取分页所需的总条数
-	counter = query.Count()
+	counter = query.Where().Count()
 	//再连表查询得到每个标签的文章数量
+	query.Where().Limit().Finder.Desc("Tag.ID")
 	query.Finder.Join(
 		"LEFT",
 		"(SELECT count(*) as Total, TagID FROM ContentTag GROUP BY TagID) as ContentTag",

@@ -1,22 +1,22 @@
 package m_node
 
-func (this Node) IsMenuText() string {
-	return IsMenuText[this.IsMenu]
-}
+import m_models "github.com/buexplain/go-blog/models"
 
-func CheckIsMenu(isNav int) bool {
-	if isNav >= IsMenuYes && isNav <= IsMenuNo {
-		return true
-	}
-	return false
-}
+// 用于判断后台是否显示
+type IsMenu m_models.Enum
 
 const (
-	IsMenuYes = iota + 1
+	IsMenuYes IsMenu = iota + 1
 	IsMenuNo
 )
 
-var IsMenuText = map[int]string{
-	IsMenuYes: "是",
-	IsMenuNo:  "否",
+func (this IsMenu) String() string {
+	switch this {
+	case IsMenuYes:
+		return "是"
+	case IsMenuNo:
+		return "否"
+	default:
+		return "UNKNOWN"
+	}
 }

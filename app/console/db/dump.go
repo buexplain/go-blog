@@ -33,7 +33,6 @@ func parseMode(m string) int {
 	return result
 }
 
-
 func init() {
 	//导出模式
 	var mode string

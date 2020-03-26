@@ -53,6 +53,7 @@
 
 {{define "js"}}
     <script>
+        //初始化日期组件
         layui.use(['laydate'], function() {
             var layDate = layui.laydate;
             layDate.render({
@@ -85,9 +86,7 @@
                     {field: 'ID', type: 'checkbox', fixed: 'left'}
                     ,{field: 'ID', title: 'ID', sort: true, fixed: 'left', width:100}
                     ,{field: 'Title', title: '标题'}
-                    ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
-                        return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
-                    }}
+                    ,{field: 'UpdatedAt', title: '更新时间'}
                     ,{field: 'Online', title: '上下线', templet: function (data) {
                         let btn = '<input type="checkbox" name="sex" value="'+data['Online']+'" data-id="'+data['ID']+'" lay-skin="switch" lay-text="上线|下线" lay-filter="online" '+(data['Online'] === 1 ? 'checked' : '')+'>';
                         return btn;

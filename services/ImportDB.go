@@ -44,10 +44,10 @@ func ImportDB(engine *xorm.Engine, r io.Reader) ([]sql.Result, error) {
 			//解析insert语句的base64编码
 			if strings.Index(query, "INSERT INTO") != -1 {
 				tmp := strings.LastIndex(query, "VALUES (")
-				b, err := base64.StdEncoding.DecodeString(query[tmp + 8 : len(query)-1])
+				b, err := base64.StdEncoding.DecodeString(query[tmp+8 : len(query)-1])
 				if err == nil {
 					query = query[0:tmp+8] + string(b) + ")"
-				}else {
+				} else {
 					return nil, err
 				}
 			}

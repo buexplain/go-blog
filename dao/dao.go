@@ -3,9 +3,9 @@ package dao
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	_ "github.com/mattn/go-sqlite3"
+	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 	"xorm.io/core"
 	"xorm.io/xorm"
@@ -14,13 +14,33 @@ import (
 
 var Dao *xorm.Engine
 
+func forceDSNParam(dsn string, param map[string]string) (string, error) {
+	s, err := url.PathUnescape(dsn)
+	if err != nil {
+		return "", err
+	}
+	if u, err := url.Parse(s); err != nil {
+		return "", err
+	} else {
+		q := u.Query()
+		for k, v := range param {
+			q.Set(k, v)
+		}
+		u.RawQuery = q.Encode()
+		return u.String(), nil
+	}
+}
+
 func init() {
-	if strings.Index(a_boot.Config.Database.DSN, "_loc") != -1 {
-		a_boot.Logger.ErrorF("初始化dao失败: 请不要设置参数`_loc`, 数据库默认按UTC时区存储时间")
+	//强制sqlite3的时区为本地时区
+	dsn, err := forceDSNParam(a_boot.Config.Database.DSN, map[string]string{"_loc": "auto"})
+	if err != nil {
+		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
 		os.Exit(1)
 	}
-	db := filepath.Join(a_boot.ROOT_PATH, "database", a_boot.Config.Database.DSN)
+
 	//创建目录
+	db := filepath.Join(a_boot.ROOT_PATH, "database", dsn)
 	if dir := filepath.Dir(db); dir != "" {
 		if err := os.MkdirAll(dir, 777); err != nil {
 			a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
@@ -29,15 +49,17 @@ func init() {
 	}
 
 	//打开数据库
-	var err error
 	Dao, err = xorm.NewEngine("sqlite3", db)
 	if err != nil {
 		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
 		os.Exit(1)
 	}
 
-	//默认为UTC时区存储时间
+	//强制xorm按UTC时区存储时间
 	Dao.DatabaseTZ = time.UTC
+
+	//强制xorm的程序时区设置为本地时区
+	Dao.TZLocation = time.Local
 
 	//设置结构体与表字段一致
 	Dao.SetMapper(core.SameMapper{})

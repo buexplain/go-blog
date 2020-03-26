@@ -9,16 +9,16 @@ import (
 
 //文章附件表
 type Attachment struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt models.Time `xorm:"DateTime created"`
-	UpdatedAt models.Time `xorm:"DateTime updated"`
-	Name         string `xorm:"TEXT"`
-	Path         string `xorm:"TEXT"`
-	Ext          string `xorm:"TEXT"`
-	Folder       string `xorm:"TEXT"`
-	Size         int    `xorm:"INTEGER"`
-	MD5          string `xorm:"index TEXT"`
-	Content      string `xorm:"-"`
+	ID        int           `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt m_models.Time `xorm:"DateTime created"`
+	UpdatedAt m_models.Time `xorm:"DateTime updated"`
+	Name      string        `xorm:"TEXT"`
+	Path      string        `xorm:"TEXT"`
+	Ext       string        `xorm:"TEXT"`
+	Folder    string        `xorm:"TEXT"`
+	Size      int           `xorm:"INTEGER"`
+	MD5       string        `xorm:"index TEXT"`
+	Content   string        `xorm:"-"`
 }
 
 type List []Attachment

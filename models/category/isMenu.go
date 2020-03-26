@@ -1,22 +1,29 @@
 package m_category
 
-func (this Category) IsMenuText() string {
-	return IsMenuText[this.IsMenu]
-}
+import m_models "github.com/buexplain/go-blog/models"
 
-func CheckIsMenu(IsMenu int) bool {
-	if IsMenu >= IsMenuYes && IsMenu <= IsMenuNo {
+// 用于判断前台是否显示
+type IsMenu m_models.Enum
+
+func CheckIsMenu(isMenu IsMenu) bool {
+	if isMenu >= IsMenuYes && isMenu <= IsMenuNo {
 		return true
 	}
 	return false
 }
 
 const (
-	IsMenuYes = iota + 1
+	IsMenuYes IsMenu = iota + 1
 	IsMenuNo
 )
 
-var IsMenuText = map[int]string{
-	IsMenuYes: "是",
-	IsMenuNo:  "否",
+func (this IsMenu) String() string {
+	switch this {
+	case IsMenuYes:
+		return "是"
+	case IsMenuNo:
+		return "否"
+	default:
+		return "UNKNOWN"
+	}
 }

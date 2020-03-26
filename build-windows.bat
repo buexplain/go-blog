@@ -57,12 +57,12 @@ rem 打包静态文件
 artisan.exe asset pack
 if %errorlevel% NEQ 0 exit /b %errorlevel%
 
-rem 复制artisan.exe
-move /Y artisan.exe .\build\artisan.exe
+rem 删除artisan.exe
+del /f /s /q artisan.exe
 if %errorlevel% NEQ 0 exit /b %errorlevel%
 
 rem 编译发布程序
-go build -ldflags "-s -w" -o ./build/blog.exe main.go
+go build -ldflags "-s -w" -o ./build/blog.exe main.go && go build -ldflags "-s -w" -o ./build/artisan.exe artisan.go
 if %errorlevel% == 0 (
     echo build successfully
     dir build

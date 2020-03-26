@@ -14,20 +14,30 @@
 </style>
 <div>{{if .message }} {{message .message}} {{end}}</div>
 {{if .url }}
-页面自动 <a id="j-href" href="{{.url}}" title="按下enter直接跳转">跳转</a> <a href="javascript:;" onclick="jump.stop()">停止</a> 等待时间：<b id="j-wait">{{.wait}}</b>
+页面自动 <a id="j-href" href="{{.url}}" title="按下enter直接跳转">跳转</a> <a href="javascript:;" onclick="jump.stop()" title="按下space可以暂停">停止</a> 等待时间：<b id="j-wait">{{.wait}}</b>
 <script type="text/javascript">
     var jump = {
         _wait:3,
         _url: '',
-        _interval:0,
+        _interval:-1,
         init: function() {
             this._wait = document.getElementById('j-wait');
             this._url = document.getElementById('j-href').href;
             var that = this;
             document.onkeydown = function (event) {
                 var e = event || window.event;
-                if(e && e.keyCode === 13) {
+                if(!e) {
+                    return;
+                }
+                if(e.keyCode === 13) {
                     that.go();
+                }else if(e.keyCode === 32) {
+
+                    if(that._interval === -1) {
+                        that.start();
+                    }else {
+                        that.stop();
+                    }
                 }
             };
         },
@@ -36,7 +46,7 @@
         },
         start: function() {
             var that = this;
-            this.interval = setInterval(function() {
+            that._interval = setInterval(function() {
                 var time = --that._wait.innerHTML;
                 if(time <= 0) {
                     that.stop();
@@ -45,7 +55,10 @@
             }, 1000);
         },
         stop: function() {
-            clearInterval(this.interval);
+            if(this._interval > -1) {
+                clearInterval(this._interval);
+                this._interval = -1;
+            }
         }
     };
     jump.init();

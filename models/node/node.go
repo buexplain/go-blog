@@ -9,9 +9,9 @@ import (
 
 //rbac 节点表
 type Node struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt models.Time `xorm:"DateTime created"`
-	UpdatedAt models.Time `xorm:"DateTime updated"`
+	ID        int           `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt m_models.Time `xorm:"DateTime created"`
+	UpdatedAt m_models.Time `xorm:"DateTime updated"`
 	//父id
 	Pid int `xorm:"INTEGER"`
 	//节点名称
@@ -21,7 +21,7 @@ type Node struct {
 	//节点路径允许的方法
 	Methods string `xorm:"TEXT"`
 	//是否为后台导航菜单
-	IsMenu int `xorm:"INTEGER"`
+	IsMenu IsMenu `xorm:"INTEGER"`
 	//排序id
 	SortID int `xorm:"INTEGER"`
 }

@@ -27,7 +27,7 @@ func init() {
 		"新密码长度必须在8~16位之间",
 		"密码格式有误，请输入数字、字母、符号",
 		"密码格式有误，数字、字母、符号至少两种")
-	v.Field("Status").Rule("in:in=1,2", "请选择状态")
+	v.Field("Status").Rule(fmt.Sprintf("in:in=%s,%s", m_user.StatusDeny, m_user.StatusAllow), "请选择状态")
 	//校验账号是否存在
 	v.Custom("CheckUnique", func(field string, value interface{}, rule *validator.Rule, structVar interface{}) (s string, e error) {
 		str, ok := value.(string)

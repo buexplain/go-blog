@@ -38,9 +38,7 @@
                     ,{field: 'Name', title: '名称'}
                     ,{field: 'Key', title: '字段'}
                     ,{field: 'Comment', title: '备注'}
-                    ,{field: 'UpdatedAt', title: '更新时间', templet: function (data) {
-                        return moment(data['UpdatedAt']).format('YYYY-MM-DD HH:mm:ss');
-                    }}
+                    ,{field: 'UpdatedAt', title: '更新时间'}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
                             let btn = '';
                             btn += '<a class="layui-btn layui-btn-sm" href="/backend/config/group/edit/'+data['ID']+'">编辑</a>';

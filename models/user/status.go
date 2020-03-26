@@ -1,18 +1,22 @@
 package m_user
 
+import m_models "github.com/buexplain/go-blog/models"
+
+//用户状态，用于判断用户是否被ban
+type Status m_models.Enum
+
 const (
-	StatusAllow = iota + 1
+	StatusAllow Status = iota + 1
 	StatusDeny
 )
 
-var StatusText = map[int]string{
-	StatusAllow: "允许",
-	StatusDeny:  "禁止",
-}
-
-func CheckStatus(status int) bool {
-	if status != StatusAllow && status != StatusDeny {
-		return false
+func (this Status) String() string {
+	switch this {
+	case StatusAllow:
+		return "允许"
+	case StatusDeny:
+		return "禁止"
+	default:
+		return "UNKNOWN"
 	}
-	return true
 }

@@ -7,7 +7,17 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 )
+
+//本地时间偏移秒数
+var LocalTimeOffsetSeconds string
+func init()  {
+	//如果更改了服务器时区，则需要重启服务器，以更新改偏移量
+	t := time.Now()
+	_, o := t.Zone()
+	LocalTimeOffsetSeconds = fmt.Sprintf("%+d", o)
+}
 
 //字节换算
 func FormatSize(size int64) string {
@@ -114,4 +124,43 @@ func UnZIP(zipFile, path string) error {
 		}
 	}
 	return nil
+}
+
+var parseTimeFormats = []string{
+	"2006-01-02 15:04:05",
+	"2006-01-02 15:04",
+	"2006-01-02 15",
+	"2006-01-02",
+	time.RFC3339,
+	"2006-01",
+	"2006",
+}
+
+func ParseInLocation(value string, loc *time.Location) (t time.Time, err error) {
+	for _, format := range parseTimeFormats {
+		if t, err = time.ParseInLocation(format, value, loc); err == nil {
+			break
+		}
+	}
+	return
+}
+
+//按本地时间解析，然后返回UTC时间
+func ParseTimeLocalToUTC(value string) string {
+	for _, format := range parseTimeFormats {
+		if t, err := time.ParseInLocation(format, value, time.Local); err == nil {
+			return t.UTC().Format(format)
+		}
+	}
+	return ""
+}
+
+//按UTC时间解析，然后返回本地时间
+func ParseTimeUTCToLocal(value string) string {
+	for _, format := range parseTimeFormats {
+		if t, err := time.ParseInLocation(format, value, time.UTC); err == nil {
+			return t.Local().Format(format)
+		}
+	}
+	return ""
 }

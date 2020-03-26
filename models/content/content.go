@@ -6,9 +6,9 @@ import (
 )
 
 type Content struct {
-	ID int `xorm:"not null pk autoincr INTEGER"`
-	CreatedAt models.Time `xorm:"DateTime created"`
-	UpdatedAt models.Time `xorm:"DateTime updated"`
+	ID        int           `xorm:"not null pk autoincr INTEGER"`
+	CreatedAt m_models.Time `xorm:"DateTime created"`
+	UpdatedAt m_models.Time `xorm:"DateTime updated"`
 	//标题
 	Title string `xorm:"TEXT"`
 	//文章内容，markdown
@@ -18,7 +18,7 @@ type Content struct {
 	//点击量
 	Hits int `xorm:"INTEGER"`
 	//是否上线
-	Online int `xorm:"INTEGER"`
+	Online Online `xorm:"INTEGER"`
 	//分类id
 	CategoryID int `xorm:"INTEGER"`
 	//pc端封面图片
@@ -33,18 +33,4 @@ type Content struct {
 	Description string `xorm:"TEXT"`
 }
 
-func (this Content) OnlineText() string {
-	return OnlineText[this.Online]
-}
-
 type List []*Content
-
-const (
-	OnlineYes = iota + 1
-	OnlineNo
-)
-
-var OnlineText = map[int]string{
-	OnlineYes: "已上线",
-	OnlineNo:  "已下线",
-}
