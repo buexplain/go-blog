@@ -15,15 +15,26 @@ go run main.go
 
 ## 发布程序
 
+### 编译
+
 ```bash
 # 编译程序 linux下是 build-linux.bin
 build-windows.bat
 ```
 
+### 注意事项
+如果你编译失败，原因有可能是`database/database.shm`、`database/database.wal`文件，不能跨平台的原因。
+比如你在windows下开发，生成了`database/database.db`、`database/database.shm`、`database/database.wal`文件。
+然后你把它们拷贝到linux下，然后你运行了`build-linux.bin`，编译失败了。
+此时请按如下步骤操作：
+1. windows下运行导出sql命令`go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql`
+2. 复制`database/init.sql`到linux，并且将`database/database.db`、`database/database.shm`、`database/database.wal`删除
+3. linux下运行导入sql命令`go build -o artisan.bin artisan.go && ./artisan.bin db sync && ./artisan.bin db import -f ./database/init.sql`
+4. 最后，再次执行编译命令`./build-linux.bin`
+
 ## 其它
 
 ### 二次开发相关命令
-
 ```bash
 # 导出 database/init.sql
 go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql

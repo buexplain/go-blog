@@ -172,7 +172,7 @@
                             html += '<br>';
                         }
                         html += data.Path;
-                        html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+data.Name+'\');">'+html+'</a>';
+                        html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+html+'</a>';
                         return html;
                     }}
                     ,{field: 'Size', title: '文件大小', templet: function (data) {
@@ -296,13 +296,16 @@
          * @param title
          */
         function preview(url, title) {
-            if(window.parent.skeleton === undefined) {
-                window.open(url);
-                return;
-            }
-            var index = (new Date()).getMilliseconds();
-            window.parent.skeleton.tab.add(title, url, index);
-            window.parent.skeleton.tab.change(index);
+            layui.use(['myUtil'], function() {
+                var myUtil = layui.myUtil;
+                if(window.parent.skeleton === undefined) {
+                    window.open(url);
+                    return;
+                }
+                var index = (new Date()).getMilliseconds();
+                window.parent.skeleton.tab.add(myUtil.unMaskStr(title), url, index);
+                window.parent.skeleton.tab.change(index);
+            });
         }
     </script>
 

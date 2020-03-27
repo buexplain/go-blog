@@ -16,11 +16,6 @@ import (
 
 //保存内容
 func Save(content *m_content.Content, tagsID []int, id int) error {
-	//将内容转为html
-	if _, err := Render(content.Body); err != nil {
-		return err
-	}
-
 	session := dao.Dao.NewSession()
 	defer session.Close()
 
@@ -125,16 +120,15 @@ func RenderByID(id int) (string, error) {
 	} else if !has {
 		return "", errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
 	}
-	return Render(result.Body)
+	return Render(result.Body), nil
 }
 
-func Render(markdown string) (string, error) {
+func Render(markdown string) string {
 	luteEngine := lute.New()
 	//注销掉高亮部分，让js去渲染
 	luteEngine.CodeSyntaxHighlight = false
 	luteEngine.CodeSyntaxHighlightLineNum = false
-	html, err := luteEngine.MarkdownStr("default", markdown)
-	return html, errors.TryMarkClient(err)
+	return luteEngine.MarkdownStr("default", markdown)
 }
 
 type Place struct {

@@ -35,11 +35,7 @@ func GetDetails(id int, online m_content.Online) (*Details, error) {
 	}
 
 	//渲染html成
-	if s, err := Render(details.Content.Body); err != nil {
-		return nil, err
-	} else {
-		details.Content.HTML = template.HTML(s)
-	}
+	details.Content.HTML = template.HTML(Render(details.Content.Body))
 
 	err := dao.Dao.
 		Table("Tag").

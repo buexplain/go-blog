@@ -68,10 +68,11 @@
             });
         });
 
-        layui.use(['table', 'jquery', 'form'], function() {
+        layui.use(['table', 'jquery', 'form', 'myUtil'], function() {
             var table = layui.table;
             var $ = layui.jquery;
             var form = layui.form;
+            var myUtil = layui.myUtil;
 
             //渲染表格
             var tableOption = {
@@ -92,7 +93,7 @@
                         return btn;
                     }}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
-                        let btn = '<a class="layui-btn layui-btn-sm layui-btn-normal" href="javascript:preview('+data['ID']+', \''+data['Title']+'\');">预览</a>';
+                        let btn = '<a class="layui-btn layui-btn-sm layui-btn-normal" href="javascript:preview('+data['ID']+', \''+myUtil.maskStr(data['Title'])+'\');">预览</a>';
                         btn += '<a class="layui-btn layui-btn-sm" href="/backend/article/content/edit/'+data['ID']+'">编辑</a>';
                         btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['Online'] === 1 ? 'none' : '')+';">删除</a>';
                         return btn;
@@ -185,14 +186,17 @@
          * @param title
          */
         function preview(id, title) {
-            var url = '/backend/article/content/show/'+id;
-            if(window.parent.skeleton === undefined) {
-                window.open(url);
-                return;
-            }
-            var index = (new Date()).getMilliseconds();
-            window.parent.skeleton.tab.add(title, url, index);
-            window.parent.skeleton.tab.change(index);
+            layui.use(['myUtil'], function() {
+                var myUtil = layui.myUtil;
+                var url = '/backend/article/content/show/'+id;
+                if(window.parent.skeleton === undefined) {
+                    window.open(url);
+                    return;
+                }
+                var index = (new Date()).getMilliseconds();
+                window.parent.skeleton.tab.add(myUtil.unMaskStr(title), url, index);
+                window.parent.skeleton.tab.change(index);
+            });
         }
     </script>
 {{end}}

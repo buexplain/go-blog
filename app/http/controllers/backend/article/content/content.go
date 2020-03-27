@@ -248,19 +248,19 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 func Render(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	var err error
 	var html string
 	id := r.QueryInt("id", 0)
 	if id > 0 {
+		var err error
 		html, err = s_content.RenderByID(id)
+		if err != nil {
+			return w.Error(code.CLIENT, err.Error())
+		}
 	} else {
 		markdown := r.Form("markdown", "")
 		if markdown != "" {
-			html, err = s_content.Render(markdown)
+			html = s_content.Render(markdown)
 		}
-	}
-	if err != nil {
-		return w.Error(code.CLIENT, err.Error())
 	}
 	return w.Success(html)
 }

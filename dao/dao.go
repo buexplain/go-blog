@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
 	_ "github.com/mattn/go-sqlite3"
 	"net/url"
@@ -64,23 +65,27 @@ func init() {
 	//设置结构体与表字段一致
 	Dao.SetMapper(core.SameMapper{})
 
-	//设置连接池的空闲数大小
-	Dao.SetMaxIdleConns(10)
+	//设置连接池中的最大闲置连接数
+	if a_boot.Config.Database.MaxIdleConns > 0 {
+		Dao.SetMaxIdleConns(a_boot.Config.Database.MaxIdleConns)
+	}
 
-	//设置最大打开连接数
-	Dao.SetMaxOpenConns(20)
+	//设置与数据库建立连接的最大数目
+	if a_boot.Config.Database.MaxOpenConns > 0 {
+		Dao.SetMaxOpenConns(a_boot.Config.Database.MaxOpenConns)
+	}
 
+	//是否开启日志打印
 	if a_boot.Config.App.Debug {
 		Dao.Logger().SetLevel(log.LOG_DEBUG)
 		Dao.ShowSQL(true)
 	}
 
 	//开启sqlite3的缓存
-	_, err = Dao.Exec("PRAGMA cache_size = 5000")
+	_, err = Dao.Exec(fmt.Sprintf("PRAGMA cache_size = %+d", a_boot.Config.Database.CacheSize))
 	if err != nil {
 		_ = Dao.Close()
 		a_boot.Logger.ErrorF("初始化dao失败: %s", err.Error())
 		os.Exit(1)
 	}
-
 }

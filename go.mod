@@ -3,7 +3,7 @@ module github.com/buexplain/go-blog
 go 1.13
 
 require (
-	github.com/88250/lute v1.1.7
+	github.com/88250/lute v1.2.5
 	github.com/BurntSushi/toml v0.3.1
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5
@@ -15,15 +15,15 @@ require (
 	github.com/gorilla/csrf v1.6.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
-	github.com/kevinburke/go-bindata v3.18.0+incompatible
-	github.com/mattn/go-runewidth v0.0.8 // indirect
+	github.com/kevinburke/go-bindata v3.19.0+incompatible
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
-	github.com/mojocn/base64Captcha v1.3.0
+	github.com/mojocn/base64Captcha v1.3.1
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
 	xorm.io/builder v0.3.7
 	xorm.io/core v0.7.3
-	xorm.io/xorm v1.0.0
+	xorm.io/xorm v1.0.1
 )

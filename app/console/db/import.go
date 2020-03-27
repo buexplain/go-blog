@@ -37,6 +37,10 @@ func init() {
 				a_boot.Logger.ErrorF("导入sql文件到数据库失败: %s", err)
 				os.Exit(1)
 			}
+			if err := dao.Dao.Close(); err != nil {
+				a_boot.Logger.ErrorF("手动关闭数据库失败: %s", err)
+				os.Exit(1)
+			}
 			a_boot.Logger.Info("导入sql文件到数据库成功")
 		},
 	}

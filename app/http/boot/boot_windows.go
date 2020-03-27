@@ -12,7 +12,7 @@ import (
 //启动http服务器
 func Run() {
 	addr := a_boot.Config.App.Server.IP + ":" + strconv.Itoa(int(a_boot.Config.App.Server.Port))
-	Logger.Info("[pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
+	log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 	server := http.Server{
 		Addr:         addr,
 		Handler:      Server,

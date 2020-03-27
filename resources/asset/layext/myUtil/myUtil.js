@@ -96,6 +96,11 @@ layui.define([], function(exports) {
             var url = this.queryString.update('page', targetPage);
             return this.queryString.update('limit', limit, url);
         },
+        /**
+         * 字节友好显示
+         * @param size
+         * @returns {string}
+         */
         renderBytes: function (size) {
             if(size === undefined || size === null || parseFloat(size) <= 0) {
                 return "0 Bytes";
@@ -105,7 +110,30 @@ layui.define([], function(exports) {
             var index = Math.floor(Math.log(size)/Math.log(1024));
             var new_size = (size/Math.pow(1024,index)).toFixed(2);
             return new_size +' '+ unitArr[index];
-        }
+        },
+        /**
+         * 对无法进行字符串拼接的字符串变量进行掩码处理
+         */
+        maskStr: function (str) {
+            return {
+                str: str,
+                toString: function () {
+                    return btoa(unescape(encodeURIComponent(this.str)));
+                }
+            }
+
+        },
+        /**
+         * 对已经掩码处理的字符串进行解码操作
+         */
+        unMaskStr: function (str) {
+            return {
+                str: str,
+                toString: function () {
+                    return decodeURIComponent(escape(atob(this.str)));
+                }
+            }
+        },
     };
     exports(MOD_NAME, myUtil);
 });

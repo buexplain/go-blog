@@ -1,12 +1,19 @@
 [Database]
+# dsn参数 https://github.com/mattn/go-sqlite3
 DSN = "database.db?_synchronous=OFF&_journal=WAL&cache=shared&_loc=auto&mode=rwc"
+# 设置连接池中的最大闲置连接数
+MaxIdleConns = 50
+# 设置与数据库建立连接的最大数目
+MaxOpenConns = 100
+# 设置缓存，如果为正数，则表示cache设置为多少页（默认页大小为1KB），如果为负数则表示设置为多少KB
+CacheSize = 5000
 
 [App]
 Debug = true
 
 [App.Server]
 IP = "127.0.0.1"
-Port = 1991
+Port = 80
 ReadTimeout = "60s"
 WriteTimeout = "60s"
 
