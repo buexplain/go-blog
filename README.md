@@ -23,14 +23,19 @@ build-windows.bat
 ```
 
 ### 注意事项
-如果你编译失败，原因有可能是`database/database.shm`、`database/database.wal`文件，不能跨平台的原因。
+如果你编译失败，例如提示一下错误之一：
+* std.ERROR: 导出数据库到文件失败: column LastTime type []uint8 convert to time.Time error
+* 编译成功，但是测试`installer-linux.sh`脚本的时候，提示导入数据库失败
+* 编译成功，测试`installer-linux.sh`脚本也成功，但是数据库里面的数据少了一部分，比如新添加的文章丢失了
+以上错误的原因有可能是`database/database.shm`、`database/database.wal`文件，不能跨平台的原因。
 比如你在windows下开发，生成了`database/database.db`、`database/database.shm`、`database/database.wal`文件。
 然后你把它们拷贝到linux下，然后你运行了`build-linux.bin`，编译失败了。
-此时请按如下步骤操作：
-1. windows下运行导出sql命令`go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql`
-2. 复制`database/init.sql`到linux，并且将`database/database.db`、`database/database.shm`、`database/database.wal`删除
-3. linux下运行导入sql命令`go build -o artisan.bin artisan.go && ./artisan.bin db sync && ./artisan.bin db import -f ./database/init.sql`
-4. 最后，再次执行编译命令`./build-linux.bin`
+此时可以重做一个`database/database/db`数据库文件，请按如下步骤操作：
+1. 首先，windows下运行导出sql命令`go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql`
+2. 然后，将`config.toml`里面`DSN`的值改为`database.db`，去掉所有的连接参数
+3. 然后，windows下运行导入sql命令`go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql`
+4. 最后，将`database/database.db`，拷贝到Linux，执行编译命令`./build-linux.bin`
+当然你也可以导出`database/init.sql`后，将其拷贝到Linux，然后再在Linux下生成`database/database.db`，然后再编译。
 
 ## 其它
 
