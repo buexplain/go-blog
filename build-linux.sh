@@ -30,6 +30,7 @@ echo "1、执行 ./installer-linux.sh 等待一段时间会提示安装成功。
 echo "2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./build/readme.txt
 echo "3、打开浏览器，输入 blog.bin 提示的网址。" >> ./build/readme.txt
 echo "4、账号 admin 密码 123456" >> ./build/readme.txt
+echo "生产环境部署命令：nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
 
 #复制配置文件
 cp config.example.toml build/config.example.toml
