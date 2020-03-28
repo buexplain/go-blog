@@ -12,7 +12,8 @@ CacheSize = 5000
 Debug = true
 
 [App.Server]
-IP = "127.0.0.1"
+# 如果配置为空，会自动获取本机公网ip地址
+IP = ""
 Port = 80
 ReadTimeout = "60s"
 WriteTimeout = "60s"

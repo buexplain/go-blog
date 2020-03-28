@@ -3,6 +3,7 @@ package a_boot
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/buexplain/go-blog/app/boot/config"
+	"github.com/buexplain/go-blog/helpers"
 	"github.com/buexplain/go-flog"
 	"github.com/buexplain/go-flog/extra"
 	"github.com/buexplain/go-flog/formatter"
@@ -35,6 +36,9 @@ func init() {
 	Config = new(config.Config)
 	if _, err := toml.DecodeFile(filepath.Join(ROOT_PATH, "config.toml"), Config); err != nil {
 		log.Fatalln(err)
+	}
+	if Config.App.Server.IP == "" {
+		Config.App.Server.IP = helpers.GetPublicIP()
 	}
 }
 

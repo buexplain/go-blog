@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -136,6 +138,7 @@ var parseTimeFormats = []string{
 	"2006",
 }
 
+//按指定时区解析时间
 func ParseInLocation(value string, loc *time.Location) (t time.Time, err error) {
 	for _, format := range parseTimeFormats {
 		if t, err = time.ParseInLocation(format, value, loc); err == nil {
@@ -145,7 +148,7 @@ func ParseInLocation(value string, loc *time.Location) (t time.Time, err error) 
 	return
 }
 
-//按本地时间解析，然后返回UTC时间
+//按本地时区解析时间，然后返回UTC时间
 func ParseTimeLocalToUTC(value string) string {
 	for _, format := range parseTimeFormats {
 		if t, err := time.ParseInLocation(format, value, time.Local); err == nil {
@@ -155,12 +158,35 @@ func ParseTimeLocalToUTC(value string) string {
 	return ""
 }
 
-//按UTC时间解析，然后返回本地时间
+//按UTC时区解析时间，然后返回本地时间
 func ParseTimeUTCToLocal(value string) string {
 	for _, format := range parseTimeFormats {
 		if t, err := time.ParseInLocation(format, value, time.UTC); err == nil {
 			return t.Local().Format(format)
 		}
+	}
+	return ""
+}
+
+//获取本机公网ip
+func GetPublicIP() string {
+	dnsArr := []string{
+		//阿里云公共DNS
+		"223.5.5.5:80",
+		"223.6.6.6:80",
+		//谷歌公共dns
+		"8.8.8.8:80",
+		"8.8.4.4:80",
+	}
+	for _, dns := range dnsArr {
+		conn, err := net.DialTimeout("udp", dns, time.Millisecond*500)
+		if err != nil {
+			continue
+		}
+		localAddr := conn.LocalAddr().String()
+		idx := strings.LastIndex(localAddr, ":")
+		_ = conn.Close()
+		return localAddr[0:idx]
 	}
 	return ""
 }

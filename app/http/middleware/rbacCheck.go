@@ -51,14 +51,14 @@ func rbacCheck(ctx *fool.Ctx) bool {
 	//得到当前路由所在角色的列表
 	nodeRoleIDList, err := s_roleNodeRelation.GetRoleIDByNodeURL(route.GetPath(), ctx.Request().Raw().Method)
 	if err != nil {
-		h_boot.Logger.ErrorF("得到当前路由所在角色的列表错误: %s", err)
+		h_boot.Logger.ErrorF("获取当前路由所在角色的列表错误: %s", err)
 		return false
 	}
 
 	//得到当前用户拥有的角色
 	userRoleIDList, err := s_userRoleRelation.GetRoleIDByUserID(user.ID)
 	if err != nil {
-		h_boot.Logger.ErrorF("得到当前用户拥有的角色错误: %s", err)
+		h_boot.Logger.ErrorF("获取当前用户拥有的角色错误: %s", err)
 		return false
 	}
 
