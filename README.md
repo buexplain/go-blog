@@ -3,14 +3,15 @@
 ## 从源代码安装
 
 ```bash
-# 代码下载
 git clone https://github.com/buexplain/go-blog.git
-# 准备配置文件
-cd go-blog && copy config.example.toml config.toml
-# 初始化数据库，初始的账号密码是 admin，123456
-go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql
-# 编译运行
-go run main.go
+cd go-blog
+chmod u+x ./build-linux.sh
+./build-linux.sh
+cd ./build
+chmod u+x ./installer-linux.sh
+./installer-linux.sh
+chmod u+x ./blog.bin
+./blog.bin
 ```
 
 ## 发布程序
@@ -18,7 +19,8 @@ go run main.go
 ### 编译
 
 ```bash
-# 编译程序 linux下是 build-linux.bin
+# 编译程序 linux下是 build-linux.sh
+# 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，请执行 sed -i 's/\r$//' build-linux.sh
 build-windows.bat
 ```
 

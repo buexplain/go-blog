@@ -19,6 +19,18 @@ else
   rm -fr build/*
 fi
 
+# 生成配置文件
+if [ ! -f "config.toml" ]; then
+  cp config.example.toml config.toml
+fi
+
+# 输出readme文件
+echo "安装步骤" > ./build/readme.txt
+echo "1、执行 ./installer-linux.sh 等待一段时间会提示安装成功。" >> ./build/readme.txt
+echo "2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./build/readme.txt
+echo "3、打开浏览器，输入 blog.bin 提示的网址。" >> ./build/readme.txt
+echo "4、账号 admin 密码 123456" >> ./build/readme.txt
+
 #复制配置文件
 cp config.example.toml build/config.example.toml
 # 复制安装器
@@ -35,13 +47,15 @@ isError
 go build -ldflags "-s -w" -o artisan.bin artisan.go
 isError
 
-# 同步表结构到数据库
-./artisan.bin db sync
-isError
+if [ -f "./database/database.db" ]; then
+  # 同步表结构到数据库
+  ./artisan.bin db sync
+  isError
 
-# 导出表数据
-./artisan.bin db dump -m 64 -f database/init.sql
-isError
+  # 导出表数据
+  ./artisan.bin db dump -m 64 -f database/init.sql
+  isError
+fi
 
 # 打包静态文件
 ./artisan.bin asset pack
