@@ -26,6 +26,8 @@ func init() {
 	//兼容GoLand编辑器下的go run命令
 	if strings.Contains(ROOT_PATH, "go-build") || strings.Contains(ROOT_PATH, "Temp") {
 		ROOT_PATH = "./"
+	}else {
+		ROOT_PATH = strings.TrimSuffix(ROOT_PATH, "/")+"/"
 	}
 }
 

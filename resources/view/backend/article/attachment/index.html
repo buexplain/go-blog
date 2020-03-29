@@ -168,10 +168,10 @@
                     ,{field: 'Path', title: '存储地址', templet: function (data) {
                         let html = '';
                         if(myUtil.isImage(data.Path)) {
-                            html += '<img style="max-height: 110px;" src="/'+data.Path+'">';
-                            html += '<br>';
+                            html += '<img style="max-height: 28px;" src="/'+data.Path+'">';
+                        }else {
+                            html += data.Path;
                         }
-                        html += data.Path;
                         html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+html+'</a>';
                         return html;
                     }}
