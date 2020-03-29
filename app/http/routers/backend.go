@@ -118,15 +118,18 @@ func backend(mux *fool.Mux) {
 			)
 			mux.Put("content/delete-batch", c_content.DestroyBatch)
 			mux.Put("content/online/:id", c_content.Online)
-			mux.Get("content/category/:pid", c_content.Category)
-			mux.Get("content/tag", c_content.Tag)
+			//返回文章分类
+			mux.Get("content/category/:pid", c_content.Category).AddLabel("json")
+			//返回文章标签
+			mux.Get("content/tag", c_content.Tag).AddLabel("json")
+			//添加新的标签
 			mux.Post("content/tag", c_content.AddTag).AddLabel("json")
+			//上传文章附件
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
-			mux.Any("content/render", c_content.Render, http.MethodGet, http.MethodPost)
 
 			//附件管理
 			mux.Get("attachment", c_attachment.Index)
-			mux.Get("attachment/check/:md5", c_attachment.CheckMD5)
+			mux.Get("attachment/check/:md5", c_attachment.CheckMD5).AddLabel("json")
 			mux.Get("attachment/edit/:id", c_attachment.Edit)
 			mux.Post("attachment/upload", c_attachment.Upload)
 			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")

@@ -85,9 +85,11 @@ func Store(mod *m_node.Node) (affected int64, err error) {
 }
 
 //根据url获取node
-func GetByURL(path string) *m_node.Node {
+func GetByURL(path string, method string) *m_node.Node {
 	result := new(m_node.Node)
-	has, err := dao.Dao.Table("Node").Where("URL=?", path).Get(result)
+	has, err := dao.Dao.Table("Node").
+		Where(fmt.Sprintf("`%s`.`%s` LIKE ?", "Node", "Methods"), fmt.Sprintf("%s%s%s", "%", method, "%")).Where("URL=?", path).
+		Get(result)
 	if err != nil || !has {
 		return nil
 	}

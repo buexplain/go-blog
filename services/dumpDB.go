@@ -136,6 +136,8 @@ func DumpDB(engine *xorm.Engine, tables []*schemas.Table, w io.Writer, fg int, t
 							if t, ok := d.(time.Time); ok {
 								v = t.UTC().Format("2006-01-02 15:04:05")
 								temp += fmt.Sprintf(", '%s'", v)
+							} else if b, ok := d.([]byte); ok {
+								temp += fmt.Sprintf(", '%s'", string(b))
 							} else {
 								return fmt.Errorf("column %s type %+T convert to time.Time error", col.Name, d)
 							}

@@ -93,9 +93,8 @@
                         ids:ids
                     };
                     $.post(window.location.pathname, param, function (json) {
-                        var url = "/common/jump?message="+json.message;
                         if(json.code === 0) {
-                            window.location.href = url+"&url="+window.location.pathname;
+                            submit.alertSuccess(json.message);
                         }else {
                             submit.alertError(json.message);
                         }

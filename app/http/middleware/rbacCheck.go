@@ -24,7 +24,7 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 		} else {
 			var message string
 			if ctx.App().Debug() && ctx.Route() != nil {
-				node := s_node.GetByURL(ctx.Route().GetPath())
+				node := s_node.GetByURL(ctx.Route().GetPath(), ctx.Request().Raw().Method)
 				if node == nil {
 					h_boot.Logger.WarningF("路由 %s 没有写入到Node表", ctx.Route().GetPath())
 					message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())

@@ -9,12 +9,9 @@ import (
 )
 
 func GetList(ctx *fool.Ctx) (counter int64, result m_configGroup.List, err error) {
-	query := s_services.NewQuery("ConfigGroup", ctx).Limit()
+	query := s_services.NewQuery("ConfigGroup", ctx)
 	query.Finder.Desc("ID")
-	query.Where()
-	//先获取分页所需的总条数
-	counter = query.Count()
-	query.Find(&result)
+	query.Where().Limit().FindAndCount(&result, &counter)
 	err = query.Error
 	return
 }

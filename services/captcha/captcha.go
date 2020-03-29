@@ -21,8 +21,8 @@ func Generate(session fool.Session, height int, width int, length int) string {
 	driver := base64Captcha.NewDriverString(
 		height,
 		width,
+		1,
 		2,
-		8,
 		length,
 		"abcdefghjkmnqrstuvxyz123456789",
 		&color.RGBA{R: uint8(255), G: uint8(255), B: uint8(255), A: uint8(255)},
