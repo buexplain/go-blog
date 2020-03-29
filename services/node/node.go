@@ -83,3 +83,13 @@ func Store(mod *m_node.Node) (affected int64, err error) {
 	}
 	return dao.Dao.ID(mod.ID).MustCols("Pid", "Methods").Update(mod)
 }
+
+//根据url获取node
+func GetByURL(path string) *m_node.Node {
+	result := new(m_node.Node)
+	has, err := dao.Dao.Table("Node").Where("URL=?", path).Get(result)
+	if err != nil || !has {
+		return nil
+	}
+	return result
+}

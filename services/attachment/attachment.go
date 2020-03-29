@@ -105,7 +105,7 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 
 	//登记文件信息到数据库
 	result.Name = file.Name()
-	result.Path = file.Result()
+	result.Path = strings.TrimLeft(file.Result(), a_boot.ROOT_PATH)
 	result.MD5, _ = file.MD5()
 	result.Ext = file.Ext()
 	if folder == "" {

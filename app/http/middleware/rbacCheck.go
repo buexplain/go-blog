@@ -5,6 +5,7 @@ import (
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/models/user"
+	s_node "github.com/buexplain/go-blog/services/node"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
@@ -23,7 +24,13 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 		} else {
 			var message string
 			if ctx.App().Debug() && ctx.Route() != nil {
-				message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())
+				node := s_node.GetByURL(ctx.Route().GetPath())
+				if node == nil {
+					h_boot.Logger.WarningF("路由 %s 没有写入到Node表", ctx.Route().GetPath())
+					message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())
+				}else {
+					message = fmt.Sprintf("%s: %s %s %s", code.Text(code.INVALID_AUTH), node.Name, node.URL, node.Methods)
+				}
 			} else {
 				message = code.Text(code.INVALID_AUTH)
 			}
@@ -38,6 +45,7 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
+	return false
 	user := s_user.IsSignIn(ctx.Request().Session())
 
 	//判断后台用户是否登录

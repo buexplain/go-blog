@@ -28,7 +28,7 @@ fi
 echo "安装步骤" > ./build/readme.txt
 echo "1、执行 ./installer-linux.sh 等待一段时间会提示安装成功。" >> ./build/readme.txt
 echo "2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./build/readme.txt
-echo "3、打开浏览器，输入 blog.bin 提示的网址。" >> ./build/readme.txt
+echo "3、打开浏览器，输入 blog.bin 提示的网址，有些云服务器，提示的网址是内网ip，请替换成公网ip。" >> ./build/readme.txt
 echo "4、账号 admin 密码 123456" >> ./build/readme.txt
 echo "生产环境部署命令：nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
 
@@ -55,6 +55,14 @@ if [ -f "./database/database.db" ]; then
 
   # 导出表数据
   ./artisan.bin db dump -m 64 -f database/init.sql
+  isError
+else
+  # 同步表结构到数据库
+  ./artisan.bin db sync
+  isError
+
+  # 导入表数据
+  ./artisan.bin db import -f ./database/init.sql
   isError
 fi
 

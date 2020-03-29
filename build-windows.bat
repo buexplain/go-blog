@@ -44,7 +44,7 @@ rem 输出readme文件
 echo 安装步骤 > build\readme.txt
 echo 1、双击 installer-windows.bat 等待一段时间会提示安装成功。 >> build\readme.txt
 echo 2、双击 blog.exe 不要关闭它，屏幕会提示网址。 >> build\readme.txt
-echo 3、打开浏览器，输入 blog.exe 提示的网址。 >> build\readme.txt
+echo 3、打开浏览器，输入 blog.exe 提示的网址，有些云服务器，提示的网址是内网ip，请替换成公网ip。 >> build\readme.txt
 echo 4、账号 admin 密码 123456 >> build\readme.txt
 
 rem 复制配置文件
@@ -71,6 +71,14 @@ if exist database/database.db (
 
     rem 导出表数据
     artisan.exe db dump -m 64 -f database/init.sql
+    if %errorlevel% NEQ 0 exit /b %errorlevel%
+) else (
+    rem 同步表结构到数据库
+    artisan.exe db sync
+    if %errorlevel% NEQ 0 exit /b %errorlevel%
+
+    rem 导入表数据
+    artisan.exe db import -f database/init.sql
     if %errorlevel% NEQ 0 exit /b %errorlevel%
 )
 
