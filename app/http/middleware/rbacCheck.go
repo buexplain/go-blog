@@ -45,7 +45,6 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
-	return false
 	user := s_user.IsSignIn(ctx.Request().Session())
 
 	//判断后台用户是否登录
