@@ -123,7 +123,8 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			panic(err)
 		}
 	}()
-	result, err := s_attachment.Upload(file, r.Form("folder", ""))
+	var result *m_attachment.Attachment
+	result, err = s_attachment.Upload(file, r.Form("folder", ""))
 	if err != nil {
 		return err
 	}
@@ -147,4 +148,20 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	return w.Success()
+}
+
+func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	result := new(m_attachment.Attachment)
+	result.ID = r.ParamInt("id", 0)
+	if result.ID <= 0 {
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, result.ID))
+	}
+
+	if has, err := dao.Dao.Get(result); err != nil {
+		return err
+	} else if !has {
+		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, result.ID))
+	}
+
+	return w.Download(result.Path, result.Name)
 }

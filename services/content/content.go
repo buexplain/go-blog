@@ -34,7 +34,7 @@ func Save(content *m_content.Content, tagsID []int, id int) error {
 			return err
 		}
 		//更新内容
-		if _, err := session.ID(content.ID).AllCols().Update(content); err != nil {
+		if _, err := session.ID(content.ID).AllCols().Omit("Hits").Update(content); err != nil {
 			if err := session.Rollback(); err != nil {
 				return err
 			}

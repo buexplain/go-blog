@@ -132,6 +132,7 @@ func backend(mux *fool.Mux) {
 			mux.Get("attachment/check/:md5", c_attachment.CheckMD5).AddLabel("json")
 			mux.Get("attachment/edit/:id", c_attachment.Edit)
 			mux.Post("attachment/upload", c_attachment.Upload)
+			mux.Get("attachment/download/:id", c_attachment.Download)
 			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")
 			mux.Delete("attachment/delete/:id", c_attachment.Destroy)
 			mux.Put("attachment/delete-batch", c_attachment.DestroyBatch)

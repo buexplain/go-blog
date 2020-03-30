@@ -41,17 +41,23 @@ if not exist config.toml (
 )
 
 rem 输出readme文件
-echo 安装步骤 > build\readme.txt
-echo 1、双击 installer-windows.bat 等待一段时间会提示安装成功。 >> build\readme.txt
-echo 2、双击 blog.exe 不要关闭它，屏幕会提示网址。 >> build\readme.txt
-echo 3、打开浏览器，输入 blog.exe 提示的网址，有些云服务器，提示的网址是内网ip，请替换成公网ip。 >> build\readme.txt
-echo 4、账号 admin 密码 123456 >> build\readme.txt
+echo 一、文件介绍 > build\readme.txt
+echo   1、artisan.exe 各种命令集合，比如数据导入导出命令等 artisan.exe -h 查看详细。 >> build\readme.txt
+echo   2、blog.exe 博客主程序。 >> build\readme.txt
+echo   3、config.example.toml 配置文件范例。 >> build\readme.txt
+echo   4、installer.bat 安装脚本，用来初始化整个应用。 >> build\readme.txt
+echo   5、readme.txt 自述文件 >> build\readme.txt
+echo 二、安装步骤 >> build\readme.txt
+echo   1、双击 installer.bat 等待一段时间会提示安装成功。 >> build\readme.txt
+echo   2、双击 blog.exe 不要关闭它，屏幕会提示网址。 >> build\readme.txt
+echo   3、打开浏览器，输入 blog.exe 提示的网址，有些云服务器和虚拟机，提示的网址是内网ip，请替换成公网ip。 >> build\readme.txt
+echo   4、账号 admin 密码 123456 >> build\readme.txt
 
 rem 复制配置文件
 copy config.example.toml .\build\config.example.toml /A/Y
 
 rem 复制安装器
-copy installer-windows.bat .\build\installer-windows.bat /A/Y
+copy installer-windows.bat .\build\installer.bat /A/Y
 
 rem 打开cgo
 SET CGO_ENABLED=1

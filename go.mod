@@ -8,7 +8,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5
 	github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c
-	github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2
+	github.com/buexplain/go-fool v0.0.0-20200330082454-de4ea34abce5
 	github.com/buexplain/go-gracehttp v0.1.0
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2
 	github.com/golang/snappy v0.0.1 // indirect
@@ -16,7 +16,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/kevinburke/go-bindata v3.19.0+incompatible
-	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/spf13/cobra v0.0.6

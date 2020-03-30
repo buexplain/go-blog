@@ -60,7 +60,7 @@
                     </span>
                 {{ end }}
                 <h2 class="title">
-                    {{.result.Content.Title}}
+                    <a href="">{{.result.Content.Title}}</a>
                     {{if eq (len .result.Content.Origin) 0}}
                         <span class="layui-badge layui-bg-green">原创</span>
                     {{else}}
@@ -135,17 +135,5 @@
         Vditor.mediaRender(preview);
         //对使用 Lute 渲染的数学公式进行渲染
         Vditor.mathRender(preview);
-        //消除第一个元素的上边空白
-        setTimeout(function () {
-            var childNodes = document.getElementById('j-preview').childNodes;
-            for(var i in childNodes) {
-                var first = childNodes[i];
-                if(first.style !== undefined && first.style.marginTop !== undefined) {
-                    first.style.marginTop = 0;
-                    first.style.paddingTop = 0;
-                    break;
-                }
-            }
-        }, 100);
     </script>
 {{end}}

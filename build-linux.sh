@@ -25,17 +25,24 @@ if [ ! -f "config.toml" ]; then
 fi
 
 # 输出readme文件
-echo "安装步骤" > ./build/readme.txt
-echo "1、执行 ./installer-linux.sh 等待一段时间会提示安装成功。" >> ./build/readme.txt
-echo "2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./build/readme.txt
-echo "3、打开浏览器，输入 blog.bin 提示的网址，有些云服务器，提示的网址是内网ip，请替换成公网ip。" >> ./build/readme.txt
-echo "4、账号 admin 密码 123456" >> ./build/readme.txt
-echo "生产环境部署命令：nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
+echo "一、文件介绍" > ./build/readme.txt
+echo "  1、artisan.bin 各种命令集合，比如数据导入导出命令等 ./artisan.bin -h 查看详细。" >> ./build/readme.txt
+echo "  2、blog.bin 博客主程序。" >> ./build/readme.txt
+echo "  3、config.example.toml 配置文件范例。" >> ./build/readme.txt
+echo "  4、installer.sh 安装脚本，用来初始化整个应用。" >> ./build/readme.txt
+echo "  5、readme.txt 自述文件" >> ./build/readme.txt
+echo "二、安装步骤" >> ./build/readme.txt
+echo "  1、执行 ./installer.sh 等待一段时间会提示安装成功。" >> ./build/readme.txt
+echo "  2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./build/readme.txt
+echo "  3、打开浏览器，输入 blog.bin 提示的网址，有些云服务器和虚拟机，提示的网址是内网ip，请替换成公网ip。" >> ./build/readme.txt
+echo "  4、账号 admin 密码 123456" >> ./build/readme.txt
+echo "三、生产环境部署" >> ./build/readme.txt
+echo "  nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
 
 #复制配置文件
 cp config.example.toml build/config.example.toml
 # 复制安装器
-cp installer-linux.sh build/installer-linux.sh
+cp installer-linux.sh build/installer.sh
 
 # 打开cgo
 export CGO_ENABLED=1
