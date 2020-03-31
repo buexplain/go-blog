@@ -92,41 +92,32 @@ SuperRoleID = 1
 
 # 上传配置
 [Business.Upload]
-# 允许是上传的文件的后缀
-Ext = [
-    "jpg", "jpeg",
-    "gif",
-    "png",
-    "mp3",
-    "mp4",
-    "txt",
-    "js",
-    "json",
-    "go",
-    "csv",
-    "xls", "xlsx",
-    "ppt", "pptx",
-    "doc", "docx",
-    "pdf",
-    "zip"
-]
-# 允许上传的文件的media类型
-# https://www.iana.org/assignments/media-types/media-types.xhtml
-MimeTypes = [
-    "image/jpeg",
-    "image/gif",
-    "image/png",
-    "audio/mpeg",
-    "video/mp4",
-    "text/plain",
-    "application/javascript",
-    "application/json",
-    "text/csv",
-    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/pdf",
-    "application/zip"
-]
 # 上传文件的保存目录
 Save = "/uploads"
+# 允许上传的文件的后缀与media类型
+# https://www.iana.org/assignments/media-types/media-types.xhtml
+[Business.Upload.Accept]
+jpg = "image/jpeg"
+jpeg = "image/jpeg"
+gif = "image/gif"
+png = "image/png"
+mp3 = "audio/mpeg"
+mp4 = "video/mp4"
+txt = "text/plain"
+js = "application/javascript"
+json = "application/json"
+csv = "text/csv"
+xls = "application/vnd.ms-excel"
+xlsx = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+ppt = "application/vnd.ms-powerpoint"
+pptx = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+doc = "application/msword"
+docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+pdf = "application/pdf"
+zip = "application/zip"
+rar = "application/octet-stream"
+go = ""
+php = ""
+java = ""
+c = ""
+py = ""

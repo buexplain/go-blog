@@ -27,8 +27,8 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		w.Assign("extList", extList)
 		w.Assign("folderList", folderList)
 		w.Assign("folderRegexp", s_attachment.FolderRegexp.String())
-		w.Assign("acceptExt", strings.Join(a_boot.Config.Business.Upload.Ext, ","))
-		w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
+		w.Assign("acceptExt", strings.Join(a_boot.Config.Business.Upload.Ext(), ","))
+		w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeType(), ","))
 		w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
 		return w.View(http.StatusOK, "backend/article/attachment/index.html")
 	}

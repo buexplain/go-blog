@@ -58,7 +58,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	w.Assign("tagList", tagList)
-	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
+	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeType(), ","))
 	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/article/content/create.html")
 }
@@ -102,7 +102,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	} else if !has {
 		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
-	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeTypes, ","))
+	w.Assign("acceptMimeTypes", strings.Join(a_boot.Config.Business.Upload.MimeType(), ","))
 	return w.Assign("result", result).
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/article/content/create.html")
