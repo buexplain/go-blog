@@ -14,7 +14,9 @@ import (
 	"github.com/buexplain/go-flog/formatter"
 	"github.com/buexplain/go-flog/handler"
 	"github.com/buexplain/go-fool"
+	"github.com/djherbis/fscache"
 	"github.com/gorilla/csrf"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -41,9 +43,32 @@ func init() {
 	}
 }
 
+//设置文件缓存
+var Cache *fscache.FSCache
+
+func init() {
+	path := filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Cache.Path)
+	if err := os.MkdirAll(path, 0755); err != nil {
+		log.Fatalln(err)
+	}
+	if path == "." || path == "./" || path == `.\` {
+		log.Fatalln("Root path not allowed")
+	}
+	c, err := fscache.New(path, 0755, time.Hour)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//先写一波文件，试试水
+	err = ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	Cache = c
+}
+
+//设置事件调度器
 var Bus *event.Bus
 
-//设置事件监听者
 func init() {
 	Bus = event.New("http")
 	if a_boot.Config.App.Event.Async {
@@ -52,9 +77,9 @@ func init() {
 	}
 }
 
+//初始化app
 var APP *fool.App
 
-//初始化app
 func init() {
 	APP = fool.New(a_boot.Config.App.Debug)
 }

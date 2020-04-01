@@ -3,19 +3,18 @@ package s_content
 import (
 	"fmt"
 	"github.com/88250/lute"
-	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/helpers"
 	m_category "github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/contentTag"
 	s_category "github.com/buexplain/go-blog/services/category"
-	"github.com/buexplain/go-fool/errors"
 	"time"
 )
 
 //保存内容
 func Save(content *m_content.Content, tagsID []int, id int) error {
+	content.Body = LuteEngine.FormatStr("", content.Body)
 	session := dao.Dao.NewSession()
 	defer session.Close()
 
@@ -112,23 +111,13 @@ func Destroy(ids []int) error {
 	return nil
 }
 
-func RenderByID(id int) (string, error) {
-	result := m_content.Content{}
-	has, err := dao.Dao.Where("ID=?", id).Get(&result)
-	if err != nil {
-		return "", err
-	} else if !has {
-		return "", errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
-	}
-	return Render(result.Body), nil
-}
-
-func Render(markdown string) string {
-	luteEngine := lute.New()
+var LuteEngine *lute.Lute
+func init()  {
+	LuteEngine = lute.New()
 	//注销掉高亮部分，让js去渲染
-	luteEngine.CodeSyntaxHighlight = false
-	luteEngine.CodeSyntaxHighlightLineNum = false
-	return luteEngine.MarkdownStr("default", markdown)
+	LuteEngine.CodeSyntaxHighlight = false
+	//设置语法高亮是否显示行号
+	LuteEngine.CodeSyntaxHighlightLineNum = false
 }
 
 type Place struct {

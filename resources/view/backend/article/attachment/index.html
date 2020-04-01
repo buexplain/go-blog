@@ -167,13 +167,11 @@
                     }}
                     ,{field: 'Path', title: '存储地址', templet: function (data) {
                         let html = '';
-                        if(myUtil.isEditable(data.Path) || myUtil.isImage(data.Path)) {
-                            if(myUtil.isEditable(data.Path)) {
-                                html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+data.Path+'</a>';
-                            }else {
-                                let img = '<img style="max-height: 28px;" src="/'+data.Path+'">';
-                                html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+img+'</a>';
-                            }
+                        if(myUtil.isEditable(data.Path)) {
+                            html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+data.Path+'</a>';
+                        }else if(myUtil.isImage(data.Path)) {
+                            let img = '<img style="max-height: 28px;" src="/'+data.Path+'">';
+                            html = '<a href="javascript:preview(\'/'+data.Path+'\', \''+myUtil.maskStr(data.Name)+'\');">'+img+'</a>';
                         }else {
                             html = data.Path;
                         }
@@ -193,9 +191,7 @@
                         if(myUtil.isEditable(data.Path)) {
                             btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/article/attachment/edit/'+data.ID+'">编辑</a>';
                         }
-                        if(!myUtil.isEditable(data.Path) && !myUtil.isImage(data.Path)) {
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" data-url="/backend/article/attachment/download/'+data.ID+'" href="javascript:;" onclick="submit.form(this)">下载</a>';
-                        }
+                        btn += '<a class="layui-btn layui-btn-sm layui-btn-normal" data-url="/backend/article/attachment/download/'+data.ID+'" href="javascript:;" onclick="submit.form(this)">下载</a>';
                         btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
                         return btn;
                     }}

@@ -162,6 +162,9 @@ func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	} else if !has {
 		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, result.ID))
 	}
-
+	result.Ext = "." + result.Ext
+	if !strings.HasSuffix(result.Name, result.Ext) {
+		result.Name += result.Ext
+	}
 	return w.Download(result.Path, result.Name)
 }

@@ -38,6 +38,8 @@ github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2 h1:JIVjIjmDhfV4V
 github.com/buexplain/go-fool v0.0.0-20200310072857-bb162a19a8e2/go.mod h1:dt5uk5609eVlEjBdet6U4WNKB4fEN0BEIUiJtdKsIuA=
 github.com/buexplain/go-fool v0.0.0-20200330082454-de4ea34abce5 h1:B3OaO+GPylDImCxKpIayZ10b6cwlNo+wBLo8E36w2k4=
 github.com/buexplain/go-fool v0.0.0-20200330082454-de4ea34abce5/go.mod h1:jH19IOQFS2Nf251e3ikTvRzMobmGN/xR+yI1pr57Wuo=
+github.com/buexplain/go-fool v0.0.0-20200330093927-28a1d0b4a12d h1:e+aMajEszlu6s7a1bgHU8NHoIvZhqbvlf8eiM56MTq0=
+github.com/buexplain/go-fool v0.0.0-20200330093927-28a1d0b4a12d/go.mod h1:jH19IOQFS2Nf251e3ikTvRzMobmGN/xR+yI1pr57Wuo=
 github.com/buexplain/go-gracehttp v0.1.0 h1:ca8qPOEKQQs3BxA87jwQ6jvH3uL+uPUttMA5Fca/WS4=
 github.com/buexplain/go-gracehttp v0.1.0/go.mod h1:gWNbLLBVZlRwRiq7U0VzLwzBxo93FDAOsN3sw/Sgh1A=
 github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2 h1:4WAINszJ3oraoq/LljQQE0LrsEp78/d1ZeWI+hxNjIQ=
@@ -60,6 +62,8 @@ github.com/denisenkom/go-mssqldb v0.0.0-20190707035753-2be1aa521ff4 h1:YcpmyvADG
 github.com/denisenkom/go-mssqldb v0.0.0-20190707035753-2be1aa521ff4/go.mod h1:zAg7JM8CkOJ43xKXIj7eRO9kmWm/TW578qo+oDO6tuM=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
+github.com/djherbis/fscache v0.10.0 h1:+O3s3LwKL1Jfz7txRHpgKOz8/krh9w+NzfzxtFdbsQg=
+github.com/djherbis/fscache v0.10.0/go.mod h1:yyPYtkNnnPXsW+81lAcQS6yab3G2CRfnPLotBvtbf0c=
 github.com/dlclark/regexp2 v1.1.6/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/dlclark/regexp2 v1.2.0 h1:8sAhBGEM0dRWogWqWyQeIJnxjWO6oIjl8FKqREDsGfk=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
@@ -301,6 +305,10 @@ gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 h1:YR8cESwS4TdDjEe65xsg0ogRM/Nc3DYOhEAlW+xobZo=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/djherbis/atime.v1 v1.0.0 h1:eMRqB/JrLKocla2PBPKgQYg/p5UG4L6AUAs92aP7F60=
+gopkg.in/djherbis/atime.v1 v1.0.0/go.mod h1:hQIUStKmJfvf7xdh/wtK84qe+DsTV5LnA9lzxxtPpJ8=
+gopkg.in/djherbis/stream.v1 v1.3.0 h1:/yFwmd+gdsSBTwXlm4O6q0FhAdpMNL/6L8iEF9GwehI=
+gopkg.in/djherbis/stream.v1 v1.3.0/go.mod h1:aEV8CBVRmSpLamVJfM903Npic1IKmb2qS30VAZ+sssg=
 gopkg.in/fsnotify.v1 v1.4.7 h1:xOHLXZwVvI9hhs+cLKq5+I5onOuwQLhQwiu63xxlHs4=
 gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=
 gopkg.in/resty.v1 v1.12.0/go.mod h1:mDo4pnntr5jdWRML875a/NmxYqAlA73dVijT2AXvQQo=

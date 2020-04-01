@@ -74,11 +74,10 @@
 						</svg>
 						{{.result.Content.UpdatedAt}}
 					</span>
-                    <span class="layui-badge-rim">
+                    <span class="layui-badge-rim" id="j-hits" data-contentID="{{.result.Content.ID}}">
 						<svg class="icon" aria-hidden="true">
 							<use xlink:href="#icon-eye"></use>
 						</svg>
-						{{.result.Content.Hits}}
 					</span>
                 </div>
                 <div class="tag">
@@ -109,6 +108,7 @@
 
 {{define "js"}}
     <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js"></script>
+    <script src="/resources/asset/frontend/js/article.js"></script>
     <script>
         //渲染分类
         layui.use(['element'], function() {

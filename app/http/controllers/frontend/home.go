@@ -3,6 +3,7 @@ package c_frontend
 import (
 	"bytes"
 	"github.com/buexplain/go-blog/app/http/boot/code"
+	"github.com/buexplain/go-blog/dao"
 	m_category "github.com/buexplain/go-blog/models/category"
 	m_content "github.com/buexplain/go-blog/models/content"
 	s_category "github.com/buexplain/go-blog/services/category"
@@ -88,4 +89,28 @@ func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
 	return w.Assign("result", result).View(http.StatusOK, "frontend/article.html")
+}
+
+func ArticleHits(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	contentID := r.ParamPositiveInt("id")
+	isIncr := r.QueryBool("isIncr")
+	if contentID == 0 {
+		return w.Error(code.NOT_FOUND_DATA, code.Text(code.NOT_FOUND_DATA, contentID))
+	}
+	result := new(m_content.Content)
+	has, err := dao.Dao.Where("ID=?", contentID).Select("Hits").Get(result)
+	if err != nil {
+		return w.Error(code.SERVER, code.Text(code.SERVER, err))
+	}
+	if !has {
+		return w.Error(code.NOT_FOUND_DATA, code.Text(code.NOT_FOUND_DATA, contentID))
+	}
+	if isIncr {
+		result.Hits++
+		_, err = dao.Dao.Table(result).ID(contentID).Update(map[string]interface{}{"Hits":result.Hits})
+		if err != nil {
+			return w.Error(code.SERVER, code.Text(code.SERVER, err))
+		}
+	}
+	return w.Success(result.Hits)
 }

@@ -1,9 +1,7 @@
 package s_content
 
 import (
-	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	e_hitContent "github.com/buexplain/go-blog/app/http/events/hitContent"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/models/content"
@@ -35,7 +33,7 @@ func GetDetails(id int, online m_content.Online) (*Details, error) {
 	}
 
 	//渲染html成
-	details.Content.HTML = template.HTML(Render(details.Content.Body))
+	details.Content.HTML = template.HTML(LuteEngine.Md2HTML(details.Content.Body))
 
 	err := dao.Dao.
 		Table("Tag").
@@ -47,12 +45,6 @@ func GetDetails(id int, online m_content.Online) (*Details, error) {
 	}
 
 	details.Category = s_category.GetParents(details.Content.CategoryID)
-
-	//更新文章浏览量
-	if m_content.CheckOnline(online) {
-		h_boot.Bus.Append(e_hitContent.EVENT_NAME, details.Content.ID)
-		details.Content.Hits += 1
-	}
 
 	return details, nil
 }
