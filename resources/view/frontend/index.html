@@ -72,6 +72,9 @@
 							</div>
 						</li>
 					{{end}}
+					{{ if eq (len .contentList) 0}}
+						<li>没有找到相关数据</li>
+					{{end}}
 				</ul>
 				<!--文章分页-->
 				<div class="more">
@@ -107,5 +110,5 @@
 {{end}}
 
 {{define "js"}}
-	<script src="/resources/asset/frontend/js/index.js"></script>
+	<script src="/resources/asset/frontend/js/index.js" defer></script>
 {{end}}

@@ -3,12 +3,12 @@ module github.com/buexplain/go-blog
 go 1.13
 
 require (
-	github.com/88250/lute v1.2.5
+	github.com/88250/lute v1.2.6
 	github.com/BurntSushi/toml v0.3.1
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5
 	github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c
-	github.com/buexplain/go-fool v0.0.0-20200330093927-28a1d0b4a12d
+	github.com/buexplain/go-fool v0.0.0-20200401073549-44e8938cb027
 	github.com/buexplain/go-gracehttp v0.1.0
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2
 	github.com/djherbis/fscache v0.10.0

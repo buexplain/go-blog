@@ -107,33 +107,6 @@
 {{end}}
 
 {{define "js"}}
-    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js"></script>
-    <script src="/resources/asset/frontend/js/article.js"></script>
-    <script>
-        //渲染分类
-        layui.use(['element'], function() {
-            var element = layui.element;
-        });
-        //高亮显示代码部分
-        var preview = document.getElementById('j-preview');
-        Vditor.highlightRender({
-            enable:true,
-            style:'monokai',
-            lineNumber:true
-        }, preview);
-        //为 element 中的代码块添加复制按钮
-        Vditor.codeRender(preview);
-        //转换 preview 中的文本为数学公式
-        Vditor.mathRender(preview);
-        //转换 preview 中 class 为 className 的元素为流程图/时序图/甘特图
-        Vditor.mermaidRender(preview);
-        //图表渲染
-        Vditor.chartRender(preview);
-        //五线谱渲染
-        Vditor.abcRender(preview);
-        //为特定链接分别渲染为视频、音频、嵌入的 iframe
-        Vditor.mediaRender(preview);
-        //对使用 Lute 渲染的数学公式进行渲染
-        Vditor.mathRender(preview);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js" defer></script>
+    <script src="/resources/asset/frontend/js/article.js" defer></script>
 {{end}}

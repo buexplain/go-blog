@@ -59,7 +59,9 @@ Path = "storage/logs"
 Buffer = 4096
 Flush = "5s"
 
+# 页面缓存
 [Cache]
+Enable = false
 Path = "storage/cache"
 
 # csrf防御配置

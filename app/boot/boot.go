@@ -18,17 +18,18 @@ import (
 var ROOT_PATH string
 
 func init() {
-	dir, err := filepath.Abs(os.Args[0])
+	var dir string
+	var err error
+	//兼容GoLand编辑器下的go run命令
+	if strings.Contains(os.Args[0], "go_build") || strings.Contains(os.Args[0], "Temp") {
+		dir, err = os.Getwd()
+	}else {
+		dir, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	}
 	if err != nil {
 		log.Fatalln(err)
 	}
-	ROOT_PATH = filepath.ToSlash(filepath.Dir(dir))
-	//兼容GoLand编辑器下的go run命令
-	if strings.Contains(ROOT_PATH, "go-build") || strings.Contains(ROOT_PATH, "Temp") {
-		ROOT_PATH = "./"
-	}else {
-		ROOT_PATH = strings.TrimSuffix(ROOT_PATH, "/")+"/"
-	}
+	ROOT_PATH = strings.TrimSuffix(filepath.ToSlash(dir), "/")+"/"
 }
 
 //应用程序配置

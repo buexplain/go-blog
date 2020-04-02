@@ -136,7 +136,7 @@ func backend(mux *fool.Mux) {
 			mux.Put("attachment/update/:id", c_attachment.Update).AddLabel("json")
 			mux.Delete("attachment/delete/:id", c_attachment.Destroy)
 			mux.Put("attachment/delete-batch", c_attachment.DestroyBatch)
-		})
+		}).Use(middleware.CacheClear)
 
 		//配置管理
 		mux.Group("config", func() {
@@ -158,7 +158,7 @@ func backend(mux *fool.Mux) {
 				c_configItem.Destroy,
 			)
 			mux.Put("item/delete-batch", c_configItem.DestroyBatch).AddLabel("json")
-		})
+		}).Use(middleware.CacheClear)
 
 		//备份管理
 		mux.Get("backup", c_backup.Index)

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	a_boot "github.com/buexplain/go-blog/app/boot"
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/constant"
@@ -10,8 +11,8 @@ import (
 
 //缓存页面
 func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
-	//开发者模式，不做缓存
-	if ctx.App().Debug() {
+	//检查是否开启缓存
+	if !a_boot.Config.Cache.Enable {
 		ctx.Next()
 		return
 	}
@@ -55,11 +56,11 @@ func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 		if err != nil {
 			ctx.Throw(err)
 		}
-	}else {
+	}else{
 		//缓存不存在，进入下一个中间件
 		ctx.Next()
-		//http返回200，写入缓存
-		if w.StatusCode() == http.StatusOK {
+		//http返回200，并且返回类型是text/html; charset=utf-8，写入缓存
+		if w.StatusCode() == http.StatusOK && w.Header().Get(constant.HeaderContentType) == constant.MIMETextHTMLCharsetUTF8 {
 			reader, writer, err := h_boot.Cache.Get(key)
 			if err != nil {
 				//缓存异常，移除缓存
@@ -79,6 +80,16 @@ func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 			if err != nil {
 				ctx.Throw(err)
 			}
+		}
+	}
+}
+
+//清空缓存页面
+func CacheClear(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+	ctx.Next()
+	if r.IsMethod(http.MethodPost) || r.IsMethod(http.MethodPut) || r.IsMethod(http.MethodPatch) || r.IsMethod(http.MethodDelete) {
+		if err := h_boot.Cache.Clean(); err != nil {
+			h_boot.Logger.ErrorF("clear cache error: %s", err)
 		}
 	}
 }

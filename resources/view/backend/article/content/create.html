@@ -163,6 +163,8 @@
                 //@link https://hacpai.com/article/1549638745630 文档地址
                 //@link https://github.com/Vanessa219/vditor/blob/master/CHANGELOG.md?utm_source=hacpai.com 升级日志
                 let vEditorObj = null;
+                //写下这行代码的原因 @link https://hacpai.com/article/1549638745630/comment/1585808918654?r=buexplain
+                window.localStorage.setItem('vditorj-vditor', '');
                 vEditorObj = new Vditor('j-vditor', {
                     debugger: true,
                     typewriterMode: true,
