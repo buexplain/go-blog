@@ -47,12 +47,13 @@ func init() {
 var Cache *fscache.FSCache
 
 func init() {
-	path := filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Cache.Path)
+	path := filepath.ToSlash(filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Cache.Path))
 	if err := os.MkdirAll(path, 0755); err != nil {
 		log.Fatalln(err)
 	}
-	if path == "." || path == "./" || path == `.\` {
-		log.Fatalln("Root path not allowed")
+	//因为缓存启动的时候会清空目录下的所有文件，所以要严格校验目录是否为根目录，避免误删
+	if path == "" || path == a_boot.ROOT_PATH[0:len(a_boot.ROOT_PATH)-1] || path == "." || path == "./" || path == `.\` {
+		log.Fatalln("cache path not allowed: "+path)
 	}
 	c, err := fscache.New(path, 0755, time.Hour)
 	if err != nil {
