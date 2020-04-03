@@ -21,7 +21,16 @@ func init() {
 	var dir string
 	var err error
 	//兼容GoLand编辑器下的go run命令
-	if strings.Contains(os.Args[0], "go_build") || strings.Contains(os.Args[0], "Temp") {
+	tmp := strings.ToLower(os.Args[0])
+	features := []string{"go_build", "go-build", "tmp", "temp"}
+	isGoBuildRun := false
+	for _, v := range features {
+		if strings.Contains(tmp, v) {
+			isGoBuildRun = true
+			break
+		}
+	}
+	if isGoBuildRun {
 		dir, err = os.Getwd()
 	}else {
 		dir, err = filepath.Abs(filepath.Dir(os.Args[0]))

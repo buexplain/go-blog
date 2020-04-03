@@ -16,6 +16,7 @@ import (
 	c_official_user "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/user"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/sign"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
+	c_sysInfo "github.com/buexplain/go-blog/app/http/controllers/backend/sysInfo"
 	c_sysLog "github.com/buexplain/go-blog/app/http/controllers/backend/sysLog"
 	c_citizen_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
 	"github.com/buexplain/go-blog/app/http/middleware"
@@ -175,6 +176,12 @@ func backend(mux *fool.Mux) {
 		//数据管理
 		mux.Get("database", c_database.Index)
 		mux.Post("database", c_database.SQL)
+
+		//服务器管理
+		mux.Group("sysInfo", func() {
+			mux.Get("", c_sysInfo.Index)
+			mux.Post("restart", c_sysInfo.Restart)
+		})
 	}).Use(middleware.RbacCheck)
 	//进程信息
 	mux.Get("/debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck)

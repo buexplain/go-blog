@@ -1,0 +1,238 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}服务器信息{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <div style="clear: both;width: 80%;">
+        <div style="float: left">
+            <form class="layui-form" action="" lay-filter="sysInfo-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="margin-left: 0;padding-left: 0;margin-right: 0;padding-right: 0;text-align: left;">自动刷新</label>
+                    <div class="layui-input-block" style="margin-left: 85px;">
+                        <input type="checkbox" name="autoFlush" lay-filter="sysInfo-form-auto-flush" lay-skin="switch" lay-text="ON|OFF">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div style="float: right;">
+            {{if .availableRestart }}
+                <form class="layui-form" action="/backend/sysInfo/restart" method="post">
+                    {{._token}}
+                    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit lay-filter="restart">重启服务器</button>
+                </form>
+            {{end}}
+        </div>
+    </div>
+
+    <div class="layui-collapse" lay-filter="sysInfo" style="width: 80%;clear: both">
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">基础信息</h2>
+            <div class="layui-colla-content" id="sysInfo-base">
+                <table class="layui-table" style="width: 600px;">
+                    <thead>
+                    <tr>
+                        <th width="100">平台</th>
+                        <th width="100">主机</th>
+                        <th width="100">go version</th>
+                        <th width="100">pid</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{index .result "base" "os"}}</td>
+                        <td>{{index .result "base" "hostName"}}</td>
+                        <td>{{index .result "base" "goVersion"}}</td>
+                        <td>{{index .result "base" "pid"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">负载信息</h2>
+            <div class="layui-colla-content" id="sysInfo-load">
+                <table class="layui-table" style="width: 300px;">
+                    <thead>
+                    <tr>
+                        <th width="100">一分钟</th>
+                        <th width="100">五分钟</th>
+                        <th width="100">十五分钟</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{index .result "load" "one"}}</td>
+                        <td>{{index .result "load" "five"}}</td>
+                        <td>{{index .result "load" "fifteen"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">内存信息</h2>
+            <div class="layui-colla-content" id="sysInfo-memory">
+                <table class="layui-table" style="width: 300px;">
+                    <thead>
+                    <tr>
+                        <th width="100">总共</th>
+                        <th width="100">已用</th>
+                        <th width="100">可用</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{index .result "memory" "total"}}</td>
+                        <td>{{index .result "memory" "used"}}</td>
+                        <td>{{index .result "memory" "free"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">磁盘信息</h2>
+            <div class="layui-colla-content" id="sysInfo-disk">
+                <table class="layui-table" style="width: 300px;">
+                    <thead>
+                    <tr>
+                        <th width="100">总共</th>
+                        <th width="100">已用</th>
+                        <th width="100">可用</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{index .result "disk" "total"}}</td>
+                        <td>{{index .result "disk" "used"}}</td>
+                        <td>{{index .result "disk" "free"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">CPU信息</h2>
+            <div class="layui-colla-content" id="sysInfo-cpu">
+                <table class="layui-table" style="width: 600px;">
+                    <thead>
+                    <tr>
+                        <th width="100">名称</th>
+                        <th width="100">核数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{$cpu := index .result "cpu"}}
+                    {{range $_, $v := $cpu}}
+                        <tr>
+                            <td>{{$v.Name}}</td>
+                            <td>{{$v.Cores}}</td>
+                        </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">IO信息</h2>
+            <div class="layui-colla-content" id="sysInfo-io">
+                <table class="layui-table" style="width: 600px;">
+                    <thead>
+                    <tr>
+                        <th width="100">名称</th>
+                        <th width="100">发送</th>
+                        <th width="100">接收</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{$io := index .result "io"}}
+                    {{range $_, $v := $io}}
+                        <tr>
+                            <td>{{$v.Name}}</td>
+                            <td>{{$v.Sent}}</td>
+                            <td>{{$v.Recv}}</td>
+                        </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">config信息</h2>
+            <div class="layui-colla-content" id="sysInfo-config"><pre class="layui-code">{{index .result "config"}}</pre></div>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        layui.use(['element', 'jquery', 'form'], function() {
+            var form = layui.form;
+            var element = layui.element;
+            var $ = layui.jquery;
+            //记录面板状态
+            element.on('collapse(sysInfo)', function(data) {
+                window.localStorage.setItem(data.content.attr('id'), data.show);
+            });
+            //设置展开状态
+            $('.layui-colla-content').each(function () {
+                var o = $(this);
+                var id = o.attr('id');
+                var status = window.localStorage.getItem(id);
+                if(status === null || status === 'false') {
+                    if(o.hasClass('layui-show')) {
+                        o.removeClass('layui-show');
+                    }
+                }else {
+                    if(!o.hasClass('layui-show')) {
+                        o.addClass('layui-show');
+                    }
+                }
+            });
+            //重渲染面板
+            element.init('collapse', 'sysInfo');
+            //记录刷新按钮状态
+            form.on('switch(sysInfo-form-auto-flush)', function(data) {
+                window.localStorage.setItem('sysInfo-form-auto-flush', data.elem.checked);
+                if(data.elem.checked) {
+                    window.location.reload();
+                }
+            });
+            //检查是否自动刷新
+            $(function () {
+                var is_auto_flush = window.localStorage.getItem('sysInfo-form-auto-flush');
+                is_auto_flush = (is_auto_flush === 'true');
+                //设置刷新按钮样式
+                form.val("sysInfo-form", {
+                    "autoFlush": is_auto_flush
+                });
+                //再次检查是否需要自动刷新
+                setTimeout(function () {
+                    var is_auto_flush = window.localStorage.getItem('sysInfo-form-auto-flush');
+                    is_auto_flush = (is_auto_flush === 'true');
+                    if(is_auto_flush) {
+                        window.location.reload();
+                    }
+                }, 3000);
+            });
+            //监听平滑重启
+            form.on('submit(restart)', function(data) {
+                $.post($(data.form).attr('action'), data.field, function (json) {
+                    if(json.code === 0) {
+                        submit.alertSuccess(json.message);
+                    }else {
+                        submit.alertError(json.message);
+                    }
+                });
+                //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                return false;
+            });
+        });
+    </script>
+{{end}}
