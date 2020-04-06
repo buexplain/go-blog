@@ -11,3 +11,12 @@ func (this *Duration) UnmarshalText(text []byte) error {
 	this.Duration, err = time.ParseDuration(string(text))
 	return err
 }
+
+func (this Duration) MarshalText() (text []byte, err error) {
+	s := this.Duration.String()
+	return []byte(s), nil
+}
+
+func (this Duration) String() string {
+	return this.Duration.String()
+}

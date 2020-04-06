@@ -14,6 +14,7 @@ type Server struct {
 	Port         uint
 	ReadTimeout  Duration
 	WriteTimeout Duration
+	CloseTimedOut Duration
 }
 
 //事件调度配置
@@ -21,6 +22,7 @@ type Event struct {
 	Async    bool
 	Worker   uint
 	Capacity uint
+	CloseTimedOut Duration
 }
 
 //restful方法欺骗中间件配置

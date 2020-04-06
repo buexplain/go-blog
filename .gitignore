@@ -5,6 +5,8 @@ go.sum
 build
 *.exe
 *.bin
+nohup.out
+error.log
 /database/database.db*
 database/backup/*
 /storage/cache/*

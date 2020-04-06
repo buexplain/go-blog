@@ -9,4 +9,5 @@ type Log struct {
 	Level    string
 	Buffer   int
 	Flush    Duration
+	CloseTimedOut Duration
 }

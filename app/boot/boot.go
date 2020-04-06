@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 //程序根目录
@@ -49,8 +50,23 @@ func init() {
 	if _, err := toml.DecodeFile(filepath.Join(ROOT_PATH, "config.toml"), Config); err != nil {
 		log.Fatalln(err)
 	}
+	//如果没有设置ip，则自动获取ip
 	if Config.App.Server.IP == "" {
 		Config.App.Server.IP = helpers.GetPublicIP()
+	}
+	//服务关闭的检查超时时间
+	min :=  Config.Log.CloseTimedOut.Nanoseconds()*2 + Config.App.Event.CloseTimedOut.Nanoseconds()
+	if Config.Log.Async {
+		//日志开启了异步，要算上一次异步冲刷的时间
+		min += Config.Log.Flush.Nanoseconds()*2
+	}
+	//再时间再翻倍
+	min *= 2
+	if Config.App.Server.CloseTimedOut.Nanoseconds() < min {
+		tmp := time.Duration(min).String()
+		if err := Config.App.Server.CloseTimedOut.UnmarshalText([]byte(tmp)); err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
 

@@ -1,19 +1,16 @@
 package c_sysInfo
 
 import (
-	"encoding/json"
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/helpers"
 	"github.com/buexplain/go-fool"
-	"github.com/gorilla/csrf"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"html/template"
 	"net/http"
 	"os"
 	"runtime"
@@ -112,21 +109,5 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 	}
 
-	if v, err := json.MarshalIndent(a_boot.Config, "", "    "); err == nil {
-		result["config"] = template.HTML(string(v))
-	}else {
-		return fmt.Errorf("读取config信息失败: %w", err)
-	}
-
-	w.Assign("availableRestart", availableRestart())
-	w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
-	return w.Assign("result", result).View(http.StatusOK, "backend/sysInfo/index.html")
-}
-
-func availableRestart() bool {
-	return true
-	if runtime.GOOS == "linux" {
-		return true
-	}
-	return false
+	return w.Assign("result", result).View(http.StatusOK, "backend/server/sysInfo/index.html")
 }

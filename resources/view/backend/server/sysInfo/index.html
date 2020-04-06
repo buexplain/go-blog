@@ -7,26 +7,14 @@
 {{define "css"}}{{end}}
 
 {{define "content"}}
-    <div style="clear: both;width: 80%;">
-        <div style="float: left">
-            <form class="layui-form" action="" lay-filter="sysInfo-form" >
-                <div class="layui-form-item">
-                    <label class="layui-form-label" style="margin-left: 0;padding-left: 0;margin-right: 0;padding-right: 0;text-align: left;">自动刷新</label>
-                    <div class="layui-input-block" style="margin-left: 85px;">
-                        <input type="checkbox" name="autoFlush" lay-filter="sysInfo-form-auto-flush" lay-skin="switch" lay-text="ON|OFF">
-                    </div>
-                </div>
-            </form>
+    <form class="layui-form" action="" lay-filter="sysInfo-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="margin-left: 0;padding-left: 0;margin-right: 0;padding-right: 0;text-align: left;">自动刷新</label>
+            <div class="layui-input-block" style="margin-left: 85px;">
+                <input type="checkbox" name="autoFlush" lay-filter="sysInfo-form-auto-flush" lay-skin="switch" lay-text="ON|OFF">
+            </div>
         </div>
-        <div style="float: right;">
-            {{if .availableRestart }}
-                <form class="layui-form" action="/backend/sysInfo/restart" method="post">
-                    {{._token}}
-                    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit lay-filter="restart">重启服务器</button>
-                </form>
-            {{end}}
-        </div>
-    </div>
+    </form>
 
     <div class="layui-collapse" lay-filter="sysInfo" style="width: 80%;clear: both">
         <div class="layui-colla-item">
@@ -163,10 +151,6 @@
                 </table>
             </div>
         </div>
-        <div class="layui-colla-item">
-            <h2 class="layui-colla-title">config信息</h2>
-            <div class="layui-colla-content" id="sysInfo-config"><pre class="layui-code">{{index .result "config"}}</pre></div>
-        </div>
     </div>
 {{end}}
 
@@ -220,18 +204,6 @@
                         window.location.reload();
                     }
                 }, 3000);
-            });
-            //监听平滑重启
-            form.on('submit(restart)', function(data) {
-                $.post($(data.form).attr('action'), data.field, function (json) {
-                    if(json.code === 0) {
-                        submit.alertSuccess(json.message);
-                    }else {
-                        submit.alertError(json.message);
-                    }
-                });
-                //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                return false;
             });
         });
     </script>

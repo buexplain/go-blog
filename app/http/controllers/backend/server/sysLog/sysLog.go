@@ -16,7 +16,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	return w.
 		Assign("result", result).
-		View(http.StatusOK, "backend/sysLog/index.html")
+		View(http.StatusOK, "backend/server/sysLog/index.html")
 }
 
 func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -54,8 +54,8 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		if err != nil {
 			return err
 		}
-		return w.Redirect(http.StatusFound, "/backend/sysLog")
+		return w.Redirect(http.StatusFound, "/backend/server/sysLog")
 	} else {
-		return w.Jump("/backend/sysLog", code.Text(code.INVALID_ARGUMENT))
+		return w.Jump("/backend/server/sysLog", code.Text(code.INVALID_ARGUMENT))
 	}
 }

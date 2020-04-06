@@ -10,18 +10,20 @@ import (
 	c_configItem "github.com/buexplain/go-blog/app/http/controllers/backend/config/item"
 	c_database "github.com/buexplain/go-blog/app/http/controllers/backend/database"
 	c_home "github.com/buexplain/go-blog/app/http/controllers/backend/home"
-	c_profile "github.com/buexplain/go-blog/app/http/controllers/backend/profile"
 	c_node "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/node"
 	c_role "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/role"
 	c_official_user "github.com/buexplain/go-blog/app/http/controllers/backend/rbac/user"
+	c_profile "github.com/buexplain/go-blog/app/http/controllers/backend/server/profile"
+	c_sysInfo "github.com/buexplain/go-blog/app/http/controllers/backend/server/sysInfo"
+	c_sysLog "github.com/buexplain/go-blog/app/http/controllers/backend/server/sysLog"
+	"github.com/buexplain/go-blog/app/http/controllers/backend/server/sysRestart"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/sign"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
-	c_sysInfo "github.com/buexplain/go-blog/app/http/controllers/backend/sysInfo"
-	c_sysLog "github.com/buexplain/go-blog/app/http/controllers/backend/sysLog"
 	c_citizen_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
 	"github.com/buexplain/go-blog/app/http/middleware"
 	"github.com/buexplain/go-fool"
 	"net/http"
+	"strings"
 )
 
 //后台管理模块路由
@@ -167,23 +169,29 @@ func backend(mux *fool.Mux) {
 		mux.Get("backup/download", c_backup.Download)
 		mux.Delete("backup/delete", c_backup.Destroy)
 
-		//系统日志
-		mux.Get("sysLog", c_sysLog.Index)
-		mux.Get("sysLog/download", c_sysLog.Download)
-		mux.Get("sysLog/show", c_sysLog.Show)
-		mux.Delete("sysLog/delete", c_sysLog.Destroy)
-
 		//数据管理
 		mux.Get("database", c_database.Index)
 		mux.Post("database", c_database.SQL)
 
 		//服务器管理
-		mux.Group("sysInfo", func() {
-			mux.Get("", c_sysInfo.Index)
-			mux.Post("restart", c_sysInfo.Restart)
+		mux.Group("server", func() {
+			//服务器状态
+			mux.Get("info", c_sysInfo.Index)
+			//进程信息
+			mux.Get("debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck).Use(func(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+				r.Raw().URL.Path = strings.TrimPrefix(r.Raw().URL.Path, "/backend/server")
+				ctx.Next()
+			})
+			//服务器重启
+			mux.Any("restart", c_sysRestart.Restart, http.MethodGet, http.MethodPost, http.MethodPut)
+			//系统日志
+			mux.Group("sysLog", func() {
+				mux.Get("", c_sysLog.Index)
+				mux.Get("download", c_sysLog.Download)
+				mux.Get("show", c_sysLog.Show)
+				mux.Delete("delete", c_sysLog.Destroy)
+			})
 		})
 	}).Use(middleware.RbacCheck)
-	//进程信息
-	mux.Get("/debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck)
 	// --------------------------需要权限校验的路由 结束---------------------------
 }

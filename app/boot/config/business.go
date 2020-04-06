@@ -8,11 +8,9 @@ type Business struct {
 	Upload upload
 }
 
-type acceptExt string
-type acceptMimeType string
 type upload struct {
 	//允许的后缀与媒体类型
-	Accept map[acceptExt]acceptMimeType
+	Accept map[string]string
 	//保存的路径
 	Save string
 }

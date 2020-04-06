@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func init() {
 	}
 	Logger = flog.New(a_boot.Config.Log.Name, file).PushExtra(extra.NewFuncCaller())
 	//debug模式下，打印日志到控制台
-	if a_boot.Config.App.Debug {
+	if strings.EqualFold(a_boot.Config.Log.Level, flog.GetNameByLevel(flog.LEVEL_DEBUG)) {
 		Logger.PushHandler(handler.NewSTD(flog.LEVEL_DEBUG, formatter.NewLine(), flog.LEVEL_WARNING))
 	}
 	if a_boot.Config.Log.Async {
@@ -59,11 +60,13 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//先写一波文件，试试水
-	err = ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755)
-	if err != nil {
+	//测试一波读写
+	if err := ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755); err != nil {
+		log.Fatalln(err)
+	}else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
 		log.Fatalln(err)
 	}
+	//缓存初始化成功
 	Cache = c
 }
 

@@ -76,7 +76,7 @@ func init() {
 	}
 
 	//是否开启日志打印
-	if a_boot.Config.App.Debug {
+	if a_boot.Config.Database.ShowSQL {
 		Dao.Logger().SetLevel(log.LOG_DEBUG)
 		Dao.ShowSQL(true)
 	}
