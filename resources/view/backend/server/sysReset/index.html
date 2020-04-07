@@ -3,7 +3,7 @@
 {{end}}
 
 {{define "title"}}
-    编辑附件
+    服务器重启
 {{end}}
 
 {{define "css"}}
@@ -14,22 +14,16 @@
 {{end}}
 
 {{define "content"}}
-    <form class="layui-form" action="/backend/article/attachment/update/{{.result.ID}}" method="post">
+    <form class="layui-form" action="/backend/server/reset/start" method="post">
         <div class="layui-form-item">
-            <input type="text" name="name" value="{{.result.Name}}" required lay-verify="required" placeholder="请输入文件名" autocomplete="off" class="layui-input">
-        </div>
-        <div class="layui-form-item">
-            <textarea id="j-attachment" name="content">{{.result.Content}}</textarea>
+            <textarea id="j-config" name="config">{{.config}}</textarea>
         </div>
         <div class="layui-form-item">
             {{._token}}
-            {{if .result}}<input type="hidden" name="_method" value="put">{{end}}
             <button class="layui-btn layui-btn-sm" lay-submit lay-filter="submit">
-                提交
+                立即重启服务器
             </button>
-            <a href="/backend/article/attachment" class="layui-btn layui-btn-sm layui-btn-primary">
-                取消
-            </a>
+            <span id="j-pid">pid：{{.pid}}</span>
         </div>
     </form>
 {{end}}
@@ -41,7 +35,7 @@
     <script>
         //定义编辑器变量
         var editor = null;
-
+        var checkTimeout = {{.checkTimeout}};
         //表单提交
         layui.use(['form', 'jquery', 'layer'], function () {
             layui.form.on('submit(submit)', function(data) {
@@ -50,24 +44,56 @@
                 });
                 data.field['content'] = editor.getValue();
                 layui.jquery.post(data.form.action, data.field, function (json) {
-                    layui.layer.close(loading);
                     if(json.code === 0) {
-                        submit.alertSuccess(json.message);
+                        //检查重启是否成功
+                        submit.alertWarning('正在重启，请稍等...');
+                        var pid = json.data;
+                        var interval = -1;
+                        var intervalTime = 3000;
+                        var checkMaxNum = parseInt((checkTimeout/intervalTime)*1000);
+                        var checkNum = 0;
+                        var check = function() {
+                            if(checkNum >= checkMaxNum) {
+                                layui.layer.close(loading);
+                                submit.alertError('重启失败！');
+                                if(interval !== -1) {
+                                    clearInterval(interval);
+                                }
+                                return;
+                            }
+                            checkNum++;
+                            layui.jquery.get('/backend/server/reset/check?pid='+pid, function (json) {
+                                if(json.code === 0) {
+                                    if(interval !== -1) {
+                                        clearInterval(interval);
+                                    }
+                                    layui.layer.close(loading);
+                                    submit.alertSuccess(json.message);
+                                    layui.jquery("#j-pid").html('pid：'+json.data);
+                                }
+                            });
+                        };
+                        interval = setInterval(function () {
+                            check();
+                        }, 3000);
                     }else {
-                        submit.alertError(json.message);
+                        layui.layer.close(loading);
+                        if(json.code === 1) {
+                            submit.alertWarning(json.message);
+                        }else {
+                            submit.alertError(json.message);
+                        }
                     }
                 });
                 return false;
             });
         });
 
-        var ext = "{{.result.Ext}}";
-
         layui.use(['jquery', 'myUtil'], function () {
             var $ = layui.jquery;
             var myUtil = layui.myUtil;
             //根据文件后缀解析依赖
-            var codeMirrorOption = myUtil.codeMirrorOptionMap(ext);
+            var codeMirrorOption = myUtil.codeMirrorOptionMap('toml');
             //解析ss依赖
             var depends = '';
             for(var i in codeMirrorOption.depends.css) {
@@ -82,7 +108,7 @@
                 $('body').append(depends);
             }
             //初始化编辑器
-            editor = CodeMirror.fromTextArea(document.getElementById("j-attachment"), Object.assign({},codeMirrorOption.option,{
+            editor = CodeMirror.fromTextArea(document.getElementById("j-config"), Object.assign({},codeMirrorOption.option,{
                 theme: "monokai",
                 indentWithTabs: true,
                 smartIndent: true,

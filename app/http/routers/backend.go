@@ -16,7 +16,7 @@ import (
 	c_profile "github.com/buexplain/go-blog/app/http/controllers/backend/server/profile"
 	c_sysInfo "github.com/buexplain/go-blog/app/http/controllers/backend/server/sysInfo"
 	c_sysLog "github.com/buexplain/go-blog/app/http/controllers/backend/server/sysLog"
-	"github.com/buexplain/go-blog/app/http/controllers/backend/server/sysRestart"
+	c_sysReset "github.com/buexplain/go-blog/app/http/controllers/backend/server/sysReset"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/sign"
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
 	c_citizen_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
@@ -183,7 +183,11 @@ func backend(mux *fool.Mux) {
 				ctx.Next()
 			})
 			//服务器重启
-			mux.Any("restart", c_sysRestart.Restart, http.MethodGet, http.MethodPost, http.MethodPut)
+			mux.Group("reset", func() {
+				mux.Get("index", c_sysReset.Index)
+				mux.Post("start", c_sysReset.Start)
+				mux.Get("check", c_sysReset.Check)
+			})
 			//系统日志
 			mux.Group("sysLog", func() {
 				mux.Get("", c_sysLog.Index)

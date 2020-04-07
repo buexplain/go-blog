@@ -15,6 +15,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"time"
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
@@ -30,6 +31,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 	base["goVersion"] = runtime.Version()
 	base["pid"] = strconv.Itoa(os.Getpid())
+	base["time"] = time.Now().Format(time.RFC3339)
 	result["base"] = base
 
 	//读取内存信息

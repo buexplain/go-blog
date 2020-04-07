@@ -2,7 +2,7 @@
     backend/layout/layout.html
 {{end}}
 
-{{define "title"}}服务器信息{{end}}
+{{define "title"}}服务器状态{{end}}
 
 {{define "css"}}{{end}}
 
@@ -20,13 +20,14 @@
         <div class="layui-colla-item">
             <h2 class="layui-colla-title">基础信息</h2>
             <div class="layui-colla-content" id="sysInfo-base">
-                <table class="layui-table" style="width: 600px;">
+                <table class="layui-table">
                     <thead>
                     <tr>
-                        <th width="100">平台</th>
-                        <th width="100">主机</th>
-                        <th width="100">go version</th>
-                        <th width="100">pid</th>
+                        <th>平台</th>
+                        <th>主机</th>
+                        <th>go version</th>
+                        <th>pid</th>
+                        <th>时间</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -35,6 +36,7 @@
                         <td>{{index .result "base" "hostName"}}</td>
                         <td>{{index .result "base" "goVersion"}}</td>
                         <td>{{index .result "base" "pid"}}</td>
+                        <td>{{index .result "base" "time"}}</td>
                     </tr>
                     </tbody>
                 </table>

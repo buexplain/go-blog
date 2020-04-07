@@ -8,6 +8,7 @@ import (
 	"github.com/buexplain/go-flog/extra"
 	"github.com/buexplain/go-flog/formatter"
 	"github.com/buexplain/go-flog/handler"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -46,8 +47,19 @@ func init() {
 var Config *config.Config
 
 func init() {
+	path := filepath.Join(ROOT_PATH, "config.toml")
+	//读取配置文件
+	c, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//检查是否可以写入配置文件
+	if err := ioutil.WriteFile(path, c, 0755); err != nil {
+		log.Fatalln(err)
+	}
+	//解析配置文件到对象
 	Config = new(config.Config)
-	if _, err := toml.DecodeFile(filepath.Join(ROOT_PATH, "config.toml"), Config); err != nil {
+	if _, err := toml.Decode(string(c), Config); err != nil {
 		log.Fatalln(err)
 	}
 	//如果没有设置ip，则自动获取ip
@@ -60,7 +72,7 @@ func init() {
 		//日志开启了异步，要算上一次异步冲刷的时间
 		min += Config.Log.Flush.Nanoseconds()*2
 	}
-	//再时间再翻倍
+	//时间再翻倍
 	min *= 2
 	if Config.App.Server.CloseTimedOut.Nanoseconds() < min {
 		tmp := time.Duration(min).String()
