@@ -28,7 +28,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, user.ID))
 		}
 
-		if role, err := s_userRoleRelation.GetUserRole(user.ID); err != nil {
+		if role, err := s_userRoleRelation.GetRelation(user.ID); err != nil {
 			return w.JumpBack(err)
 		} else {
 			w.Assign("role", template.JS(role.String()))
@@ -48,7 +48,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	roleID := r.FormSliceInt("ids")
 
-	err := s_userRoleRelation.SetUserRole(userID, roleID)
+	err := s_userRoleRelation.SetRelation(userID, roleID)
 	if err != nil {
 		return err
 	}

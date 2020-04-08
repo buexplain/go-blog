@@ -56,7 +56,7 @@ func init() {
 	if path == "" || path == a_boot.ROOT_PATH[0:len(a_boot.ROOT_PATH)-1] || path == "." || path == "./" || path == `.\` {
 		log.Fatalln("cache path not allowed: "+path)
 	}
-	c, err := fscache.New(path, 0755, time.Hour)
+	c, err := fscache.New(path, 0755, time.Duration(0))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -111,6 +111,16 @@ func init() {
 
 //设置session
 func init() {
+	path := filepath.Join(a_boot.ROOT_PATH, "storage/session")
+	if err := os.MkdirAll(path, 0755); err != nil {
+		log.Fatalln(err)
+	}
+	//测试一波读写
+	if err := ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755); err != nil {
+		log.Fatalln(err)
+	}else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
+		log.Fatalln(err)
+	}
 	switch a_boot.Config.Session.Store {
 	case "cookie":
 		h := session.NewCookieStoreManager(a_boot.Config.Session.Key)
@@ -119,10 +129,6 @@ func init() {
 		APP.SetSessionHandler(h)
 		break
 	case "file":
-		path := filepath.Join(a_boot.ROOT_PATH, "storage/session")
-		if err := os.MkdirAll(path, 0666); err != nil {
-			log.Fatalln(err)
-		}
 		h := session.NewFilesystemStoreManager(path, a_boot.Config.Session.Key)
 		h.Options = a_boot.Config.Session.Options
 		h.Name = a_boot.Config.Session.Name

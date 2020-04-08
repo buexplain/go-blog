@@ -50,7 +50,10 @@ Key = "XUU1NDA4JXU0RTAwJXUzMDAy"
 [Session.Options]
 Path = "/"
 Domain = ""
-MaxAge = 0
+# MaxAge=0 表示未指定Max Age属性，浏览器会话结束后将删除cookie
+# MaxAge<0 意味着立即删除cookie
+# MaxAge>0 表示存在并以秒为单位给定的最大时长
+MaxAge = 3600
 Secure = false
 HttpOnly = true
 SameSite = 1

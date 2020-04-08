@@ -28,7 +28,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, role.ID))
 		}
 
-		if node, err := s_roleNodeRelation.GetRoleNode(role.ID); err != nil {
+		if node, err := s_roleNodeRelation.GetRelation(role.ID); err != nil {
 			return w.JumpBack(err)
 		} else {
 			w.Assign("node", template.JS(node.String()))
@@ -48,7 +48,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 	nodeID := r.FormSliceInt("ids")
 
-	err := s_roleNodeRelation.SetRoleNode(roleID, nodeID)
+	err := s_roleNodeRelation.SetRelation(roleID, nodeID)
 	if err != nil {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
 	}

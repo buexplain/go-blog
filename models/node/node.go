@@ -55,6 +55,7 @@ func GetALL() (List, error) {
 func GetMenuByUserID(userID int) (List, error) {
 	result := make(List, 0)
 	mod := dao.Dao.Table("Node").
+		Select("DISTINCT(`Node`.`ID`),`Node`.*").
 		Join("INNER", "`RoleNodeRelation`", "`Node`.`ID` = `RoleNodeRelation`.`NodeID`").
 		Join("INNER", "`UserRoleRelation`", "`UserRoleRelation`.`RoleID` = `RoleNodeRelation`.`RoleID`").
 		Where("UserRoleRelation.UserID=?", userID).Where("Node.IsMenu=?", IsMenuYes)

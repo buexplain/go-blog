@@ -52,6 +52,8 @@ echo   1、双击 installer.bat 等待一段时间会提示安装成功。 >> bu
 echo   2、双击 blog.exe 不要关闭它，屏幕会提示网址。 >> build\readme.txt
 echo   3、打开浏览器，输入 blog.exe 提示的网址，有些云服务器和虚拟机，提示的网址是内网ip，请替换成公网ip。 >> build\readme.txt
 echo   4、账号 admin 密码 123456 >> build\readme.txt
+echo 三、更多信息 >> build\readme.txt
+echo   https://github.com/buexplain/go-blog >> build\readme.txt
 
 rem 复制配置文件
 copy config.example.toml .\build\config.example.toml /A/Y

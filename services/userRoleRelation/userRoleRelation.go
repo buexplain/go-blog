@@ -5,16 +5,18 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	m_role "github.com/buexplain/go-blog/models/role"
 	m_userRoleRelation "github.com/buexplain/go-blog/models/userRoleRelation"
+	"strings"
 )
 
-type UserRole struct {
+type Relation struct {
 	m_role.Role `xorm:"extends"`
+	//是否拥有该角色
 	Checked     bool `xorm:"-"`
 }
 
-type UserRoleList []*UserRole
+type RelationList []*Relation
 
-func (this UserRoleList) String() string {
+func (this RelationList) String() string {
 	b, err := json.Marshal(this)
 	if err != nil {
 		return err.Error()
@@ -22,26 +24,24 @@ func (this UserRoleList) String() string {
 	return string(b)
 }
 
-//获取用户角色
-func GetUserRole(userID int) (UserRoleList, error) {
+//获取用户与所有角色的关系
+func GetRelation(userID int) (RelationList, error) {
 	//获取所有的角色
-	allRole := make(UserRoleList, 0)
+	allRole := make(RelationList, 0)
 	err := dao.Dao.Table("Role").Desc("SortID").Find(&allRole)
 	if err != nil {
 		return nil, err
 	}
 
-	if userID > 0 {
-		//获取用户拥有的角色
-		userRole := make(m_userRoleRelation.List, 0)
-		err = dao.Dao.Table("UserRoleRelation").Where("UserID=?", userID).Find(&userRole)
-		if err != nil {
-			return nil, err
-		}
-		if len(userRole) > 0 {
-			for _, role := range allRole {
-				role.Checked = userRole.HasRoleID(role.ID)
-			}
+	//获取用户拥有的角色
+	userRole := make(m_userRoleRelation.List, 0)
+	err = dao.Dao.Table("UserRoleRelation").Where("UserID=?", userID).Find(&userRole)
+	if err != nil {
+		return nil, err
+	}
+	if len(userRole) > 0 {
+		for _, role := range allRole {
+			role.Checked = userRole.HasRoleID(role.ID)
 		}
 	}
 
@@ -49,7 +49,7 @@ func GetUserRole(userID int) (UserRoleList, error) {
 }
 
 //设置用户角色
-func SetUserRole(userID int, roleID []int) error {
+func SetRelation(userID int, roleID []int) error {
 	//开启事务
 	session := dao.Dao.NewSession()
 	defer session.Close()
@@ -95,9 +95,37 @@ type UserRoleIDList []UserRoleID
 //获取用户的角色id列表
 func GetRoleIDByUserID(userID int) (UserRoleIDList, error) {
 	result := make(UserRoleIDList, 0)
-	session := dao.Dao.Table("`User`").Where("`User`.`ID`=?", userID)
-	session.Join("INNER", "`UserRoleRelation`", "`UserRoleRelation`.UserID = `User`.ID")
-	session.Select("`UserRoleRelation`.`RoleID` as `UserRoleID`")
+	session := dao.Dao.Table("`UserRoleRelation`").
+		Where("`UserRoleRelation`.`UserID`=?", userID).
+		Select("`UserRoleRelation`.`RoleID` as `UserRoleID`")
+	err := session.Find(&result)
+	return result, err
+}
+
+//用户角色id
+type UserRoleName string
+
+type UserRoleNameList []UserRoleName
+
+func (this UserRoleNameList) String() string {
+	b := strings.Builder{}
+	for _, v := range this {
+		b.WriteString(", ")
+		b.WriteString(string(v))
+	}
+	s := b.String()
+	if s != "" {
+		s = s[len(", "):]
+	}
+	return s
+}
+
+//获取用户的角色名称列表
+func GetRoleNameByUserID(userID int) (UserRoleNameList, error) {
+	result := make(UserRoleNameList, 0)
+	session := dao.Dao.Table("`UserRoleRelation`").Where("`UserRoleRelation`.`UserID`=?", userID)
+	session.Join("INNER", "`Role`", "`UserRoleRelation`.RoleID = `Role`.ID")
+	session.Select("`Role`.`Name` as `UserRoleName`")
 	err := session.Find(&result)
 	return result, err
 }

@@ -38,14 +38,13 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 				//存在路由，并且路由有json标签，则响应json格式
 				ctx.Throw(w.Error(code.INVALID_AUTH, message))
 			} else {
-				ctx.Throw(ctx.Response().JumpBack(message))
+				ctx.Throw(ctx.Response().Jump("/backend/sign", message))
 			}
 		}
 	}
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
-	return true
 	user := s_user.IsSignIn(ctx.Request().Session())
 
 	//判断后台用户是否登录
@@ -64,7 +63,8 @@ func rbacCheck(ctx *fool.Ctx) bool {
 	}
 
 	//得到当前用户拥有的角色
-	userRoleIDList, err := s_userRoleRelation.GetRoleIDByUserID(user.ID)
+	var userRoleIDList s_userRoleRelation.UserRoleIDList
+	userRoleIDList, err = s_userRoleRelation.GetRoleIDByUserID(user.ID)
 	if err != nil {
 		h_boot.Logger.ErrorF("获取当前用户拥有的角色错误: %s", err)
 		return false

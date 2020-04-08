@@ -40,7 +40,7 @@ func (this *EventListener) Handle(e *event.Event) {
 			nodeID = append(nodeID, v.ID)
 		}
 		if len(nodeID) > 0 {
-			if err := s_roleNodeRelation.SetRoleNode(result.ID, nodeID); err != nil {
+			if err := s_roleNodeRelation.SetRelation(result.ID, nodeID); err != nil {
 				h_boot.Logger.ErrorF("同步超级角色节点失败: %s", err)
 			} else {
 				h_boot.Logger.InfoF("同步超级角色节点成功: %d", result.ID)

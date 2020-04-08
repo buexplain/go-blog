@@ -38,6 +38,8 @@ echo "  3、打开浏览器，输入 blog.bin 提示的网址，有些云服务�
 echo "  4、账号 admin 密码 123456" >> ./build/readme.txt
 echo "三、生产环境部署" >> ./build/readme.txt
 echo "  nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
+echo "四、更多信息" >> ./build/readme.txt
+echo "  https://github.com/buexplain/go-blog" >> ./build/readme.txt
 
 #复制配置文件
 cp config.example.toml build/config.example.toml

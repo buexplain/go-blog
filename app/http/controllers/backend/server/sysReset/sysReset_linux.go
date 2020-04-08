@@ -34,7 +34,7 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		if l.restarting == 0 {
 			return w.Error(1, "正在重启，请稍等...")
 		}
-		return w.Error(2, "重启失败，请登录服务器检查错误")
+		return w.Error(2, "重启失败，请登录服务器检查错误日志")
 	}
 	//接收客户端传递的配置
 	c := r.Form("config")
@@ -49,6 +49,7 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//锁定
 	l.restarting = 0
 	go func() {
+		//进程退出超时的时候还没结束的话，锁定重启按钮，不再支持重启
 		<- time.After(a_boot.Config.App.Server.CloseTimedOut.Duration)
 		l.restarting = 1
 	}()

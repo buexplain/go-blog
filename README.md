@@ -8,8 +8,8 @@ cd go-blog
 chmod u+x ./build-linux.sh
 ./build-linux.sh
 cd ./build
-chmod u+x ./installer-linux.sh
-./installer-linux.sh
+chmod u+x ./installer.sh
+./installer.sh
 chmod u+x ./blog.bin
 ./blog.bin
 ```
@@ -27,8 +27,8 @@ build-windows.bat
 ### 注意事项
 如果你编译失败，例如提示一下错误之一：
 * std.ERROR: 导出数据库到文件失败: column LastTime type []uint8 convert to time.Time error
-* 编译成功，但是测试`installer-linux.sh`脚本的时候，提示导入数据库失败
-* 编译成功，测试`installer-linux.sh`脚本也成功，但是数据库里面的数据少了一部分，比如新添加的文章丢失了
+* 编译成功，但是测试`installer.sh`脚本的时候，提示导入数据库失败
+* 编译成功，测试`installer.sh`脚本也成功，但是数据库里面的数据少了一部分，比如新添加的文章丢失了
 以上错误的原因有可能是`database/database.shm`、`database/database.wal`文件，不能跨平台的原因。
 比如你在windows下开发，生成了`database/database.db`、`database/database.shm`、`database/database.wal`文件。
 然后你把它们拷贝到linux下，然后你运行了`build-linux.bin`，编译失败了。
@@ -73,4 +73,8 @@ go get -u github.com/BurntSushi/toml@latest
 go get -u github.com/gorilla/securecookie@latest
 go get -u github.com/buexplain/go-flog@latest
 go get -u github.com/buexplain/go-fool@latest
+go get -u github.com/cloudflare/tableflip@latest
 ```
+
+## License
+[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

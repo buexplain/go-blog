@@ -7,14 +7,14 @@ import (
 	"github.com/buexplain/go-blog/models/roleNodeRelation"
 )
 
-type RoleNode struct {
+type Relation struct {
 	m_node.Node `xorm:"extends"`
 	Checked     bool `xorm:"-"`
 }
 
-type RoleNodeList []*RoleNode
+type RelationList []*Relation
 
-func (this RoleNodeList) String() string {
+func (this RelationList) String() string {
 	b, err := json.Marshal(this)
 	if err != nil {
 		return err.Error()
@@ -23,25 +23,23 @@ func (this RoleNodeList) String() string {
 }
 
 //获取角色节点
-func GetRoleNode(roleID int) (RoleNodeList, error) {
+func GetRelation(roleID int) (RelationList, error) {
 	//获取所有的节点
-	allNode := make(RoleNodeList, 0)
+	allNode := make(RelationList, 0)
 	err := dao.Dao.Table("Node").Desc("SortID").Find(&allNode)
 	if err != nil {
 		return nil, err
 	}
 
-	if roleID > 0 {
-		//获取角色拥有的节点
-		roleNode := make(m_roleNodeRelation.List, 0)
-		err = dao.Dao.Table("RoleNodeRelation").Where("RoleID=?", roleID).Find(&roleNode)
-		if err != nil {
-			return nil, err
-		}
-		if len(roleNode) > 0 {
-			for _, node := range allNode {
-				node.Checked = roleNode.HasNodeID(node.ID)
-			}
+	//获取角色拥有的节点
+	roleNode := make(m_roleNodeRelation.List, 0)
+	err = dao.Dao.Table("RoleNodeRelation").Where("RoleID=?", roleID).Find(&roleNode)
+	if err != nil {
+		return nil, err
+	}
+	if len(roleNode) > 0 {
+		for _, node := range allNode {
+			node.Checked = roleNode.HasNodeID(node.ID)
 		}
 	}
 
@@ -49,7 +47,7 @@ func GetRoleNode(roleID int) (RoleNodeList, error) {
 }
 
 //设置角色的节点
-func SetRoleNode(roleID int, nodeID []int) error {
+func SetRelation(roleID int, nodeID []int) error {
 	//开启事务
 	session := dao.Dao.NewSession()
 	defer session.Close()

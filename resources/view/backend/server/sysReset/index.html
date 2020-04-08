@@ -42,7 +42,7 @@
                 var loading = layui.layer.load(1, {
                     shade: [0.1, '#fff']
                 });
-                data.field['content'] = editor.getValue();
+                data.field['config'] = editor.getValue();
                 layui.jquery.post(data.form.action, data.field, function (json) {
                     if(json.code === 0) {
                         //检查重启是否成功
@@ -55,7 +55,7 @@
                         var check = function() {
                             if(checkNum >= checkMaxNum) {
                                 layui.layer.close(loading);
-                                submit.alertError('重启失败！');
+                                submit.alertError('重启失败，请登录服务器检查错误日志');
                                 if(interval !== -1) {
                                     clearInterval(interval);
                                 }

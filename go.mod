@@ -3,7 +3,7 @@ module github.com/buexplain/go-blog
 go 1.13
 
 require (
-	github.com/88250/lute v1.2.6
+	github.com/88250/lute v1.2.7
 	github.com/BurntSushi/toml v0.3.1
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -21,8 +21,9 @@ require (
 	github.com/kevinburke/go-bindata v3.19.0+incompatible
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mojocn/base64Captcha v1.3.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shirou/gopsutil v2.20.3+incompatible
-	github.com/spf13/cobra v0.0.6
+	github.com/spf13/cobra v0.0.7
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
