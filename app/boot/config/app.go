@@ -12,6 +12,8 @@ type App struct {
 type Server struct {
 	IP           string
 	Port         uint
+	CertFile     string
+	KeyFile      string
 	ReadTimeout  Duration
 	WriteTimeout Duration
 	CloseTimedOut Duration

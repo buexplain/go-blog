@@ -5,6 +5,9 @@ go.sum
 build
 *.exe
 *.bin
+*.pem
+*.crt
+*.key
 nohup.out
 error.log
 /database/database.db*
