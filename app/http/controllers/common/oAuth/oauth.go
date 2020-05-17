@@ -16,6 +16,10 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	oauth_before_url := r.Session().GetString("oauth_before_url")
+	if oauth_before_url == "" {
+		oauth_before_url = "/"
+	}
 	oauth, err := s_oauth.New(r)
 	if err != nil {
 		return err
@@ -23,15 +27,15 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var accessResult s_oauth.AccessResult
 	accessResult, err = oauth.GetAccessToken(r)
 	if err != nil {
-		return err
+		return w.Jump(oauth_before_url, err.Error())
 	}
 	var userInfo s_oauth.UserInfo
 	userInfo, err = oauth.GetUserInfo(accessResult.GetAccessToken())
 	if err != nil {
-		return err
+		return w.Jump(oauth_before_url, err.Error())
 	}
 	if userInfo.GetAccount() == "" {
-		return errors.MarkClient(fmt.Errorf("请授予本站相关权限"))
+		return w.Jump(oauth_before_url, "请授予本站相关权限")
 	}
 	var user m_user.User
 	var has bool
@@ -42,7 +46,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		Join("INNER", "User", "User.ID = Oauth.UserID").
 		Get(&user)
 	if err != nil {
-		return err
+		return w.Jump(oauth_before_url, err.Error())
 	}
 	//用户第一次以第三方账号进入本站
 	if !has {

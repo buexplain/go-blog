@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
-	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
@@ -49,6 +48,7 @@ func (this Github) GetURL(scope string, oauth_after_url string, r *fool.Request)
 	//记录state
 	r.Session().Set("oauth_state", state)
 	r.Session().Set("oauth_after_url", oauth_after_url)
+	r.Session().Set("oauth_before_url", r.Raw().URL.String())
 	query.Set("state", state)
 	tmp.RawQuery = query.Encode()
 	oauth_url = tmp.String()
@@ -191,7 +191,6 @@ func (this Github) GetUserInfo(access_token string) (UserInfo, error) {
 		return nil, err
 	}
 	var result GithubUser
-	h_boot.Logger.Info(string(body))
 	if err := json.Unmarshal(body,  &result); err != nil {
 		return nil, err
 	}
