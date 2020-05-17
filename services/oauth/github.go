@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
+	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
@@ -182,6 +183,7 @@ func (this Github) GetUserInfo(access_token string) (UserInfo, error) {
 		return nil, err
 	}
 	var result GithubUser
+	h_boot.Logger.Info(string(body))
 	if err := json.Unmarshal(body,  &result); err != nil {
 		return nil, err
 	}

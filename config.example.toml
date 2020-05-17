@@ -145,4 +145,4 @@ py = ""
 [Business.OAuth.github]
 ID = "0a139cf8dcb0c1bdf415"
 Secret = "c1f20e36d0c7fbe9a34503a1447d8e1a05329757"
-RedirectUri = "http://47.100.63.237/common/auth"
+RedirectUri = "http://47.100.63.237/common/oauth"
