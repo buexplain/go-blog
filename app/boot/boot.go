@@ -80,6 +80,10 @@ func init() {
 			log.Fatalln(err)
 		}
 	}
+	//如果证书不为空，强制设置端口为443
+	if Config.App.Server.CertFile != "" && Config.App.Server.KeyFile != "" {
+		Config.App.Server.Port = 443
+	}
 }
 
 //全局共用的控制台日志

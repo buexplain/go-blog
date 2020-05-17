@@ -24,6 +24,6 @@ func (this Online) String() string {
 	case OnlineNo:
 		return "已下线"
 	default:
-		return "UNKNOWN"
+		return m_models.EnumUNKNOWN
 	}
 }

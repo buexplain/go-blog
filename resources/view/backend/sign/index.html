@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="Generator" content="EditPlus®">
-    <meta name="Author" content="梦想星辰大海">
     <meta name="Keywords" content="">
     <meta name="Description" content="">
     <title>登录</title>
@@ -109,6 +107,9 @@
                 <div class="layui-input-block">
                     {{._token}}
                     <button class="layui-btn" lay-submit lay-filter="signIn">提 交</button>
+                    {{ if .github}}
+                    <a class="layui-btn" href="{{.github}}">Github</a>
+                    {{ end}}
                 </div>
             </div>
         </form>

@@ -10,6 +10,7 @@ import (
 	m_content "github.com/buexplain/go-blog/models/content"
 	m_contentTag "github.com/buexplain/go-blog/models/contentTag"
 	m_node "github.com/buexplain/go-blog/models/node"
+	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	m_role "github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/models/roleNodeRelation"
 	m_tag "github.com/buexplain/go-blog/models/tag"
@@ -40,6 +41,7 @@ func init() {
 				new(m_contentTag.ContentTag),
 				new(m_configGroup.ConfigGroup),
 				new(m_configItem.ConfigItem),
+				new(m_oauth.Oauth),
 			)
 			if err != nil {
 				a_boot.Logger.ErrorF("同步models到数据库失败: %s", err)

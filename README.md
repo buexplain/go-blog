@@ -43,6 +43,8 @@ build-windows.bat
 
 ### 二次开发相关命令
 ```bash
+# 同步表结构
+go build -o artisan.exe artisan.go && artisan.exe db sync
 # 导出 database/init.sql
 go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
 # 导入  database/init.sql

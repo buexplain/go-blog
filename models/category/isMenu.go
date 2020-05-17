@@ -24,6 +24,6 @@ func (this IsMenu) String() string {
 	case IsMenuNo:
 		return "否"
 	default:
-		return "UNKNOWN"
+		return m_models.EnumUNKNOWN
 	}
 }

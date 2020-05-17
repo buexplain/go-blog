@@ -57,11 +57,15 @@ func Run()  {
 			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
 			if err := server.ServeTLS(ln, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.CertFile), filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.KeyFile)); err != nil && err != http.ErrServerClosed {
 				Logger.Error(err.Error())
+				_ = Logger.Close()
+				os.Exit(1)
 			}
 		}else {
 			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 			if err := server.Serve(ln); err != nil && err != http.ErrServerClosed {
 				Logger.Error(err.Error())
+				_ = Logger.Close()
+				os.Exit(1)
 			}
 		}
 	}()

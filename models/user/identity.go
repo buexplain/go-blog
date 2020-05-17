@@ -17,6 +17,6 @@ func (this Identity) String() string {
 	case IdentityCitizen:
 		return "普通用户"
 	default:
-		return "UNKNOWN"
+		return m_models.EnumUNKNOWN
 	}
 }

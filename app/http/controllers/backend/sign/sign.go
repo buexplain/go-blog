@@ -2,8 +2,9 @@ package c_sign
 
 import (
 	"fmt"
-	"github.com/buexplain/go-blog/app/boot"
+	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/services/captcha"
+	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
 	"github.com/buexplain/go-fool/errors"
@@ -13,14 +14,6 @@ import (
 	"strings"
 )
 
-//显示登录页面
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	if s_user.IsSignIn(r.Session()) != nil {
-		return w.Redirect(http.StatusFound, "/backend/skeleton")
-	}
-	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
-}
-
 //表单校验器
 var v *validator.Validator
 
@@ -29,6 +22,15 @@ func init() {
 	v.Field("Account").Rule("required", "请输入账号")
 	v.Field("Password").Rule("required", "请输入密码")
 	v.Field("CaptchaVal").Rule("VerifyCaptcha", "请输入验证码", "验证码错误")
+}
+
+//显示登录页面
+func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+	if s_user.IsSignIn(r.Session()) != nil {
+		return w.Redirect(http.StatusFound, "/backend/skeleton")
+	}
+	w.Assign("github", s_oauth.NewGithub().GetURL("user", "/backend/skeleton/index", r))
+	return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).View(http.StatusOK, "backend/sign/index.html")
 }
 
 //登录

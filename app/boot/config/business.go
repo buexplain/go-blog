@@ -6,6 +6,14 @@ type Business struct {
 	SuperRoleID int
 	//附件上传配置
 	Upload upload
+	//三方登录
+	OAuth map[string]OAuth
+}
+
+type OAuth struct {
+	ID string
+	Secret string
+	RedirectUri string
 }
 
 type upload struct {

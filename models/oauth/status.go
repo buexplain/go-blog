@@ -1,21 +1,18 @@
-package m_user
+package m_oauth
 
 import m_models "github.com/buexplain/go-blog/models"
 
-//用户状态，用于判断用户是否被ban
+//第三方类型
 type Status m_models.Enum
 
 const (
-	StatusAllow Status = iota + 1
-	StatusDeny
+	StatusGithub Status = iota + 1
 )
 
 func (this Status) String() string {
 	switch this {
-	case StatusAllow:
-		return "允许"
-	case StatusDeny:
-		return "禁止"
+	case StatusGithub:
+		return "Github"
 	default:
 		return m_models.EnumUNKNOWN
 	}
