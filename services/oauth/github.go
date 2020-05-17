@@ -95,7 +95,7 @@ func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Cookie", "name=anny")
 	client := &http.Client{}
-	client.Timeout = time.Second*3
+	client.Timeout = time.Second*10
 	var resp *http.Response
 	resp, err = client.Do(req)
 	if err != nil {
@@ -118,51 +118,59 @@ func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 
 
 type GithubUser struct {
-	Login                   string    `json:"login,omitempty"`
-	ID                      int       `json:"id,omitempty"`
-	NodeID                  string    `json:"node_id,omitempty"`
-	AvatarURL               string    `json:"avatar_url,omitempty"`
-	GravatarID              string    `json:"gravatar_id,omitempty"`
-	URL                     string    `json:"url,omitempty"`
-	HtmlURL                 string    `json:"html_url,omitempty"`
-	FollowersURL            string    `json:"followers_url,omitempty"`
-	FollowingURL            string    `json:"following_url,omitempty"`
-	GistsURL                string    `json:"gists_url,omitempty"`
-	StarredURL              string    `json:"starred_url,omitempty"`
-	SubscriptionsURL        string    `json:"subscriptions_url,omitempty"`
-	OrganizationsURL        string    `json:"organizations_url,omitempty"`
-	ReposURL                string    `json:"repos_url,omitempty"`
-	EventsURL               string    `json:"events_url,omitempty"`
-	ReceivedEventsURL       string    `json:"received_events_url,omitempty"`
-	Type                    string    `json:"type,omitempty"`
-	SiteAdmin               bool      `json:"site_admin,omitempty"`
-	Name                    string    `json:"name,omitempty"`
-	Company                 string    `json:"company,omitempty"`
-	Blog                    string    `json:"blog,omitempty"`
-	Location                string    `json:"location,omitempty"`
-	Email                   string    `json:"email,omitempty"`
-	Hireable                string    `json:"hireable,omitempty"`
-	Bio                     string    `json:"bio,omitempty"`
-	PublicRepos             string    `json:"public_repos,omitempty"`
-	PublicGists             int       `json:"public_gists,omitempty"`
-	Followers               int       `json:"followers,omitempty"`
-	Following               int       `json:"following,omitempty"`
-	CreatedAt               time.Time `json:"created_at,omitempty"`
-	UpdatedAt               time.Time `json:"updated_at,omitempty"`
-	PrivateGists            int       `json:"private_gists,omitempty"`
-	TotalPrivateRepos       int       `json:"total_private_repos,omitempty"`
-	OwnedPrivateRepos       int       `json:"owned_private_repos,omitempty"`
-	DiskUsage               int       `json:"disk_usage,omitempty"`
-	Collaborators           int       `json:"collabocollaboratorsrators,omitempty"`
-	TwoFactorAuthentication bool      `json:"two_factor_authentication,omitempty"`
+	AvatarURL         string      `json:"avatar_url,omitempty"`
+	Bio               interface{} `json:"bio,omitempty"`
+	Blog              string      `json:"blog,omitempty"`
+	Collaborators     int64       `json:"collaborators,omitempty"`
+	Company           interface{} `json:"company,omitempty"`
+	CreatedAt         string      `json:"created_at,omitempty"`
+	DiskUsage         int64       `json:"disk_usage,omitempty"`
+	Email             interface{} `json:"email,omitempty"`
+	EventsURL         string      `json:"events_url,omitempty"`
+	Followers         int64       `json:"followers,omitempty"`
+	FollowersURL      string      `json:"followers_url,omitempty"`
+	Following         int64       `json:"following,omitempty"`
+	FollowingURL      string      `json:"following_url,omitempty"`
+	GistsURL          string      `json:"gists_url,omitempty"`
+	GravatarID        string      `json:"gravatar_id,omitempty"`
+	Hireable          interface{} `json:"hireable,omitempty"`
+	HTMLURL           string      `json:"html_url,omitempty"`
+	ID                int64       `json:"id,omitempty"`
+	Location          interface{} `json:"location,omitempty"`
+	Login             string      `json:"login,omitempty"`
+	Name              interface{} `json:"name,omitempty"`
+	NodeID            string      `json:"node_id,omitempty"`
+	OrganizationsURL  string      `json:"organizations_url,omitempty"`
+	OwnedPrivateRepos int64       `json:"owned_private_repos,omitempty"`
+	Plan              struct {
+		Collaborators int64  `json:"collaborators,omitempty"`
+		Name          string `json:"name,omitempty"`
+		PrivateRepos  int64  `json:"private_repos,omitempty"`
+		Space         int64  `json:"space,omitempty"`
+	} `json:"plan,omitempty"`
+	PrivateGists            int64  `json:"private_gists,omitempty"`
+	PublicGists             int64  `json:"public_gists,omitempty"`
+	PublicRepos             int64  `json:"public_repos,omitempty"`
+	ReceivedEventsURL       string `json:"received_events_url,omitempty"`
+	ReposURL                string `json:"repos_url,omitempty"`
+	SiteAdmin               bool   `json:"site_admin,omitempty"`
+	StarredURL              string `json:"starred_url,omitempty"`
+	SubscriptionsURL        string `json:"subscriptions_url,omitempty"`
+	TotalPrivateRepos       int64  `json:"total_private_repos,omitempty"`
+	TwoFactorAuthentication bool   `json:"two_factor_authentication,omitempty"`
+	Type                    string `json:"type,omitempty"`
+	UpdatedAt               string `json:"updated_at,omitempty"`
+	URL                     string `json:"url,omitempty"`
 }
 
+
+
 func (this GithubUser) GetAccount() string {
-	return this.Name
+	return this.Login
 }
 
 func (this GithubUser) GetNickname() string {
-	return this.Name
+	return this.Login
 }
 
 func init() {

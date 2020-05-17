@@ -30,6 +30,9 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if err != nil {
 		return err
 	}
+	if userInfo.GetAccount() == "" {
+		return errors.MarkClient(fmt.Errorf("请授予本站相关权限"))
+	}
 	var user m_user.User
 	var has bool
 	has, err = dao.Dao.Table("Oauth").
