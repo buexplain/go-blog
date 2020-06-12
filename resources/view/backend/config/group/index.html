@@ -40,10 +40,11 @@
                     ,{field: 'Comment', title: '备注'}
                     ,{field: 'UpdatedAt', title: '更新时间'}
                     ,{fixed: 'right', title:'操作', templet:function (data) {
+                        console.log(data);
                             let btn = '';
                             btn += '<a class="layui-btn layui-btn-sm" href="/backend/config/group/edit/'+data['ID']+'">编辑</a>';
                             btn += '<a class="layui-btn layui-btn-sm" lay-event="item">项目</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['ContentNum'] > 0 ? 'none' : '')+';">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
                             return btn;
                         }}
                 ]]

@@ -44,7 +44,7 @@
                     ,{fixed: 'right', title:'操作', templet:function (data) {
                             let btn = '';
                             btn += '<a class="layui-btn layui-btn-sm" href="/backend/config/item/edit/'+data['ID']+'">编辑</a>';
-                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del" id="j-del'+data['ID']+'" style="display:'+(data['ContentNum'] > 0 ? 'none' : '')+';">删除</a>';
+                            btn += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
                             return btn;
                         }}
                 ]]
