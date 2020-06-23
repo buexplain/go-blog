@@ -143,8 +143,8 @@ py = ""
 # 第三方登录配置
 [Business.OAuth]
 [Business.OAuth.User]
-Identity = 0
-RoleID = 0
+Identity = 2
+RoleID = []
 [Business.OAuth.List.github]
 ID = ""
 Secret = ""
