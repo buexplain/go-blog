@@ -93,7 +93,7 @@ func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 	form.Set("state", state)
 	req, err := http.NewRequest(http.MethodPost, "https://github.com/login/oauth/access_token", strings.NewReader(form.Encode()))
 	if err != nil {
-		return nil, code.New(code.CALL_THIRD_ERROR, "请求github错误")
+		return nil, code.New(code.CALL_THIRD_ERROR, "请求github错误，请重试")
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
@@ -181,7 +181,7 @@ func init() {
 func (this Github) GetUserInfo(access_token string) (UserInfo, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.github.com/user?access_token=%s", access_token))
 	if err != nil {
-		return nil, code.New(code.CALL_THIRD_ERROR, "请求github错误")
+		return nil, code.New(code.CALL_THIRD_ERROR, "请求github错误，请重试")
 	}
 	defer func() {
 		_ = resp.Body.Close()
