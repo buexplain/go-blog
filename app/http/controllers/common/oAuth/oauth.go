@@ -79,6 +79,7 @@ func Register(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	r.Session().Set(s_user.USER_INFO, user)
+	r.Session().Del("oauthUserInfo")
 	return w.Success(map[string]string{"redirectURL": s_oauth.RedirectURL(r)})
 }
 
@@ -103,5 +104,6 @@ func Bind(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return err
 	}
 	r.Session().Set(s_user.USER_INFO, user)
+	r.Session().Del("oauthUserInfo")
 	return w.Success(map[string]string{"redirectURL": s_oauth.RedirectURL(r)})
 }

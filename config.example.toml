@@ -143,8 +143,10 @@ py = ""
 # 第三方登录配置
 [Business.OAuth]
 [Business.OAuth.User]
+# 管理人员=1，普通用户=2
 Identity = 2
-RoleID = []
+# 角色id请登录管理员后台查看
+RoleID = [3]
 [Business.OAuth.List.github]
 ID = ""
 Secret = ""
