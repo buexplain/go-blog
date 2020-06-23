@@ -80,7 +80,7 @@ func Destroy(ids []int) error {
 	} else if affected > 0 {
 		if len(ids) == 1 {
 			//只有一条数据时，直接删除tag
-			_, _ = dao.Dao.Where("ContentID", ids[0]).Delete(&m_contentTag.ContentTag{})
+			_, _ = dao.Dao.Where("ContentID=?", ids[0]).Delete(&m_contentTag.ContentTag{})
 			return nil
 		}
 		//检查还有哪些id是存在的
@@ -112,7 +112,8 @@ func Destroy(ids []int) error {
 }
 
 var LuteEngine *lute.Lute
-func init()  {
+
+func init() {
 	LuteEngine = lute.New()
 	//注销掉高亮部分，让js去渲染
 	LuteEngine.CodeSyntaxHighlight = false
@@ -131,9 +132,9 @@ func GetPlace(online m_content.Online) PlaceList {
 	mod := dao.Dao.Table("Content").
 		GroupBy("CreatedAtYm").OrderBy("CreatedAt DESC")
 	//sqlite3存储的是UTC时间，所以要对其进行偏移
-	mod.Select("COUNT(*) as total, strftime('%Y年%m月', CreatedAt, '"+helpers.LocalTimeOffsetSeconds+" seconds') as CreatedAtYm")
+	mod.Select("COUNT(*) as total, strftime('%Y年%m月', CreatedAt, '" + helpers.LocalTimeOffsetSeconds + " seconds') as CreatedAtYm")
 	if m_content.CheckOnline(online) {
-		mod.Where("Online=?", int(online));
+		mod.Where("Online=?", int(online))
 	}
 	result := make(PlaceList, 0)
 	err := mod.Find(&result)

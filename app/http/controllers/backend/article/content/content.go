@@ -13,7 +13,6 @@ import (
 	"github.com/buexplain/go-blog/services/content"
 	"github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -73,13 +72,13 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := v.Validate(mod); err != nil {
 		return err
 	} else if !r.IsEmpty() {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
+		return code.NewM(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
+		return code.NewM(code.INVALID_ARGUMENT, "tagsID")
 	}
 
 	if err := s_content.Save(mod, tagsID, 0); err != nil {
@@ -98,7 +97,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		return w.JumpBack(code.Text(code.INVALID_ARGUMENT, "id"))
 	}
 	if has, err := dao.Dao.Get(result); err != nil {
-		return errors.MarkServer(err)
+		return err
 	} else if !has {
 		return w.JumpBack(code.Text(code.NOT_FOUND_DATA, result.ID))
 	}
@@ -121,13 +120,13 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if r, err := vClone.Validate(mod); err != nil {
 		return err
 	} else if !r.IsEmpty() {
-		return w.Error(code.INVALID_ARGUMENT, r.ToSimpleString())
+		return code.NewM(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
 	tagsID := r.FormSliceInt("tagsID")
 
 	if len(tagsID) == 0 {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "tagsID"))
+		return code.NewM(code.INVALID_ARGUMENT, "tagsID")
 	}
 
 	if err := s_content.Save(mod, tagsID, mod.ID); err != nil {
@@ -190,7 +189,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 
 	if _, err := dao.Dao.ID(result.ID).Update(result); err != nil {
-		return errors.MarkServer(err)
+		return err
 	}
 
 	return w.Success(result.Online)
@@ -214,7 +213,7 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_tag.List)
 	if err := dao.Dao.Find(result); err != nil {
-		return errors.MarkServer(err)
+		return err
 	}
 	return w.Success(result)
 }

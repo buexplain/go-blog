@@ -1,9 +1,8 @@
 package s_oauth
 
 import (
-	"fmt"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 )
 
 type ThirdSite string
@@ -16,6 +15,6 @@ func New(r *fool.Request) (Oauth, error) {
 	case ThirdSiteGithub:
 		return NewGithub(), nil
 	default:
-		return nil, errors.MarkClient(fmt.Errorf("invalid request param: third_site"))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "third_site")
 	}
 }

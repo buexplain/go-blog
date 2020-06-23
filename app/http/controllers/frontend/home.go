@@ -9,7 +9,9 @@ import (
 	s_category "github.com/buexplain/go-blog/services/category"
 	s_configItem "github.com/buexplain/go-blog/services/config/item"
 	s_content "github.com/buexplain/go-blog/services/content"
+	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	s_tag "github.com/buexplain/go-blog/services/tag"
+	s_user "github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
 	"net/http"
 	"strconv"
@@ -33,6 +35,11 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//注入数据
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
+	if user := s_user.IsSignIn(r); user != nil {
+		w.Assign("user", user)
+	} else {
+		w.Assign("github", s_oauth.NewGithub().GetURL("user", "/", r))
+	}
 	w.Assign("contentList", contentList)
 	w.Assign("limit", limit)
 	w.Assign("prePage", currentPage-1)
@@ -100,16 +107,16 @@ func ArticleHits(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_content.Content)
 	has, err := dao.Dao.Where("ID=?", contentID).Select("Hits").Get(result)
 	if err != nil {
-		return w.Error(code.SERVER, code.Text(code.SERVER, err))
+		return w.Error(code.SERVER, err.Error())
 	}
 	if !has {
 		return w.Error(code.NOT_FOUND_DATA, code.Text(code.NOT_FOUND_DATA, contentID))
 	}
 	if isIncr {
 		result.Hits++
-		_, err = dao.Dao.Table(result).ID(contentID).Update(map[string]interface{}{"Hits":result.Hits})
+		_, err = dao.Dao.Table(result).ID(contentID).Update(map[string]interface{}{"Hits": result.Hits})
 		if err != nil {
-			return w.Error(code.SERVER, code.Text(code.SERVER, err))
+			return w.Error(code.SERVER, err.Error())
 		}
 	}
 	return w.Success(result.Hits)

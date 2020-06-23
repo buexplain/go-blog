@@ -7,7 +7,6 @@ import (
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
@@ -23,7 +22,7 @@ func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 
 		if has, err := dao.Dao.Get(user); err != nil {
-			return errors.MarkServer(err)
+			return err
 		} else if !has {
 			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, user.ID))
 		}

@@ -8,7 +8,6 @@ import (
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/attachment"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"strings"
@@ -53,12 +52,12 @@ func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	result := new(m_attachment.Attachment)
 	result.MD5 = r.Param("md5", "")
 	if result.MD5 == "" {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "MD5"))
+		return code.NewM(code.INVALID_ARGUMENT, "MD5")
 	}
 	if has, err := dao.Dao.Get(result); err != nil {
 		return err
 	} else if !has {
-		return w.Error(code.NOT_FOUND_DATA, code.Text(code.NOT_FOUND_DATA))
+		return code.New(code.NOT_FOUND_DATA)
 	}
 	return w.Success(result)
 }
@@ -87,18 +86,18 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	name := r.Form("name")
 	content := r.Form("content")
 	if name == "" && content == "" {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "name or content"))
+		return code.NewM(code.INVALID_ARGUMENT, "name or content")
 	}
 
 	mod := new(m_attachment.Attachment)
 	mod.ID = r.ParamPositiveInt("id")
 	if mod.ID <= 0 {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
+		return code.NewM(code.INVALID_ARGUMENT, "id")
 	}
 	if has, err := dao.Dao.Get(mod); err != nil {
-		return errors.MarkServer(err)
+		return err
 	} else if !has {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, mod.ID))
+		return code.NewM(code.INVALID_ARGUMENT, mod.ID)
 	}
 	if name != "" {
 		mod.Name = name

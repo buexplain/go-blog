@@ -7,7 +7,6 @@ import (
 	"github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
@@ -23,7 +22,7 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		}
 
 		if has, err := dao.Dao.Get(role); err != nil {
-			return errors.MarkServer(err)
+			return err
 		} else if !has {
 			return w.JumpBack(code.Text(code.NOT_FOUND_DATA, role.ID))
 		}
@@ -43,14 +42,14 @@ func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	//开始插入角色节点关系表
 	roleID := r.ParamInt("id")
 	if roleID <= 0 {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "id"))
+		return code.NewM(code.INVALID_ARGUMENT, "id")
 	}
 
 	nodeID := r.FormSliceInt("ids")
 
 	err := s_roleNodeRelation.SetRelation(roleID, nodeID)
 	if err != nil {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
+		return code.NewM(code.INVALID_ARGUMENT, err)
 	}
 
 	return w.Success()

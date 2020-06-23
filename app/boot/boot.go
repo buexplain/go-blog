@@ -34,13 +34,13 @@ func init() {
 	}
 	if isGoBuildRun {
 		dir, err = os.Getwd()
-	}else {
+	} else {
 		dir, err = filepath.Abs(filepath.Dir(os.Args[0]))
 	}
 	if err != nil {
 		log.Fatalln(err)
 	}
-	ROOT_PATH = strings.TrimSuffix(filepath.ToSlash(dir), "/")+"/"
+	ROOT_PATH = strings.TrimSuffix(filepath.ToSlash(dir), "/") + "/"
 }
 
 //应用程序配置
@@ -67,10 +67,10 @@ func init() {
 		Config.App.Server.IP = helpers.GetPublicIP()
 	}
 	//服务关闭的检查超时时间
-	min :=  Config.Log.CloseTimedOut.Nanoseconds()*2 + Config.App.Event.CloseTimedOut.Nanoseconds()
+	min := Config.Log.CloseTimedOut.Nanoseconds()*2 + Config.App.Event.CloseTimedOut.Nanoseconds()
 	if Config.Log.Async {
 		//日志开启了异步，要算上一次异步冲刷的时间
-		min += Config.Log.Flush.Nanoseconds()*2
+		min += Config.Log.Flush.Nanoseconds() * 2
 	}
 	//时间再翻倍
 	min *= 2

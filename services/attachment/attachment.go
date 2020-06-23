@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/attachment"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-fool/upload"
 	"io"
 	"log"
@@ -59,14 +59,14 @@ func Upload(file *upload.Upload, folder string) (*m_attachment.Attachment, error
 	if folder != "" {
 		folder = strings.Trim(folder, "/")
 		if !FolderRegexp.MatchString(folder) {
-			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹必须符合规则：%s", FolderRegexp.String()))
+			return nil, code.NewF(code.INVALID_ARGUMENT, "自定义文件夹必须符合规则：%s", FolderRegexp.String())
 		}
 		if len(folder) > 50 {
-			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹长度必须小于50个字符"))
+			return nil, code.New(code.INVALID_ARGUMENT, "自定义文件夹长度必须小于50个字符")
 		}
 
 		if len(strings.Split(folder, "/")) > 5 {
-			return nil, errors.MarkClient(fmt.Errorf("自定义文件夹深度不能超过5层"))
+			return nil, code.New(code.INVALID_ARGUMENT, "自定义文件夹深度不能超过5层")
 		}
 	}
 

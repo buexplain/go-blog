@@ -124,7 +124,7 @@
             type: "GET",
             url: "/common/captcha",
             success: function(json) {
-                $("#j-captcha").html('<img onclick="getCaptcha()" src="'+json.data+'">');
+                $("#j-captcha").html('<img onclick="getCaptcha()" src="'+json.data+'" alt="验证码">');
             }
         });
     }

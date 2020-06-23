@@ -6,7 +6,6 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -39,12 +38,12 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		"密码格式有误，数字、字母、符号至少两种")
 
 	if r, err := v.Validate(mod); err != nil {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
+		return code.NewM(code.INVALID_ARGUMENT, err)
 	} else if !r.IsEmpty() {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, r.ToSimpleString()))
+		return code.NewM(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
-	user := s_user.IsSignIn(r.Session())
+	user := s_user.IsSignIn(r)
 	if user == nil {
 		return w.Error(code.INVALID_ARGUMENT, "错误的登录信息")
 	}
@@ -56,11 +55,11 @@ func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	var err error
 	user.Password, err = s_user.GeneratePassword(mod.NewPassword)
 	if err != nil {
-		return errors.MarkServer(err)
+		return err
 	}
 
 	if _, err := dao.Dao.ID(user.ID).Update(user); err != nil {
-		return errors.MarkServer(err)
+		return err
 	}
 
 	return w.Success()

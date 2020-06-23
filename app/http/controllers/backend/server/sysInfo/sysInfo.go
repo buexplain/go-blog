@@ -26,7 +26,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if v, err := host.Info(); err == nil {
 		base["hostName"] = v.Hostname
 		base["os"] = v.OS
-	}else{
+	} else {
 		return fmt.Errorf("读取系统信息失败: %w", err)
 	}
 	base["goVersion"] = runtime.Version()
@@ -41,7 +41,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		tmp["free"] = helpers.FormatSize(int64(v.Available))
 		tmp["used"] = helpers.FormatSize(int64(v.Used))
 		result["memory"] = tmp
-	}else{
+	} else {
 		return fmt.Errorf("读取内存信息失败: %w", err)
 	}
 
@@ -52,14 +52,14 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		tmp["free"] = helpers.FormatSize(int64(v.Free))
 		tmp["used"] = helpers.FormatSize(int64(v.Used))
 		result["disk"] = tmp
-	}else {
+	} else {
 		return fmt.Errorf("读取磁盘信息失败: %w", err)
 	}
 
 	//读取cpu信息
 	if v, err := cpu.Info(); err == nil {
-		tmp := make([]struct{
-			Name string
+		tmp := make([]struct {
+			Name  string
 			Cores int32
 		}, 0)
 		for _, info := range v {
@@ -69,13 +69,13 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			}{Name: info.ModelName, Cores: info.Cores})
 		}
 		result["cpu"] = tmp
-	}else {
+	} else {
 		return fmt.Errorf("读取cpu信息失败: %w", err)
 	}
 
 	//网卡
 	if v, err := net.IOCounters(true); err == nil {
-		tmp := make([]struct{
+		tmp := make([]struct {
 			Name string
 			Recv string
 			Sent string
@@ -88,7 +88,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 			}{Name: info.Name, Recv: helpers.FormatSize(int64(info.BytesRecv)), Sent: helpers.FormatSize(int64(info.BytesSent))})
 		}
 		result["io"] = tmp
-	}else {
+	} else {
 		return fmt.Errorf("读取网卡信息失败: %w", err)
 	}
 
@@ -99,14 +99,14 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		tmp["five"] = v.Load5
 		tmp["fifteen"] = v.Load15
 		result["load"] = tmp
-	}else {
+	} else {
 		if runtime.GOOS == "windows" {
 			tmp := map[string]interface{}{}
 			tmp["one"] = 0
 			tmp["five"] = 0
 			tmp["fifteen"] = 0
 			result["load"] = tmp
-		}else {
+		} else {
 			return fmt.Errorf("读取负载信息失败: %w", err)
 		}
 	}

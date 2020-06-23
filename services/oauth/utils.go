@@ -1,6 +1,7 @@
 package s_oauth
 
 import (
+	"github.com/buexplain/go-fool"
 	"math/rand"
 	"net/url"
 )
@@ -36,4 +37,28 @@ func setQueryString(uri string, key string, value string) string {
 	query.Set(key, value)
 	tmp.RawQuery = query.Encode()
 	return tmp.String()
+}
+
+func RedirectURL(r *fool.Request, def ...string) string {
+	s := r.Session().GetString("oauthRedirect")
+	if s == "" {
+		if len(def) > 0 {
+			s = def[0]
+		} else {
+			s = "/"
+		}
+	}
+	return s
+}
+
+func OriginURL(r *fool.Request, def ...string) string {
+	s := r.Session().GetString("oauthOrigin")
+	if s == "" {
+		if len(def) > 0 {
+			s = def[0]
+		} else {
+			s = "/"
+		}
+	}
+	return s
 }

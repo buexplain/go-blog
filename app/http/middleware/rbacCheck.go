@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/models/user"
@@ -10,42 +9,29 @@ import (
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
 	"github.com/buexplain/go-fool"
-	"net/http"
 )
 
 //rbac 权限校验
 func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	if ctx.Route() == nil {
 		//该中间件必须设置为组中间件或者是路由中间件
-		ctx.Throw(ctx.Response().Plain(http.StatusInternalServerError, code.Text(code.MIDDLEWARE_SET_ERROR)))
+		ctx.Throw(code.New(code.MIDDLEWARE_SET_ERROR))
+		return
+	}
+	if rbacCheck(ctx) {
+		ctx.Next()
+		return
+	}
+	node := s_node.GetByURL(ctx.Route().GetPath(), ctx.Request().Raw().Method)
+	if node == nil {
+		ctx.Throw(code.NewF(code.SERVER, "路由 %s 没有写入到Node表", ctx.Route().GetPath()))
 	} else {
-		if rbacCheck(ctx) {
-			ctx.Next()
-		} else {
-			var message string
-			if ctx.App().Debug() && ctx.Route() != nil {
-				node := s_node.GetByURL(ctx.Route().GetPath(), ctx.Request().Raw().Method)
-				if node == nil {
-					h_boot.Logger.WarningF("路由 %s 没有写入到Node表", ctx.Route().GetPath())
-					message = fmt.Sprintf("%s: %s", code.Text(code.INVALID_AUTH), ctx.Route().GetPath())
-				}else {
-					message = fmt.Sprintf("%s: %s %s %s", code.Text(code.INVALID_AUTH), node.Name, node.URL, node.Methods)
-				}
-			} else {
-				message = code.Text(code.INVALID_AUTH)
-			}
-			if ctx.Route() != nil && ctx.Route().HasLabel("json") {
-				//存在路由，并且路由有json标签，则响应json格式
-				ctx.Throw(w.Error(code.INVALID_AUTH, message))
-			} else {
-				ctx.Throw(ctx.Response().Jump("/backend/sign", message))
-			}
-		}
+		ctx.Throw(code.New(code.INVALID_AUTH))
 	}
 }
 
 func rbacCheck(ctx *fool.Ctx) bool {
-	user := s_user.IsSignIn(ctx.Request().Session())
+	user := s_user.IsSignIn(ctx.Request())
 
 	//判断后台用户是否登录
 	if user == nil || user.Identity != m_user.IdentityOfficial {

@@ -91,7 +91,9 @@ func (this Time) Raw() time.Time {
 
 //枚举类型
 type Enum int
-const EnumUNKNOWN  = "UNKNOWN"
+
+const EnumUNKNOWN = "UNKNOWN"
+
 func (this *Enum) FromDB(b []byte) error {
 	s := string(b)
 	i, err := strconv.Atoi(s)

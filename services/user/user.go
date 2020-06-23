@@ -2,7 +2,7 @@ package s_user
 
 import (
 	"encoding/gob"
-	"fmt"
+	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	m_models "github.com/buexplain/go-blog/models"
@@ -10,12 +10,11 @@ import (
 	m_user "github.com/buexplain/go-blog/models/user"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
-const SESSION_ID = "SESSION_ID"
+const USER_INFO = "UserInfo"
 
 func init() {
 	gob.Register(&m_user.User{})
@@ -46,19 +45,19 @@ func OfficialSignIn(session fool.Session, account string, password string) (*m_u
 		return nil, err
 	}
 	if !has {
-		return nil, errors.MarkClient(errors.New("账号或密码错误"))
+		return nil, code.New(code.INVALID_ARGUMENT, "账号或密码错误")
 	}
 
 	if !ComparePassword(password, user.Password) {
-		return nil, errors.MarkClient(errors.New("账号或密码错误"))
+		return nil, code.New(code.INVALID_ARGUMENT, "账号或密码错误")
 	}
 
 	if user.Status != m_user.StatusAllow {
-		return nil, errors.MarkClient(errors.New("账号已被禁用，请联系管理员"))
+		return nil, code.New(code.INVALID_AUTH, "账号已被禁用，请联系管理员")
 	}
 
 	if user.Identity != m_user.IdentityOfficial {
-		return nil, errors.MarkClient(errors.New("非法登录"))
+		return nil, code.New(code.INVALID_AUTH, "非法登录")
 	}
 
 	user.LastTime = m_models.Time(time.Now())
@@ -66,7 +65,7 @@ func OfficialSignIn(session fool.Session, account string, password string) (*m_u
 	_, err = SaveByID(user.ID, user)
 
 	if err == nil {
-		session.Set(SESSION_ID, user)
+		session.Set(USER_INFO, user)
 	}
 
 	return user, err
@@ -74,13 +73,16 @@ func OfficialSignIn(session fool.Session, account string, password string) (*m_u
 
 //退出登录
 func SignOut(session fool.Session) {
-	session.Del(SESSION_ID)
+	session.Del(USER_INFO)
 	session.Destroy()
 }
 
 //校验是否登录
-func IsSignIn(session fool.Session) *m_user.User {
-	user := session.Get(SESSION_ID)
+func IsSignIn(r *fool.Request) *m_user.User {
+	if !r.HasCookie(a_boot.Config.Session.Name) {
+		return nil
+	}
+	user := r.Session().Get(USER_INFO)
 	if user == nil {
 		return nil
 	}
@@ -104,13 +106,13 @@ func SaveByID(id int, user *m_user.User) (affected int64, err error) {
 //根据第三方的账号信息，注册本站用户信息
 func RegisterByOauth(account string, nickname string, status m_oauth.Status, userInfo s_oauth.UserInfo) (*m_user.User, error) {
 	if account == "" {
-		return nil, errors.MarkClient(fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "account")))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "account")
 	}
 	if nickname == "" {
-		return nil, errors.MarkClient(fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "nickname")))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "nickname")
 	}
 	if status.String() == m_models.EnumUNKNOWN {
-		return nil, fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "status"))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "status")
 	}
 	var user m_user.User
 	//判断是否已经注册过
@@ -133,12 +135,11 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 		Get(&user)
 	if has {
 		//账号不唯一，直接返回
-		return nil, errors.MarkClient(fmt.Errorf("账号已存在: "+account))
+		return nil, code.New(code.INVALID_ARGUMENT, "账号已存在")
 	}
 	//生成一个随机的密码
 	var password string
-	password, err = GeneratePassword("123456")
-	//password, err = GeneratePassword(time.Now().String())
+	password, err = GeneratePassword(time.Now().String())
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +167,7 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 		if err := session.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("insert table error: user")
+		return nil, code.New(code.SERVER, "插入表 user 失败")
 	}
 	//插入数据到第三方登录表
 	oauth := m_oauth.Oauth{}
@@ -185,7 +186,7 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 		if err := session.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("insert table error: oauth")
+		return nil, code.New(code.SERVER, "插入表 oauth 失败")
 	}
 	//提交事务
 	if err := session.Commit(); err != nil {
@@ -197,13 +198,13 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 //将用户的第三方账号信息与本站用户信息进行绑定
 func BindByOauth(account string, password string, status m_oauth.Status, userInfo s_oauth.UserInfo) (*m_user.User, error) {
 	if account == "" {
-		return nil, errors.MarkClient(fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "account")))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "account")
 	}
 	if password == "" {
-		return nil, errors.MarkClient(fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "password")))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "password")
 	}
 	if status.String() == m_models.EnumUNKNOWN {
-		return nil, fmt.Errorf(code.Text(code.INVALID_ARGUMENT, "status"))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "status")
 	}
 	var oauth m_oauth.Oauth
 	//判断是否已经绑定过
@@ -215,7 +216,7 @@ func BindByOauth(account string, password string, status m_oauth.Status, userInf
 		return nil, err
 	}
 	if has {
-		return nil, errors.MarkClient(fmt.Errorf("账号已被绑定了: "+userInfo.GetNickname()))
+		return nil, code.NewM(code.CLIENT, "账号已被绑定到 "+userInfo.GetNickname())
 	}
 	var user *m_user.User
 	user, has, err = GetByAccount(account)
@@ -223,13 +224,13 @@ func BindByOauth(account string, password string, status m_oauth.Status, userInf
 		return nil, err
 	}
 	if !has {
-		return nil, errors.MarkClient(errors.New("账号或密码错误"))
+		return nil, code.New(code.CLIENT, "账号或密码错误")
 	}
 	if !ComparePassword(password, user.Password) {
-		return nil, errors.MarkClient(errors.New("账号或密码错误"))
+		return nil, code.New(code.CLIENT, "账号或密码错误")
 	}
 	if user.Status != m_user.StatusAllow {
-		return nil, errors.MarkClient(errors.New("账号已被禁用，请联系管理员"))
+		return nil, code.New(code.CLIENT, "账号已被禁用，请联系管理员")
 	}
 	oauth.Nickname = userInfo.GetAccount()
 	oauth.Account = userInfo.GetAccount()
@@ -240,7 +241,7 @@ func BindByOauth(account string, password string, status m_oauth.Status, userInf
 		return nil, err
 	}
 	if oauth.ID == 0 {
-		return nil, fmt.Errorf("insert table error: oauth")
+		return nil, code.New(code.SERVER, "插入表 oauth 失败")
 	}
 	return user, nil
 }

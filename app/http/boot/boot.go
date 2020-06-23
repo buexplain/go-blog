@@ -54,7 +54,7 @@ func init() {
 	}
 	//因为缓存启动的时候会清空目录下的所有文件，所以要严格校验目录是否为根目录，避免误删
 	if path == "" || path == a_boot.ROOT_PATH[0:len(a_boot.ROOT_PATH)-1] || path == "." || path == "./" || path == `.\` {
-		log.Fatalln("cache path not allowed: "+path)
+		log.Fatalln("cache path not allowed: " + path)
 	}
 	c, err := fscache.New(path, 0755, time.Duration(0))
 	if err != nil {
@@ -63,7 +63,7 @@ func init() {
 	//测试一波读写
 	if err := ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755); err != nil {
 		log.Fatalln(err)
-	}else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
+	} else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
 		log.Fatalln(err)
 	}
 	//缓存初始化成功
@@ -118,7 +118,7 @@ func init() {
 	//测试一波读写
 	if err := ioutil.WriteFile(filepath.Join(path, "git.keep"), []byte(""), 0755); err != nil {
 		log.Fatalln(err)
-	}else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
+	} else if _, err := ioutil.ReadFile(filepath.Join(path, "git.keep")); err != nil {
 		log.Fatalln(err)
 	}
 	switch a_boot.Config.Session.Store {

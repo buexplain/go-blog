@@ -1,12 +1,11 @@
 package s_configItem
 
 import (
-	"fmt"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	m_configItem "github.com/buexplain/go-blog/models/config/item"
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"html/template"
 )
 
@@ -41,7 +40,7 @@ func (this List) Get(key string) string {
 			return v.Value
 		}
 	}
-	panic(errors.MarkServer(fmt.Errorf("not found config: %s.%s", this.group, key)))
+	panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", this.group, key))
 }
 
 func (this List) GetToHTML(key string) template.HTML {
@@ -50,7 +49,7 @@ func (this List) GetToHTML(key string) template.HTML {
 			return template.HTML(v.Value)
 		}
 	}
-	panic(errors.MarkServer(fmt.Errorf("not found config: %s.%s", this.group, key)))
+	panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", this.group, key))
 }
 
 func GetByGroup(groupName string) *List {
@@ -65,7 +64,7 @@ func GetByGroup(groupName string) *List {
 		panic(err)
 	}
 	if len(*result) == 0 {
-		panic(errors.MarkServer(fmt.Errorf("not found config: %s", groupName)))
+		panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", groupName))
 	}
 	return &List{data: *result, group: groupName}
 }

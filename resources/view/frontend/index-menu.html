@@ -15,3 +15,22 @@
         {{end}}
     </li>
 {{end}}
+{{if .user}}
+    <li class="layui-nav-item ">
+        <a href="javascript:;">{{.user.Nickname}}<span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child layui-anim layui-anim-upbit">
+            <dd class="">
+                <a target="_blank" href="/backend/skeleton">进入后台</a>
+            </dd>
+            <dd class="">
+                <a href="/backend/sign?_method=delete&redirect={{(URL $.currentURL).String}}">退出登录</a>
+            </dd>
+        </dl>
+    </li>
+{{else}}
+    {{if .github}}
+        <li class="layui-nav-item ">
+            <a href="{{.github}}">Github登录</a>
+        </li>
+    {{end}}
+{{end}}

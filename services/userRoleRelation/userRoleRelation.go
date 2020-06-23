@@ -11,7 +11,7 @@ import (
 type Relation struct {
 	m_role.Role `xorm:"extends"`
 	//是否拥有该角色
-	Checked     bool `xorm:"-"`
+	Checked bool `xorm:"-"`
 }
 
 type RelationList []*Relation

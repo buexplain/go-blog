@@ -7,7 +7,6 @@ import (
 	"github.com/buexplain/go-blog/models/content"
 	"github.com/buexplain/go-blog/models/tag"
 	s_category "github.com/buexplain/go-blog/services/category"
-	"github.com/buexplain/go-fool/errors"
 	"html/template"
 )
 
@@ -24,12 +23,12 @@ func GetDetails(id int, online m_content.Online) (*Details, error) {
 	details.Tag = new(m_tag.List)
 	mod := dao.Dao.Table("Content").ID(id)
 	if m_content.CheckOnline(online) {
-		mod.Where("Online=?", int(online));
+		mod.Where("Online=?", int(online))
 	}
 	if has, err := mod.Get(details.Content); err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.MarkClient(errors.New(code.Text(code.NOT_FOUND_DATA, id)))
+		return nil, code.NewM(code.NOT_FOUND_DATA, id)
 	}
 
 	//渲染html成

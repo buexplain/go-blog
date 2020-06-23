@@ -11,9 +11,9 @@ type Business struct {
 }
 
 type OAuth struct {
-	ID string
-	Secret string
-	RedirectUri string
+	ID          string
+	Secret      string
+	CallBackUrl string
 }
 
 type upload struct {
@@ -25,7 +25,7 @@ type upload struct {
 
 func (this upload) Ext() []string {
 	str := make([]string, 0, len(this.Accept))
-	for k,_ := range this.Accept  {
+	for k, _ := range this.Accept {
 		str = append(str, string(k))
 	}
 	return str
@@ -34,7 +34,7 @@ func (this upload) Ext() []string {
 func (this upload) MimeType() []string {
 	m := map[string]bool{}
 	i := 0
-	for _, v := range this.Accept  {
+	for _, v := range this.Accept {
 		tmp := string(v)
 		if tmp == "" {
 			continue

@@ -8,7 +8,7 @@ import (
 )
 
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	user := s_user.IsSignIn(r.Session())
+	user := s_user.IsSignIn(r)
 	userRoleName, err := s_userRoleRelation.GetRoleNameByUserID(user.ID)
 	if err != nil {
 		return err

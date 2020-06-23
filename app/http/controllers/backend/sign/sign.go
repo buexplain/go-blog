@@ -7,7 +7,6 @@ import (
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -26,7 +25,7 @@ func init() {
 
 //显示登录页面
 func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
-	if s_user.IsSignIn(r.Session()) != nil {
+	if s_user.IsSignIn(r) != nil {
 		return w.Redirect(http.StatusFound, "/backend/skeleton")
 	}
 	w.Assign("github", s_oauth.NewGithub().GetURL("user", "/backend/skeleton", r))
@@ -62,7 +61,7 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	})
 
 	if r, err := vClone.Validate(mod); err != nil {
-		return errors.MarkServer(err)
+		return err
 	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}
@@ -79,5 +78,6 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 //退出登录
 func Out(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	s_user.SignOut(r.Session())
-	return w.Redirect(http.StatusFound, "/backend/sign")
+	redirect := r.Query("redirect", "/backend/sign")
+	return w.Redirect(http.StatusFound, redirect)
 }

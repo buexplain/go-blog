@@ -46,7 +46,7 @@ func Run() {
 				_ = Logger.Close()
 				os.Exit(1)
 			}
-		}else {
+		} else {
 			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 			if err := server.Serve(ln); err != nil && err != http.ErrServerClosed {
 				Logger.Error(err.Error())
@@ -67,7 +67,7 @@ func Run() {
 
 		//关闭http
 		if err := server.Shutdown(context.Background()); err != nil {
-			log.Println("shutdown err: "+err.Error())
+			log.Println("shutdown err: " + err.Error())
 		}
 
 		//等待事件调度器结束

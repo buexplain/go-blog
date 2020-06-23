@@ -15,12 +15,12 @@ import (
 
 type lock struct {
 	restarting int
-	rw sync.RWMutex
+	rw         sync.RWMutex
 }
 
 var l *lock
 
-func init()  {
+func init() {
 	l = new(lock)
 	l.restarting = -1
 	l.rw = sync.RWMutex{}
@@ -40,17 +40,17 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	c := r.Form("config")
 	//检查配置格式是否正确
 	if _, err := toml.Decode(c, &config.Config{}); err != nil {
-		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, err))
+		return w.Error(code.INVALID_ARGUMENT, err.Error())
 	}
 	//写入配置到文件
 	if err := ioutil.WriteFile(PATH, []byte(c), 0755); err != nil {
-		return w.Error(code.SERVER, code.Text(code.SERVER, err))
+		return w.Error(code.SERVER, err.Error())
 	}
 	//锁定
 	l.restarting = 0
 	go func() {
 		//进程退出超时的时候还没结束的话，锁定重启按钮，不再支持重启
-		<- time.After(a_boot.Config.App.Server.CloseTimedOut.Duration)
+		<-time.After(a_boot.Config.App.Server.CloseTimedOut.Duration)
 		l.restarting = 1
 	}()
 	//发送信号

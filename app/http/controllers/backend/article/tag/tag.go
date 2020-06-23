@@ -9,7 +9,6 @@ import (
 	"github.com/buexplain/go-blog/services"
 	s_tag "github.com/buexplain/go-blog/services/tag"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -72,7 +71,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	vClone.Field("Name").Rule("CheckUnique:id="+strconv.Itoa(mod.ID), "该标签名已存在")
 
 	if r, err := vClone.Validate(mod); err != nil {
-		return errors.MarkServer(err)
+		return err
 	} else if !r.IsEmpty() {
 		return w.JumpBack(r)
 	}

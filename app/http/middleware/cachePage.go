@@ -56,7 +56,7 @@ func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 		if err != nil {
 			ctx.Throw(err)
 		}
-	}else{
+	} else {
 		//缓存不存在，进入下一个中间件
 		ctx.Next()
 		//http返回200，并且返回类型是text/html; charset=utf-8，写入缓存

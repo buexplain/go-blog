@@ -10,20 +10,20 @@ type App struct {
 
 //http服务配置
 type Server struct {
-	IP           string
-	Port         uint
-	CertFile     string
-	KeyFile      string
-	ReadTimeout  Duration
-	WriteTimeout Duration
+	IP            string
+	Port          uint
+	CertFile      string
+	KeyFile       string
+	ReadTimeout   Duration
+	WriteTimeout  Duration
 	CloseTimedOut Duration
 }
 
 //事件调度配置
 type Event struct {
-	Async    bool
-	Worker   uint
-	Capacity uint
+	Async         bool
+	Worker        uint
+	Capacity      uint
 	CloseTimedOut Duration
 }
 

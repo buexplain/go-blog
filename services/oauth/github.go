@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,8 +16,8 @@ import (
 )
 
 type Github struct {
-	ID string
-	Secret string
+	ID          string
+	Secret      string
 	RedirectUri string
 }
 
@@ -26,13 +26,13 @@ func NewGithub() Oauth {
 	if config, ok := a_boot.Config.Business.OAuth["github"]; ok {
 		tmp.ID = config.ID
 		tmp.Secret = config.Secret
-		tmp.RedirectUri = setQueryString(config.RedirectUri, "third_site", string(ThirdSiteGithub))
+		tmp.RedirectUri = setQueryString(config.CallBackUrl, "third_site", string(ThirdSiteGithub))
 	}
 	return tmp
 }
 
 //@link https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
-func (this Github) GetURL(scope string, oauth_after_url string, r *fool.Request) (oauth_url string) {
+func (this Github) GetURL(scope string, redirect string, r *fool.Request) (oauth_url string) {
 	if this.ID == "" || this.Secret == "" {
 		return
 	}
@@ -46,15 +46,16 @@ func (this Github) GetURL(scope string, oauth_after_url string, r *fool.Request)
 	query.Set("scope", scope)
 	state := randomString(6)
 	//记录state
-	r.Session().Set("oauth_state", state)
-	r.Session().Set("oauth_after_url", oauth_after_url)
-	r.Session().Set("oauth_before_url", r.Raw().URL.String())
+	r.Session().Set("oauthState", state)
+	//记录授权成功后的跳转地址
+	r.Session().Set("oauthRedirect", redirect)
+	//记录授权失败后的跳转地址
+	r.Session().Set("oauthOrigin", r.Raw().URL.String())
 	query.Set("state", state)
 	tmp.RawQuery = query.Encode()
 	oauth_url = tmp.String()
 	return
 }
-
 
 type GithubAccessResult struct {
 	AccessToken string `json:"access_token,omitempty"`
@@ -68,24 +69,27 @@ func (this GithubAccessResult) GetAccessToken() string {
 
 func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 	state := r.Query("state")
-	code := r.Query("code")
+	codeStr := r.Query("code")
 	if state == "" {
-		return nil, errors.MarkClient(fmt.Errorf("invalid request param: state"))
+		return nil, code.NewM(code.INVALID_ARGUMENT, "state")
 	}
-	if code == "" {
-		return nil, errors.MarkClient(fmt.Errorf("invalid request param: code"))
+	if codeStr == "" {
+		return nil, code.NewM(code.INVALID_ARGUMENT, "code")
 	}
 	//校验state
-	if r.Session().GetString("oauth_state") != state {
-		return nil, errors.MarkClient(fmt.Errorf("invalid request param: state"))
+	if r.Session().GetString("oauthState") != state {
+		return nil, code.NewM(code.INVALID_ARGUMENT, "state")
 	}
-	if this.ID == "" || this.Secret == "" {
-		return nil, fmt.Errorf("not found config: github")
+	if this.ID == "" {
+		return nil, code.NewM(code.INVALID_CONFIG, "github id")
+	}
+	if this.Secret == "" {
+		return nil, code.NewM(code.INVALID_CONFIG, "github secret")
 	}
 	form := url.Values{}
 	form.Set("client_id", this.ID)
 	form.Set("client_secret", this.Secret)
-	form.Set("code", code)
+	form.Set("code", codeStr)
 	form.Set("state", state)
 	req, err := http.NewRequest(http.MethodPost, "https://github.com/login/oauth/access_token", strings.NewReader(form.Encode()))
 	if err != nil {
@@ -95,7 +99,7 @@ func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Cookie", "name=anny")
 	client := &http.Client{}
-	client.Timeout = time.Second*10
+	client.Timeout = time.Second * 10
 	var resp *http.Response
 	resp, err = client.Do(req)
 	if err != nil {
@@ -110,12 +114,11 @@ func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
 		return nil, err
 	}
 	var result GithubAccessResult
-	if err := json.Unmarshal(body,  &result); err != nil {
+	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
-
 
 type GithubUser struct {
 	AvatarURL         string      `json:"avatar_url,omitempty"`
@@ -163,8 +166,6 @@ type GithubUser struct {
 	URL                     string `json:"url,omitempty"`
 }
 
-
-
 func (this GithubUser) GetAccount() string {
 	return this.Login
 }
@@ -191,7 +192,7 @@ func (this Github) GetUserInfo(access_token string) (UserInfo, error) {
 		return nil, err
 	}
 	var result GithubUser
-	if err := json.Unmarshal(body,  &result); err != nil {
+	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil

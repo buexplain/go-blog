@@ -3,11 +3,11 @@ package s_services
 import (
 	"fmt"
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/helpers"
 	m_models "github.com/buexplain/go-blog/models"
 	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/errors"
 	"strings"
 	"time"
 	"xorm.io/xorm"
@@ -47,8 +47,6 @@ func (this *Query) TableInfo() *schemas.Table {
 		this.tableInfo, this.Error = GetTableInfo(dao.Dao, this.tableName)
 		if this.Error == nil {
 			this.tableName = this.tableInfo.Name
-		} else {
-			this.Error = errors.MarkServer(this.Error)
 		}
 	}
 	return this.tableInfo
@@ -64,7 +62,7 @@ func (this *Query) Find(rowsSlicePtr interface{}) {
 		this.condition = 2
 	}
 	if this.Error == nil {
-		this.Error = errors.MarkServer(this.Finder.Find(rowsSlicePtr))
+		this.Error = this.Finder.Find(rowsSlicePtr)
 	}
 }
 
@@ -86,16 +84,14 @@ func (this *Query) Count() int64 {
 					CreatedAt m_models.Time `xorm:"DATETIME created"`
 				}
 				total, this.Error = this.Finder.Count(new(Tmp))
-				this.Error = errors.MarkServer(this.Error)
 			} else if tableInfo.GetColumn("ID") != nil {
 				type Tmp struct {
 					ID int `xorm:"INTEGER"`
 				}
 				total, this.Error = this.Finder.Count(new(Tmp))
-				this.Error = errors.MarkServer(this.Error)
 			} else {
 				//如果报这个错误，请在此处添加一个比较通用的字段
-				this.Error = errors.MarkServer(fmt.Errorf("not hit table field: %s", this.tableName))
+				this.Error = code.NewF(code.SERVER, "not hit table field: %s", this.tableName)
 			}
 		}
 	}
@@ -107,7 +103,7 @@ func (this *Query) FindAndCount(rowsSlicePtr interface{}, counter *int64, condiB
 	if this.Error == nil {
 		c, err := this.Finder.FindAndCount(rowsSlicePtr, condiBean...)
 		if err != nil {
-			this.Error = errors.MarkServer(err)
+			this.Error = err
 		} else {
 			*counter = c
 		}

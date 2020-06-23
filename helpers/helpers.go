@@ -14,7 +14,8 @@ import (
 
 //本地时间偏移秒数
 var LocalTimeOffsetSeconds string
-func init()  {
+
+func init() {
 	//如果更改了服务器时区，则需要重启服务器，以更新改偏移量
 	t := time.Now()
 	_, o := t.Zone()

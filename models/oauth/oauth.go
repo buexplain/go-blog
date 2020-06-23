@@ -1,7 +1,5 @@
 package m_oauth
 
-
-
 import (
 	m_models "github.com/buexplain/go-blog/models"
 )
@@ -20,4 +18,3 @@ type Oauth struct {
 	//第三方类型
 	Status Status `xorm:"INTEGER"`
 }
-
