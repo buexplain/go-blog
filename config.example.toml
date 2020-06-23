@@ -142,7 +142,10 @@ py = ""
 
 # 第三方登录配置
 [Business.OAuth]
-[Business.OAuth.github]
+[Business.OAuth.User]
+Identity = 0
+RoleID = 0
+[Business.OAuth.List.github]
 ID = ""
 Secret = ""
 CallBackUrl = ""

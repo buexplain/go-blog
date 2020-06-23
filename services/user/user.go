@@ -9,6 +9,7 @@ import (
 	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	m_user "github.com/buexplain/go-blog/models/user"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
+	s_userRoleRelation "github.com/buexplain/go-blog/services/userRoleRelation"
 	"github.com/buexplain/go-fool"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -153,7 +154,11 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 	user.Status = m_user.StatusAllow
 	user.Account = account
 	user.Nickname = nickname
-	user.Identity = m_user.IdentityCitizen
+	if m_user.Identity(a_boot.Config.Business.OAuth.User.Identity).String() == m_models.EnumUNKNOWN {
+		user.Identity = m_user.IdentityCitizen
+	}else {
+		user.Identity = m_user.Identity(a_boot.Config.Business.OAuth.User.Identity)
+	}
 	user.Password = password
 	user.LastTime = m_models.Time(time.Now())
 	_, err = dao.Dao.Insert(&user)
@@ -191,6 +196,12 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 	//提交事务
 	if err := session.Commit(); err != nil {
 		return nil, err
+	}
+	//插入角色关系表
+	if m_user.Identity(a_boot.Config.Business.OAuth.User.Identity).String() != m_models.EnumUNKNOWN && len(a_boot.Config.Business.OAuth.User.RoleID) > 0 {
+		if err := s_userRoleRelation.SetRelation(user.ID, a_boot.Config.Business.OAuth.User.RoleID); err != nil {
+			return nil, err
+		}
 	}
 	return &user, nil
 }

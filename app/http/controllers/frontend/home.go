@@ -38,7 +38,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	if user := s_user.IsSignIn(r); user != nil {
 		w.Assign("user", user)
 	} else {
-		w.Assign("github", s_oauth.NewGithub().GetURL("user", "/", r))
+		w.Assign("github", s_oauth.NewGithub().GetURL("user", r.Raw().URL.String(), r))
 	}
 	w.Assign("contentList", contentList)
 	w.Assign("limit", limit)
@@ -95,6 +95,11 @@ func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	w.Assign("currentURL", *r.Raw().URL)
 	w.Assign("config", config)
 	w.Assign("categoryTree", categoryTree)
+	if user := s_user.IsSignIn(r); user != nil {
+		w.Assign("user", user)
+	} else {
+		w.Assign("github", s_oauth.NewGithub().GetURL("user", r.Raw().URL.String(), r))
+	}
 	return w.Assign("result", result).View(http.StatusOK, "frontend/article.html")
 }
 

@@ -7,7 +7,13 @@ type Business struct {
 	//附件上传配置
 	Upload upload
 	//三方登录
-	OAuth map[string]OAuth
+	OAuth struct{
+		List map[string]OAuth
+		User struct{
+			Identity int
+			RoleID []int
+		}
+	}
 }
 
 type OAuth struct {

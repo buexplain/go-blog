@@ -79,8 +79,8 @@
 <div class="main">
     <div class="bac-layer"></div>
     <div class="container">
-        <div class="ask">
-            <button type="button" class="layui-btn" data-ask="j-bind">已经账号，我要绑定</button>
+        <div class="ask" id="j-ask">
+            <button type="button" class="layui-btn" data-ask="j-bind">已有账号，我要绑定</button>
             <button type="button" class="layui-btn" data-ask="j-register">没有账号，我要注册</button>
         </div>
         <fieldset class="layui-elem-field login" id="j-bind" style="display: none;">
@@ -176,6 +176,7 @@
         var buttonList = $(".ask button");
         //设置切换事件
         buttonList.on('click', function () {
+            $("#j-ask").hide();
             $(".login").hide();
             $("#"+$(this).attr('data-ask')).show();
         });

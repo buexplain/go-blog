@@ -23,7 +23,7 @@ type Github struct {
 
 func NewGithub() Oauth {
 	tmp := &Github{}
-	if config, ok := a_boot.Config.Business.OAuth["github"]; ok {
+	if config, ok := a_boot.Config.Business.OAuth.List["github"]; ok {
 		tmp.ID = config.ID
 		tmp.Secret = config.Secret
 		tmp.RedirectUri = setQueryString(config.CallBackUrl, "third_site", string(ThirdSiteGithub))
