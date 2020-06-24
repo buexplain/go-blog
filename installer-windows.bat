@@ -16,12 +16,8 @@ rem 释放静态文件
 artisan.exe asset unpack
 if %errorlevel% NEQ 0 exit /b %errorlevel%
 
-rem 同步表结构到数据库
-artisan.exe db sync
-if %errorlevel% NEQ 0 exit /b %errorlevel%
-
 rem 导入database/init.sql文件
-artisan.exe db import -f ./database/init.sql
+artisan.exe db importInit
 if %errorlevel% NEQ 0 exit /b %errorlevel%
 
 rem 启动程序

@@ -17,7 +17,7 @@ Debug = false
 
 [App.Server]
 # 如果配置为空，会自动获取本机公网ip地址
-IP =""
+IP ="0.0.0.0"
 # 测试环境可用用 https://github.com/FiloSottile/mkcert 生成测试的证书
 CertFile = ""
 KeyFile = ""

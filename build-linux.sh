@@ -19,11 +19,6 @@ else
   rm -fr build/*
 fi
 
-# 生成配置文件
-if [ ! -f "config.toml" ]; then
-  cp config.example.toml config.toml
-fi
-
 # 输出readme文件
 echo "一、文件介绍" > ./build/readme.txt
 echo "  1、artisan.bin 各种命令集合，比如数据导入导出命令等 ./artisan.bin -h 查看详细。" >> ./build/readme.txt
@@ -49,6 +44,11 @@ cp installer-linux.sh build/installer.sh
 # 打开cgo
 export CGO_ENABLED=1
 
+# 生成配置文件
+if [ ! -f "config.toml" ]; then
+  cp config.example.toml config.toml
+fi
+
 # 更新依赖包
 go mod tidy
 isError
@@ -56,24 +56,6 @@ isError
 # 编译命令行程序
 go build -ldflags "-s -w" -o artisan.bin artisan.go
 isError
-
-if [ -f "./database/database.db" ]; then
-  # 同步表结构到数据库
-  ./artisan.bin db sync
-  isError
-
-  # 导出表数据
-  ./artisan.bin db dump -m 64 -f database/init.sql
-  isError
-else
-  # 同步表结构到数据库
-  ./artisan.bin db sync
-  isError
-
-  # 导入表数据
-  ./artisan.bin db import -f ./database/init.sql
-  isError
-fi
 
 # 打包静态文件
 ./artisan.bin asset pack
@@ -87,7 +69,7 @@ isError
 go build -ldflags "-s -w" -o ./build/blog.bin main.go && go build -ldflags "-s -w" -o ./build/artisan.bin artisan.go
 if [ $? == 0 ]; then
   echo "build successfully"
-  ls build
+  cd build && pwd && ls
 else
     echo "build failed"
 fi

@@ -35,11 +35,6 @@ if not exist build (
     del /f /s /q build\*
 )
 
-rem 生成配置文件
-if not exist config.toml (
-    copy config.example.toml config.toml
-)
-
 rem 输出readme文件
 echo 一、文件介绍 > build\readme.txt
 echo   1、artisan.exe 各种命令集合，比如数据导入导出命令等 artisan.exe -h 查看详细。 >> build\readme.txt
@@ -64,6 +59,11 @@ copy installer-windows.bat .\build\installer.bat /A/Y
 rem 打开cgo
 SET CGO_ENABLED=1
 
+rem 生成配置文件
+if not exist config.toml (
+    copy config.example.toml config.toml
+)
+
 rem 更新依赖包
 go mod tidy
 if %errorlevel% NEQ 0 exit /b %errorlevel%
@@ -71,24 +71,6 @@ if %errorlevel% NEQ 0 exit /b %errorlevel%
 rem 编译命令行程序
 go build -ldflags "-s -w" -o artisan.exe artisan.go
 if %errorlevel% NEQ 0 exit /b %errorlevel%
-
-if exist database/database.db (
-    rem 同步表结构到数据库
-    artisan.exe db sync
-    if %errorlevel% NEQ 0 exit /b %errorlevel%
-
-    rem 导出表数据
-    artisan.exe db dump -m 64 -f database/init.sql
-    if %errorlevel% NEQ 0 exit /b %errorlevel%
-) else (
-    rem 同步表结构到数据库
-    artisan.exe db sync
-    if %errorlevel% NEQ 0 exit /b %errorlevel%
-
-    rem 导入表数据
-    artisan.exe db import -f database/init.sql
-    if %errorlevel% NEQ 0 exit /b %errorlevel%
-)
 
 rem 打包静态文件
 artisan.exe asset pack

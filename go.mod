@@ -19,7 +19,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/kevinburke/go-bindata v3.21.0+incompatible
-	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/shirou/gopsutil v2.20.3+incompatible

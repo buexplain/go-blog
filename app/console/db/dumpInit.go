@@ -31,6 +31,11 @@ func init() {
 		Use:  "dumpInit",
 		Long: "导出数据库到 ./database/init.sql 文件",
 		Run: func(cmd *cobra.Command, args []string) {
+			//先同步现有数据库的字段结构
+			if err := syncModels(dao.Dao); err != nil {
+				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
+				os.Exit(1)
+			}
 			//打开内存数据库
 			memoryDao, err := xorm.NewEngine("sqlite3", ":memory:")
 			if err != nil {

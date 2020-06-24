@@ -13,6 +13,7 @@ chmod u+x ./installer.sh
 chmod u+x ./blog.bin
 ./blog.bin
 ```
+> 请查看`config.toml`的相关配置，做出必要的变更
 > 账号：admin
 > 密码：123456
 
@@ -21,8 +22,8 @@ chmod u+x ./blog.bin
 ### 编译
 
 ```bash
-# 编译程序 linux下是 build-linux.sh
-# 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，请执行 sed -i 's/\r$//' build-linux.sh
+# 编译程序 linux下是 ./build-linux.sh
+# 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，请先执行修复命令： sed -i 's/\r$//' build-linux.sh
 build-windows.bat
 ```
 
@@ -87,6 +88,10 @@ go get -u github.com/buexplain/go-flog@latest
 go get -u github.com/buexplain/go-fool@latest
 go get -u github.com/cloudflare/tableflip@latest
 ```
+
+## 感谢
+
+感谢本项目中所有用到的各种框架、组件、库等等代码，是它们让我能更好的完成本项目。
 
 ## License
 [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

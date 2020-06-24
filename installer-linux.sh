@@ -24,17 +24,13 @@ isError
 ./artisan.bin asset unpack
 isError
 
-# 同步表结构到数据库
-./artisan.bin db sync
-isError
-
 # 导入database/init.sql文件
-./artisan.bin db import -f ./database/init.sql
+./artisan.bin db importInit
 isError
 
 # 启动程序
 if [ $? == 0 ]; then
-  echo "install successfully, please execute: blog.bin"
+  echo "install successfully, please execute: ./blog.bin"
   date -d today +"%Y-%m-%d %H/%M/%S" > installed.lock
 else
     echo "install failed"
