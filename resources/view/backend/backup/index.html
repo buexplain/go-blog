@@ -67,10 +67,7 @@
             };
             o.isLockBtn = function () {
                 var disabled = this.getAttribute('disabled');
-                if(disabled === 'true' || disabled === 'disabled') {
-                    return true;
-                }
-                return false;
+                return disabled === 'true' || disabled === 'disabled';
             };
 
             var messageContainer = document.querySelector('#j-backup-message');
@@ -97,7 +94,7 @@
             o.lockBtn();
 
             var es = new EventSource('/backend/backup/start');
-            es.onerror = function() {
+            es.onerror = function(e) {
                 //关闭连接，不再重试连接
                 es.close();
                 o.unLockBtn();

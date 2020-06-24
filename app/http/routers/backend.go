@@ -106,7 +106,7 @@ func backend(mux *fool.Mux) {
 				c_tag.Store,
 				c_tag.Update,
 				c_tag.Destroy,
-			).AddLabel("json")
+			)
 			mux.Put("tag/delete-batch", c_tag.DestroyBatch)
 
 			//内容管理
@@ -126,7 +126,7 @@ func backend(mux *fool.Mux) {
 			//返回文章标签
 			mux.Get("content/tag", c_content.Tag).AddLabel("json")
 			//添加新的标签
-			mux.Post("content/tag", c_content.AddTag).AddLabel("json")
+			mux.Post("content/addTag", c_content.AddTag).AddLabel("json")
 			//上传文章附件
 			mux.Post("content/upload", c_content.Upload).AddLabel("json")
 

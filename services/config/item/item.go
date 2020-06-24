@@ -40,7 +40,7 @@ func (this List) Get(key string) string {
 			return v.Value
 		}
 	}
-	panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", this.group, key))
+	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group,".", key))
 }
 
 func (this List) GetToHTML(key string) template.HTML {
@@ -49,11 +49,10 @@ func (this List) GetToHTML(key string) template.HTML {
 			return template.HTML(v.Value)
 		}
 	}
-	panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", this.group, key))
+	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group,".", key))
 }
 
 func GetByGroup(groupName string) *List {
-	//SELECT ConfigItem.* FROM ConfigItem INNER JOIN ConfigGroup on ConfigGroup.ID = ConfigItem.GroupID WHERE ConfigGroup."Key" = "SiteInfo"
 	mod := dao.Dao.Table("ConfigItem")
 	mod.Select("ConfigItem.`Key`, ConfigItem.`Value`")
 	mod.Join("inner", "ConfigGroup", "ConfigGroup.ID = ConfigItem.GroupID")
@@ -64,7 +63,7 @@ func GetByGroup(groupName string) *List {
 		panic(err)
 	}
 	if len(*result) == 0 {
-		panic(code.New(code.INVALID_CONFIG, "请在管理后台设置: %s.%s", groupName))
+		panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s", groupName))
 	}
 	return &List{data: *result, group: groupName}
 }

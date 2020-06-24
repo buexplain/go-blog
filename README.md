@@ -13,6 +13,8 @@ chmod u+x ./installer.sh
 chmod u+x ./blog.bin
 ./blog.bin
 ```
+> 账号：admin
+> 密码：123456
 
 ## 发布程序
 
@@ -41,15 +43,23 @@ build-windows.bat
 
 ## 其它
 
-### 二次开发相关命令
+### 二次开发
+
+#### 制作`database/init.sql`注意事项
+
+1. 权限节点是根据现有的权限节点导出而成的。
+2. `配置管理`的数据写在`artisan.exe db dumpInit -h`命令代码里。
+3. 用户、角色的数据写在`artisan.exe db dumpInit -h`命令代码里。
+
+#### 相关命令
+
 ```bash
 # 同步表结构
 go build -o artisan.exe artisan.go && artisan.exe db sync
 # 导出 database/init.sql
-go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db dumpInit
 # 导入  database/init.sql
-go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql
-
+go build -o artisan.exe artisan.go && artisan.exe db importInit
 # 静态文件打包
 go build -o artisan.exe artisan.go && artisan.exe asset pack
 ```

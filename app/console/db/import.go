@@ -12,7 +12,7 @@ import (
 var importCmd *cobra.Command
 
 func init() {
-	//保存文件
+	//sql文件
 	var fpath string
 	importCmd = &cobra.Command{
 		Use:  "import",

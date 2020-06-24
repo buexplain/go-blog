@@ -126,7 +126,7 @@
                         }
                         var value = val;
                         $.ajax({
-                            url: "/backend/article/content/tag",
+                            url: "/backend/article/content/addTag",
                             async:false,
                             data: {name: val, _token: _token()},
                             type: "post",

@@ -1,6 +1,6 @@
 [Database]
 # dsn参数 https://github.com/mattn/go-sqlite3
-# ?_synchronous=OFF&_journal=WAL&cache=shared&_loc=auto&mode=rwc
+# 不建议配置WAL模式，因为这会导致后台数据备份功能失败
 DSN = "database.db"
 # 设置连接池中的最大闲置连接数
 MaxIdleConns = 50
@@ -8,10 +8,11 @@ MaxIdleConns = 50
 MaxOpenConns = 100
 # 设置缓存，如果为正数，则表示cache设置为多少页（默认页大小为1KB），如果为负数则表示设置为多少KB
 CacheSize = 5000
-# 控制台显示日志
+# 控制台显示sql日志
 ShowSQL = false
 
 [App]
+# 生产环境建议关闭以提高性能
 Debug = false
 
 [App.Server]
@@ -48,7 +49,8 @@ Referer = true
 [Session] # https://github.com/gorilla/sessions
 Store = "cookie" # cookie|file
 Name = "SESSION"
-Key = "XUU1NDA4JXU0RTAwJXUzMDAy"
+# 需要自己生成一个key
+Key = "32-byte-long-session-key"
 
 [Session.Options]
 Path = "/"
@@ -81,6 +83,7 @@ Path = "storage/cache"
 # https://github.com/gorilla/csrf
 [CSRF]
 Enable = true
+# 需要自己生成一个key
 Key = "32-byte-long-auth-key"
 Name = "CSRF"
 Field = "_token"
@@ -146,7 +149,7 @@ py = ""
 # 管理人员=1，普通用户=2
 Identity = 1
 # 角色id请登录管理员后台查看
-RoleID = [3]
+RoleID = [2]
 [Business.OAuth.List.github]
 ID = ""
 Secret = ""

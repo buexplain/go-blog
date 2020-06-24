@@ -11,7 +11,7 @@ import (
 func main() {
 	defer func() {
 		if a := recover(); a != nil {
-			a_boot.Logger.ErrorF("console run failed: %s", a)
+			a_boot.Logger.ErrorF("%+v", a)
 			os.Exit(1)
 		}
 	}()
