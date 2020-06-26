@@ -17,8 +17,10 @@ fi
 echo "install start..."
 
 # 生成配置文件
-cp config.example.toml config.toml
-isError
+if [ ! -f "config.toml" ]; then
+  cp config.example.toml config.toml
+  isError
+fi
 
 # 释放静态文件
 ./artisan.bin asset unpack

@@ -87,6 +87,7 @@ func init() {
 }
 
 //全局共用的控制台日志
+//这个日志无缓冲
 var Logger *flog.Logger
 
 func init() {

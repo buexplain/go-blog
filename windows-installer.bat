@@ -9,8 +9,10 @@ if exist installed.lock (
 echo install start...
 
 rem 生成配置文件
-copy config.example.toml config.toml /A/Y
-if %errorlevel% NEQ 0 exit /b %errorlevel%
+if not exist config.toml (
+    copy config.example.toml config.toml /A/Y
+    if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
 
 rem 释放静态文件
 artisan.exe asset unpack

@@ -40,17 +40,16 @@ func Run() {
 	}
 	go func() {
 		if a_boot.Config.App.Server.CertFile != "" && a_boot.Config.App.Server.KeyFile != "" {
-			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
+			go NewRedirectHttps()
+			a_boot.Logger.Info("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
 			if err := server.ServeTLS(ln, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.CertFile), filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.KeyFile)); err != nil && err != http.ErrServerClosed {
-				Logger.Error(err.Error())
-				_ = Logger.Close()
+				a_boot.Logger.Error(err.Error())
 				os.Exit(1)
 			}
 		} else {
-			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
+			a_boot.Logger.Info("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 			if err := server.Serve(ln); err != nil && err != http.ErrServerClosed {
-				Logger.Error(err.Error())
-				_ = Logger.Close()
+				a_boot.Logger.Error(err.Error())
 				os.Exit(1)
 			}
 		}
@@ -58,29 +57,27 @@ func Run() {
 
 	//等待信号
 	for range sigCH {
-		log.Println("shutting down, please wait")
+		a_boot.Logger.Info("shutting down, please wait")
 
 		//设定进程结束超时
 		time.AfterFunc(time.Duration(a_boot.Config.App.Server.CloseTimedOut.Nanoseconds()), func() {
-			log.Fatalln("shutdown timed out")
+			a_boot.Logger.Error("shutdown timed out")
+			os.Exit(1)
 		})
 
 		//关闭http
 		if err := server.Shutdown(context.Background()); err != nil {
-			log.Println("shutdown err: " + err.Error())
+			a_boot.Logger.Error("shutdown err: " + err.Error())
 		}
 
 		//等待事件调度器结束
 		Bus.Close(time.Duration(a_boot.Config.App.Event.CloseTimedOut.Nanoseconds()))
 		//等待日志收集器结束
-		if err := a_boot.Logger.Close(time.Duration(a_boot.Config.Log.CloseTimedOut.Nanoseconds())); err != nil {
-			log.Println(fmt.Errorf("a_boot.Logger.Close: %w", err))
-		}
 		if err := Logger.Close(time.Duration(a_boot.Config.Log.CloseTimedOut.Nanoseconds())); err != nil {
-			log.Println(fmt.Errorf("h_boot.Logger.Close: %w", err))
+			a_boot.Logger.Error(fmt.Errorf("h_boot.Logger.Close: %w", err).Error())
 		}
 
-		log.Println("shutdown success")
+		a_boot.Logger.Info("shutdown success")
 
 		//退出程序
 		os.Exit(0)
