@@ -36,9 +36,9 @@ windows-build.bat
 比如你在windows下开发，生成了`database/database.db`、`database/database.shm`、`database/database.wal`文件。
 然后你把它们拷贝到linux下，然后你运行了`build-linux.bin`，编译失败了。
 此时可以重做一个`database/database/db`数据库文件，请按如下步骤操作：
-1. 首先，windows下运行导出sql命令`go build -o artisan.exe artisan.go && artisan.exe db dump -m 64 -f database/init.sql`
+1. 首先，windows下运行导出sql命令`go build -o artisan.exe artisan.go && artisan.exe db dumpInit`
 2. 然后，将`config.toml`里面`DSN`的值改为`database.db`，去掉所有的连接参数
-3. 然后，windows下运行导入sql命令`go build -o artisan.exe artisan.go && artisan.exe db sync && artisan.exe db import -f ./database/init.sql`
+3. 然后，windows下运行导入sql命令`go build -o artisan.exe artisan.go && artisan.exe db importInit`
 4. 最后，将`database/database.db`，拷贝到Linux，执行编译命令`./build-linux.bin`
 当然你也可以导出`database/init.sql`后，将其拷贝到Linux，然后再在Linux下生成`database/database.db`，然后再编译。
 
