@@ -54,7 +54,7 @@ rem 复制配置文件
 copy config.example.toml .\build\config.example.toml /A/Y
 
 rem 复制安装器
-copy installer-windows.bat .\build\installer.bat /A/Y
+copy windows-installer.bat .\build\installer.bat /A/Y
 
 rem 打开cgo
 SET CGO_ENABLED=1

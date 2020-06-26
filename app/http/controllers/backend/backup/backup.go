@@ -5,7 +5,7 @@ import (
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	s_backup "github.com/buexplain/go-blog/services/backup"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"io"
 	"net/http"
 	"os"
@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_backup.GetList()
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 
 //备份数据
 //@link https://developer.mozilla.org/zh-CN/docs/Server-sent_events/EventSource
-func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Start(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	//接管连接，避免服务端写入超时
 	hj, ok := w.Raw().(http.Hijacker)
 	if !ok {
@@ -106,7 +106,7 @@ func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 }
 
-func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Download(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_backup.GetList()
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 }
 
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_backup.GetList()
 	if err != nil {
 		return err

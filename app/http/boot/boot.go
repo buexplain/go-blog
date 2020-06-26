@@ -13,7 +13,7 @@ import (
 	"github.com/buexplain/go-flog/extra"
 	"github.com/buexplain/go-flog/formatter"
 	"github.com/buexplain/go-flog/handler"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/djherbis/fscache"
 	"github.com/gorilla/csrf"
 	"io/ioutil"
@@ -82,10 +82,12 @@ func init() {
 }
 
 //初始化app
-var APP *fool.App
+var APP *slim.App
 
 func init() {
-	APP = fool.New(a_boot.Config.App.Debug)
+	APP = slim.New(a_boot.Config.App.Debug)
+	APP.SetFormMaxMemory(a_boot.Config.App.Server.FormMaxMemory)
+	APP.SetBodyMaxBytes(a_boot.Config.App.Server.BodyMaxBytes)
 }
 
 //设置相关默认函数

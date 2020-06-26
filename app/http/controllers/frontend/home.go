@@ -12,14 +12,14 @@ import (
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	s_tag "github.com/buexplain/go-blog/services/tag"
 	s_user "github.com/buexplain/go-blog/services/user"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 //首页
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	//获取站点配置
 	config := s_configItem.GetByGroup("SiteInfo")
 	//获取站点菜单栏
@@ -55,7 +55,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //首页的部件
-func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func IndexWidget(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	buff := &bytes.Buffer{}
 	result := map[string]string{}
 	//渲染标签
@@ -84,7 +84,7 @@ func IndexWidget(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Article(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	id, _ := strconv.Atoi(strings.TrimRight(r.Param("id.html"), ".html"))
 	result, err := s_content.GetDetails(id, m_content.OnlineYes)
 	if err != nil {
@@ -103,7 +103,7 @@ func Article(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Assign("result", result).View(http.StatusOK, "frontend/article.html")
 }
 
-func ArticleHits(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func ArticleHits(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	contentID := r.ParamPositiveInt("id")
 	isIncr := r.QueryBool("isIncr")
 	if contentID == 0 {

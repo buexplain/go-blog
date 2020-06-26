@@ -2,14 +2,14 @@ package staticFile
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"path/filepath"
 	"strings"
 )
 
 //静态文件中间件
-func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+func Filter(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	path := r.Raw().URL.Path
 	for _, v := range a_boot.Config.App.StaticFile.Path {
 		if strings.HasPrefix(path, v) {

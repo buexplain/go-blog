@@ -124,7 +124,17 @@ func Start() <-chan string {
 				return
 			}
 		}()
-
+		if a_boot.Config.App.Server.CertFile != "" && a_boot.Config.App.Server.KeyFile != "" {
+			message.Tips("往zip写入器中写入证书")
+			if err := helpers.ZIP(dst, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.CertFile)); err != nil {
+				message.Fail(err)
+				return
+			}
+			if err := helpers.ZIP(dst, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.KeyFile)); err != nil {
+				message.Fail(err)
+				return
+			}
+		}
 		message.Tips("往zip写入器中写入附件")
 		if err := helpers.ZIP(dst, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.Business.Upload.Save)); err != nil {
 			message.Fail(err)

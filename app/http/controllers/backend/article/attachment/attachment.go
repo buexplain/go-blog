@@ -7,13 +7,13 @@ import (
 	"github.com/buexplain/go-blog/models/attachment"
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/attachment"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"strings"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		extList, err := s_attachment.GetExtList()
 		if err != nil {
@@ -48,7 +48,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func CheckMD5(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_attachment.Attachment)
 	result.MD5 = r.Param("md5", "")
 	if result.MD5 == "" {
@@ -62,7 +62,7 @@ func CheckMD5(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Edit(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_attachment.Attachment)
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {
@@ -82,7 +82,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Assign("result", result).View(http.StatusOK, "backend/article/attachment/create.html")
 }
 
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	name := r.Form("name")
 	content := r.Form("content")
 	if name == "" && content == "" {
@@ -112,7 +112,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success()
 }
 
-func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Upload(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	file, err := r.File("file")
 	if err != nil {
 		return err
@@ -131,7 +131,7 @@ func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //单个删除
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	err := s_attachment.Destroy([]int{r.ParamInt("id", 0)})
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //批量删除
-func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func DestroyBatch(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := r.FormSliceInt("ids")
 	err := s_attachment.Destroy(ids)
 	if err != nil {
@@ -149,7 +149,7 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success()
 }
 
-func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Download(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_attachment.Attachment)
 	result.ID = r.ParamInt("id", 0)
 	if result.ID <= 0 {

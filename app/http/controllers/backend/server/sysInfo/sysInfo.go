@@ -4,7 +4,7 @@ import (
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/helpers"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := make(map[string]interface{})
 
 	//获取基础信息

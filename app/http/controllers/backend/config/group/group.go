@@ -6,7 +6,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	m_configGroup "github.com/buexplain/go-blog/models/config/group"
 	s_configGroup "github.com/buexplain/go-blog/services/config/group"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -21,7 +21,7 @@ func init() {
 	v.Field("key").Rule("required", "请输入组字段名称")
 }
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			View(http.StatusOK, "backend/config/group/index.html")
@@ -34,13 +34,13 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Create(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	return w.
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/config/group/create.html")
 }
 
-func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Store(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_configGroup.ConfigGroup)
 	if err := r.FormToStruct(mod); err != nil {
 		return err
@@ -59,7 +59,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.JumpBack("操作成功")
 }
 
-func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Edit(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_configGroup.ConfigGroup)
 
 	result.ID = r.ParamInt("id", 0)
@@ -79,7 +79,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/config/group/create.html")
 }
 
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_configGroup.ConfigGroup)
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
@@ -102,7 +102,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Jump("/backend/config/group", "操作成功")
 }
 
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
 	_, err := s_configGroup.Destroy(ids)
 	if err != nil {
@@ -112,7 +112,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //批量删除
-func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func DestroyBatch(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := r.FormSliceInt("ids")
 	_, err := s_configGroup.Destroy(ids)
 	if err != nil {

@@ -1,6 +1,6 @@
 package code
 
-import "github.com/buexplain/go-fool/errors"
+import "github.com/buexplain/go-slim/errors"
 
 //预定义的服务端错误
 const (

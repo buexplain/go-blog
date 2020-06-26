@@ -2,7 +2,7 @@ package c_sysReset
 
 import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +17,7 @@ func init() {
 	PATH = filepath.Join(a_boot.ROOT_PATH, "config.toml")
 }
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	config, err := ioutil.ReadFile(PATH)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/server/sysReset/index.html")
 }
 
-func Check(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Check(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	pid := r.Query("pid")
 	if pid == strconv.Itoa(os.Getpid()) {
 		return w.Error(1, "正在重启，请稍等...")

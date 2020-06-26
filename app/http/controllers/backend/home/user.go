@@ -5,14 +5,14 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/services/user"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
 )
 
 //后台用户修改自己的密码
-func ForgetPassword(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func ForgetPassword(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if r.IsMethod("get") {
 		return w.
 			Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).

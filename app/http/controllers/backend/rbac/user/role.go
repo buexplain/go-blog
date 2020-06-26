@@ -6,13 +6,13 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
 )
 
-func EditRole(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func EditRole(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		user := new(m_user.User)
 

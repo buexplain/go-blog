@@ -6,13 +6,13 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/role"
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
 )
 
-func EditNode(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func EditNode(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		role := new(m_role.Role)
 

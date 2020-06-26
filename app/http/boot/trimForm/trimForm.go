@@ -2,13 +2,13 @@ package trimForm
 
 import (
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"strings"
 )
 
 //前后空白字符清理
-func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
-	if err := r.ParseForm(fool.DefaultMaxMemory); err != nil {
+func Filter(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
+	if err := r.ParseForm(); err != nil {
 		if ctx.Route() != nil && ctx.Route().HasLabel("json") {
 			//存在路由，并且路由有json标签，则响应json格式
 			ctx.Throw(w.Error(code.INVALID_ARGUMENT, err.Error()))

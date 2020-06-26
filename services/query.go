@@ -7,7 +7,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/helpers"
 	m_models "github.com/buexplain/go-blog/models"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"strings"
 	"time"
 	"xorm.io/xorm"
@@ -26,7 +26,7 @@ func (this where) Get(index int) string {
 //查询构造器
 type Query struct {
 	//请求上下文
-	ctx *fool.Ctx
+	ctx *slim.Ctx
 	//表名称
 	tableName string
 	//表信息
@@ -233,7 +233,7 @@ func (this *Query) Where() *Query {
 	return this
 }
 
-func NewQuery(tableName string, ctx *fool.Ctx) *Query {
+func NewQuery(tableName string, ctx *slim.Ctx) *Query {
 	tmp := new(Query)
 	tmp.ctx = ctx
 	tmp.tableName = tableName

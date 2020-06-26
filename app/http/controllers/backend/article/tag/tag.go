@@ -8,7 +8,7 @@ import (
 	"github.com/buexplain/go-blog/models/tag"
 	"github.com/buexplain/go-blog/services"
 	s_tag "github.com/buexplain/go-blog/services/tag"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -34,7 +34,7 @@ func init() {
 	})
 }
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			View(http.StatusOK, "backend/article/tag/index.html")
@@ -47,7 +47,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.Success(result)
 }
 
-func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Store(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	names := r.FormSliceByComma("names")
 	if len(names) == 0 {
 		return w.Error(code.INVALID_ARGUMENT, code.Text(code.INVALID_ARGUMENT, "names"))
@@ -59,7 +59,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.RedirectBack()
 }
 
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_tag.Tag)
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
@@ -84,7 +84,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //单个删除
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
 	_, err := s_tag.Destroy(ids)
 	if err != nil {
@@ -94,7 +94,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //批量删除
-func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func DestroyBatch(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := r.FormSliceInt("ids")
 	_, err := s_tag.Destroy(ids)
 	if err != nil {

@@ -2,13 +2,13 @@ package method
 
 import (
 	"github.com/buexplain/go-blog/app/boot"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"strings"
 )
 
 //方法欺骗中间件中间件
-func Filter(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+func Filter(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	if r.Raw().Method == http.MethodGet {
 		//get 请求切换成 delete 请求
 		if m := r.Query(a_boot.Config.App.Method.Field); strings.EqualFold(http.MethodDelete, m) {

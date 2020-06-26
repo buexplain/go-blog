@@ -1,6 +1,6 @@
 package code
 
-import "github.com/buexplain/go-fool/errors"
+import "github.com/buexplain/go-slim/errors"
 
 const (
 	//1 ~ 400 客户端错误

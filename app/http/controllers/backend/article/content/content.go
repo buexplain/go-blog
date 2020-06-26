@@ -12,7 +12,7 @@ import (
 	"github.com/buexplain/go-blog/services/attachment"
 	"github.com/buexplain/go-blog/services/content"
 	"github.com/buexplain/go-blog/services/tag"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -32,7 +32,7 @@ func init() {
 }
 
 //列表
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if !r.IsAjax() {
 		return w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 			View(http.StatusOK, "backend/article/content/index.html")
@@ -51,7 +51,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //新增
-func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Create(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	tagList := new(m_tag.List)
 	if err := dao.Dao.Find(tagList); err != nil {
 		return err
@@ -63,7 +63,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //保存
-func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Store(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_content.Content)
 	if err := r.FormToStruct(mod); err != nil {
 		return err
@@ -89,7 +89,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //编辑
-func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Edit(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	//内容
 	result := new(m_content.Content)
 	result.ID = r.ParamInt("id", 0)
@@ -108,7 +108,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //更新
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_content.Content)
 	if err := r.FormToStruct(mod); err != nil {
 		return err
@@ -137,7 +137,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //单个删除
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := []int{r.ParamInt("id", 0)}
 	err := s_content.Destroy(ids)
 	if err != nil {
@@ -147,7 +147,7 @@ func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //批量删除
-func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func DestroyBatch(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := r.FormSliceInt("ids")
 	err := s_content.Destroy(ids)
 	if err != nil {
@@ -157,7 +157,7 @@ func DestroyBatch(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //查看
-func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Show(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_content.GetDetails(r.ParamInt("id"), 0)
 	if r.IsAjax() {
 		if err != nil {
@@ -173,7 +173,7 @@ func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //设置上下线
-func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Online(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_content.Content)
 
 	result.ID = r.ParamInt("id", 0)
@@ -196,7 +196,7 @@ func Online(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //返回分类
-func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Category(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	pid := r.ParamInt("pid", -1)
 	query := dao.Dao.Table("Category").Desc("ID")
 	if pid > -1 {
@@ -210,7 +210,7 @@ func Category(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //返回标签
-func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Tag(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_tag.List)
 	if err := dao.Dao.Find(result); err != nil {
 		return err
@@ -219,7 +219,7 @@ func Tag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //新增tag
-func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func AddTag(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	name := r.Form("name")
 	mod, err := s_tag.Store(name)
 	if err != nil {
@@ -229,7 +229,7 @@ func AddTag(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //上传附件
-func Upload(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Upload(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	file, err := r.File("file")
 	if err != nil {
 		return err

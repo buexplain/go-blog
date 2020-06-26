@@ -7,7 +7,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/category"
 	"github.com/buexplain/go-blog/services/category"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"html/template"
@@ -23,7 +23,7 @@ func init() {
 }
 
 //列表
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := s_category.GetALL()
 	return w.
 		Assign("result", template.JS(result.String())).
@@ -31,7 +31,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //创建
-func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Create(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	pid := r.QueryInt("pid", 0)
 	return ctx.Response().
 		Assign("pid", pid).
@@ -40,7 +40,7 @@ func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //保存
-func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Store(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := &m_category.Category{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
@@ -60,7 +60,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //编辑
-func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Edit(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_category.Category)
 
 	result.ID = r.ParamInt("id", 0)
@@ -81,7 +81,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //更新
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := &m_category.Category{}
 	if err := r.FormToStruct(mod); err != nil {
 		return w.JumpBack(err)
@@ -105,7 +105,7 @@ func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //删除
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ids := r.QuerySlicePositiveInt("ids")
 	if len(ids) == 0 {
 		return w.Jump("/backend/article/category", "入参错误")

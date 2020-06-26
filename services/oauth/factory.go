@@ -2,14 +2,14 @@ package s_oauth
 
 import (
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 )
 
 type ThirdSite string
 
 const ThirdSiteGithub ThirdSite = "github"
 
-func New(r *fool.Request) (Oauth, error) {
+func New(r *slim.Request) (Oauth, error) {
 	third_site := ThirdSite(r.Query("third_site"))
 	switch third_site {
 	case ThirdSiteGithub:

@@ -3,10 +3,10 @@ package routers
 import (
 	"github.com/buexplain/go-blog/app/http/controllers/frontend"
 	"github.com/buexplain/go-blog/app/http/middleware"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 )
 
-func frontend(mux *fool.Mux) {
+func frontend(mux *slim.Mux) {
 	mux.Get("/", c_frontend.Index)
 	mux.Get("/index.html", c_frontend.Index)
 	mux.Get("/index-widget", c_frontend.IndexWidget).AddLabel("json")

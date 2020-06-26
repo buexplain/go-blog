@@ -7,7 +7,7 @@ import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	m_oauth "github.com/buexplain/go-blog/models/oauth"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -32,7 +32,7 @@ func NewGithub() Oauth {
 }
 
 //@link https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
-func (this Github) GetURL(scope string, redirect string, r *fool.Request) (oauth_url string) {
+func (this Github) GetURL(scope string, redirect string, r *slim.Request) (oauth_url string) {
 	if this.ID == "" || this.Secret == "" {
 		return
 	}
@@ -67,7 +67,7 @@ func (this GithubAccessResult) GetAccessToken() string {
 	return this.AccessToken
 }
 
-func (this Github) GetAccessToken(r *fool.Request) (AccessResult, error) {
+func (this Github) GetAccessToken(r *slim.Request) (AccessResult, error) {
 	state := r.Query("state")
 	codeStr := r.Query("code")
 	if state == "" {

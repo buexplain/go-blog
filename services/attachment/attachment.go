@@ -8,7 +8,7 @@ import (
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
 	"github.com/buexplain/go-blog/models/attachment"
-	"github.com/buexplain/go-fool/upload"
+	"github.com/buexplain/go-slim/upload"
 	"io"
 	"log"
 	"os"

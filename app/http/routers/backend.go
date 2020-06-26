@@ -21,13 +21,13 @@ import (
 	"github.com/buexplain/go-blog/app/http/controllers/backend/skeleton"
 	c_citizen_user "github.com/buexplain/go-blog/app/http/controllers/backend/user"
 	"github.com/buexplain/go-blog/app/http/middleware"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"strings"
 )
 
 //后台管理模块路由
-func backend(mux *fool.Mux) {
+func backend(mux *slim.Mux) {
 	// --------------------------登录 开始---------------------------
 	mux.Get("/backend/sign", c_sign.Index)
 	mux.Post("/backend/sign", c_sign.In)
@@ -178,7 +178,7 @@ func backend(mux *fool.Mux) {
 			//服务器状态
 			mux.Get("info", c_sysInfo.Index)
 			//进程信息
-			mux.Get("debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck).Use(func(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+			mux.Get("debug/pprof/:name", c_profile.Index).Use(middleware.RbacCheck).Use(func(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 				r.Raw().URL.Path = strings.TrimPrefix(r.Raw().URL.Path, "/backend/server")
 				ctx.Next()
 			})

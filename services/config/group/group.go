@@ -5,10 +5,10 @@ import (
 	m_configGroup "github.com/buexplain/go-blog/models/config/group"
 	m_configItem "github.com/buexplain/go-blog/models/config/item"
 	s_services "github.com/buexplain/go-blog/services"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 )
 
-func GetList(ctx *fool.Ctx) (counter int64, result m_configGroup.List, err error) {
+func GetList(ctx *slim.Ctx) (counter int64, result m_configGroup.List, err error) {
 	query := s_services.NewQuery("ConfigGroup", ctx)
 	query.Finder.Desc("ID")
 	query.Where().Limit().FindAndCount(&result, &counter)

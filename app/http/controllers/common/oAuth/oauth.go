@@ -10,13 +10,13 @@ import (
 	s_captcha "github.com/buexplain/go-blog/services/captcha"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	s_user "github.com/buexplain/go-blog/services/user"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"net/http"
 )
 
 //登录授权回调
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	//根据请求url的参数获取oauth对象
 	oauth, err := s_oauth.New(r)
 	if err != nil {
@@ -66,7 +66,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //注册新用户
-func Register(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Register(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	account := r.Form("account")
 	nickname := r.Form("nickname")
 	userInfo, ok := r.Session().Get("oauthUserInfo").(s_oauth.UserInfo)
@@ -84,7 +84,7 @@ func Register(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //绑定已有账号
-func Bind(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Bind(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	captchaVal := r.Form("captchaVal")
 	if captchaVal == "" {
 		return code.New(code.INVALID_ARGUMENT, "请输入验证码")

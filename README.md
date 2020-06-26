@@ -5,8 +5,8 @@
 ```bash
 git clone https://github.com/buexplain/go-blog.git
 cd go-blog
-chmod u+x ./build-linux.sh
-./build-linux.sh
+chmod u+x ./linux-build.sh
+./linux-build.sh
 cd ./build
 chmod u+x ./installer.sh
 ./installer.sh
@@ -22,9 +22,9 @@ chmod u+x ./blog.bin
 ### 编译
 
 ```bash
-# 编译程序 linux下是 ./build-linux.sh
-# 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，请先执行修复命令： sed -i 's/\r$//' build-linux.sh
-build-windows.bat
+# 编译程序 linux下是 ./linux-build.sh
+# 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，请先执行修复命令： sed -i 's/\r$//' linux-build.sh
+windows-build.bat
 ```
 
 ### 注意事项
@@ -67,9 +67,7 @@ go build -o artisan.exe artisan.go && artisan.exe asset pack
 
 ### 引用本地包
 ```bash
-go mod edit -replace=github.com/buexplain/go-fool=F:/go-fool
-go mod edit -replace=github.com/buexplain/go-fool=C:\Edisk\code\go-fool
-go mod edit -replace=github.com/buexplain/go-fool=/mnt/winEdisk/code/go-fool
+go mod edit -replace=github.com/buexplain/go-slim=E:/go-slim
 ```
 
 ### 包升级到最新版本
@@ -85,7 +83,7 @@ go get -u github.com/mattn/go-sqlite3@latest
 go get -u github.com/BurntSushi/toml@latest
 go get -u github.com/gorilla/securecookie@latest
 go get -u github.com/buexplain/go-flog@latest
-go get -u github.com/buexplain/go-fool@latest
+go get -u github.com/buexplain/go-slim@latest
 go get -u github.com/cloudflare/tableflip@latest
 ```
 

@@ -36,8 +36,8 @@ github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5 h1:58wsnclxk0Po
 github.com/buexplain/go-event v0.0.0-20200112104502-ebe0cfdc01b5/go.mod h1:W+MHfbKRRMX1Fze4yuOMs0SCztaVLA8INOL49NPHjk8=
 github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c h1:5TB8/MqaFyGNG/i2l0fQ/JckYr9nPgCmLkztBHRMUcg=
 github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c/go.mod h1:XgCBm3a3Pgkejjk/UjKm5Yu+g21jzo30SqDNLq7gtjU=
-github.com/buexplain/go-fool v0.0.0-20200623085332-7d55a8d7c630 h1:9fkx2U/W50oWmCurHzH2SLRWFAaVPXq9C2qqQp7kWNc=
-github.com/buexplain/go-fool v0.0.0-20200623085332-7d55a8d7c630/go.mod h1:jH19IOQFS2Nf251e3ikTvRzMobmGN/xR+yI1pr57Wuo=
+github.com/buexplain/go-slim v0.0.0-20200626092415-57fa29bd0f00 h1:bhaXzmFt0s0LutDoR5Uwe3xML8lpgyp4yV8PJNpE4HM=
+github.com/buexplain/go-slim v0.0.0-20200626092415-57fa29bd0f00/go.mod h1:2uqAPdsEIwN01lB9SR3rrR9XOdtoyQVyIBheuj+j9Tc=
 github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2 h1:4WAINszJ3oraoq/LljQQE0LrsEp78/d1ZeWI+hxNjIQ=
 github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2/go.mod h1:tdwn7N22YAeDLep7s2QsvCOnY7Sl3p8f6rcayvvYKL0=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=

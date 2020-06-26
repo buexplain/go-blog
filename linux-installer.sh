@@ -1,6 +1,6 @@
 #!/bin/bash
 # 如果提示 /bin/bash^M: 坏的解释器: 没有那个文件或目录，则是因为结束符的不通，windows下是\r\n，linux下是\n的原因
-# sed -i 's/\r$//' installer-linux.sh
+# sed -i 's/\r$//' linux-installer.sh
 
 function isError() {
   if [ $? != 0 ]; then

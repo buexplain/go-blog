@@ -3,13 +3,13 @@ package c_sysLog
 import (
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	s_sysLog "github.com/buexplain/go-blog/services/sysLog"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_sysLog.GetList()
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/server/sysLog/index.html")
 }
 
-func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Download(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_sysLog.GetList()
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func Download(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 }
 
-func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Show(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_sysLog.GetList()
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func Show(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	}
 }
 
-func Destroy(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Destroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result, err := s_sysLog.GetList()
 	if err != nil {
 		return err

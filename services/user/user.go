@@ -10,7 +10,7 @@ import (
 	m_user "github.com/buexplain/go-blog/models/user"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	s_userRoleRelation "github.com/buexplain/go-blog/services/userRoleRelation"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -40,7 +40,7 @@ func ComparePassword(plaintext string, password string) bool {
 }
 
 //后台管理人员登录
-func OfficialSignIn(session fool.Session, account string, password string) (*m_user.User, error) {
+func OfficialSignIn(session slim.Session, account string, password string) (*m_user.User, error) {
 	user, has, err := GetByAccount(account)
 	if err != nil {
 		return nil, err
@@ -73,13 +73,13 @@ func OfficialSignIn(session fool.Session, account string, password string) (*m_u
 }
 
 //退出登录
-func SignOut(session fool.Session) {
+func SignOut(session slim.Session) {
 	session.Del(USER_INFO)
 	session.Destroy()
 }
 
 //校验是否登录
-func IsSignIn(r *fool.Request) *m_user.User {
+func IsSignIn(r *slim.Request) *m_user.User {
 	if !r.HasCookie(a_boot.Config.Session.Name) {
 		return nil
 	}

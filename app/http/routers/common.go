@@ -4,10 +4,10 @@ import (
 	"github.com/buexplain/go-blog/app/http/controllers/common/captcha"
 	"github.com/buexplain/go-blog/app/http/controllers/common/jump"
 	c_oAuth "github.com/buexplain/go-blog/app/http/controllers/common/oAuth"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 )
 
-func common(mux *fool.Mux) {
+func common(mux *slim.Mux) {
 	//图形验证码输出
 	mux.Get("/common/captcha", c_captcha.Index)
 	mux.Any("/common/jump", c_jump.Index)

@@ -8,11 +8,11 @@ import (
 	"github.com/buexplain/go-blog/services/roleNodeRelation"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-blog/services/userRoleRelation"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 )
 
 //rbac 权限校验
-func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+func RbacCheck(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	if ctx.Route() == nil {
 		//该中间件必须设置为组中间件或者是路由中间件
 		ctx.Throw(code.New(code.MIDDLEWARE_SET_ERROR))
@@ -30,7 +30,7 @@ func RbacCheck(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 	}
 }
 
-func rbacCheck(ctx *fool.Ctx) bool {
+func rbacCheck(ctx *slim.Ctx) bool {
 	user := s_user.IsSignIn(ctx.Request())
 
 	//判断后台用户是否登录

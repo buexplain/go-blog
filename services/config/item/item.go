@@ -5,11 +5,11 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	m_configItem "github.com/buexplain/go-blog/models/config/item"
 	s_services "github.com/buexplain/go-blog/services"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"html/template"
 )
 
-func GetList(ctx *fool.Ctx) (counter int64, result m_configItem.List, err error) {
+func GetList(ctx *slim.Ctx) (counter int64, result m_configItem.List, err error) {
 	query := s_services.NewQuery("ConfigItem", ctx)
 	query.Finder.Desc("ID")
 	groupID := ctx.Request().QueryPositiveInt("groupID")

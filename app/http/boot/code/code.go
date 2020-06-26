@@ -2,7 +2,7 @@ package code
 
 import (
 	"fmt"
-	"github.com/buexplain/go-fool/errors"
+	"github.com/buexplain/go-slim/errors"
 	"strings"
 )
 

@@ -6,7 +6,7 @@ import (
 	"github.com/buexplain/go-blog/services/captcha"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	"github.com/buexplain/go-blog/services/user"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -24,7 +24,7 @@ func init() {
 }
 
 //显示登录页面
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if s_user.IsSignIn(r) != nil {
 		return w.Redirect(http.StatusFound, "/backend/skeleton")
 	}
@@ -33,7 +33,7 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //登录
-func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func In(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	type In struct {
 		Account    string
 		Password   string
@@ -76,7 +76,7 @@ func In(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 }
 
 //退出登录
-func Out(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Out(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	s_user.SignOut(r.Session())
 	redirect := r.Query("redirect", "/backend/sign")
 	return w.Redirect(http.StatusFound, redirect)

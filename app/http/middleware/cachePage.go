@@ -3,14 +3,14 @@ package middleware
 import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	h_boot "github.com/buexplain/go-blog/app/http/boot"
-	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/constant"
+	"github.com/buexplain/go-slim"
+	"github.com/buexplain/go-slim/constant"
 	"io"
 	"net/http"
 )
 
 //缓存页面
-func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+func CachePage(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	//检查是否开启缓存
 	if !a_boot.Config.Cache.Enable {
 		ctx.Next()
@@ -85,7 +85,7 @@ func CachePage(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
 }
 
 //清空缓存页面
-func CacheClear(ctx *fool.Ctx, w *fool.Response, r *fool.Request) {
+func CacheClear(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	ctx.Next()
 	if r.IsMethod(http.MethodPost) || r.IsMethod(http.MethodPut) || r.IsMethod(http.MethodPatch) || r.IsMethod(http.MethodDelete) {
 		if err := h_boot.Cache.Clean(); err != nil {

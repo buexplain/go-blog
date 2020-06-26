@@ -2,7 +2,7 @@ package session
 
 import (
 	"errors"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"net/http"
@@ -31,7 +31,7 @@ type Manager struct {
 }
 
 //返回一个session实例
-func (this *Manager) Get(r *fool.Request) (fool.Session, error) {
+func (this *Manager) Get(r *slim.Request) (slim.Session, error) {
 	var s *sessions.Session
 	var err error
 	if this.CookieStore != nil {

@@ -1,7 +1,7 @@
 package s_captcha
 
 import (
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/mojocn/base64Captcha"
 	"image/color"
 )
@@ -12,12 +12,12 @@ const CaptchaID = "captchaID"
 var store base64Captcha.Store = base64Captcha.DefaultMemStore
 
 //校验验证码
-func Verify(session fool.Session, captcha string) bool {
+func Verify(session slim.Session, captcha string) bool {
 	return store.Verify(session.GetString(CaptchaID), captcha, true)
 }
 
 //生成验证码
-func Generate(session fool.Session, height int, width int, length int) string {
+func Generate(session slim.Session, height int, width int, length int) string {
 	driver := base64Captcha.NewDriverString(
 		height,
 		width,

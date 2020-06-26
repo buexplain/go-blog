@@ -1,7 +1,7 @@
 package s_oauth
 
 import (
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"math/rand"
 	"net/url"
 )
@@ -39,7 +39,7 @@ func setQueryString(uri string, key string, value string) string {
 	return tmp.String()
 }
 
-func RedirectURL(r *fool.Request, def ...string) string {
+func RedirectURL(r *slim.Request, def ...string) string {
 	s := r.Session().GetString("oauthRedirect")
 	if s == "" {
 		if len(def) > 0 {
@@ -51,7 +51,7 @@ func RedirectURL(r *fool.Request, def ...string) string {
 	return s
 }
 
-func OriginURL(r *fool.Request, def ...string) string {
+func OriginURL(r *slim.Request, def ...string) string {
 	s := r.Session().GetString("oauthOrigin")
 	if s == "" {
 		if len(def) > 0 {

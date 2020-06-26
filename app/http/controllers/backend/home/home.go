@@ -3,11 +3,11 @@ package c_home
 import (
 	"github.com/buexplain/go-blog/services/user"
 	s_userRoleRelation "github.com/buexplain/go-blog/services/userRoleRelation"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	user := s_user.IsSignIn(r)
 	userRoleName, err := s_userRoleRelation.GetRoleNameByUserID(user.ID)
 	if err != nil {

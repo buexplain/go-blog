@@ -1,12 +1,12 @@
 package c_profile
 
 import (
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"net/http"
 	"net/http/pprof"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	w.WriteHeader(http.StatusOK)
 	name := r.Param("name", "")
 	if name == "index" {

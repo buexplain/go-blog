@@ -5,7 +5,7 @@ import (
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/boot/config"
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -26,7 +26,7 @@ func init() {
 	l.rw = sync.RWMutex{}
 }
 
-func Start(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Start(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	//判断是否发送过信号

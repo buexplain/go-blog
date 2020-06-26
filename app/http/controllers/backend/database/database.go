@@ -6,7 +6,7 @@ import (
 	"github.com/buexplain/go-blog/dao"
 	s_backup "github.com/buexplain/go-blog/services/backup"
 	s_database "github.com/buexplain/go-blog/services/database"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"sort"
@@ -14,13 +14,13 @@ import (
 	"time"
 )
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	w.Assign("tables", s_database.GetTables())
 	w.Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw()))
 	return w.View(http.StatusOK, "backend/database/index.html")
 }
 
-func SQL(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func SQL(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	sql := r.Form("sql")
 	sql = strings.Trim(sql, " ")
 	sqlType := r.Form("sqlType", "")

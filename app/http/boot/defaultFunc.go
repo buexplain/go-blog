@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buexplain/go-blog/app/http/boot/code"
-	"github.com/buexplain/go-fool"
-	"github.com/buexplain/go-fool/constant"
-	"github.com/buexplain/go-fool/errors"
+	"github.com/buexplain/go-slim"
+	"github.com/buexplain/go-slim/constant"
+	"github.com/buexplain/go-slim/errors"
 	"net/http"
 	"runtime/debug"
 	"strings"
 )
 
 //恐慌恢复
-func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
+func defaultRecoverFunc(ctx *slim.Ctx, a interface{}) {
 	if err, ok := a.(interface{ Error() string }); ok {
 		markerErr := errors.IsMarker(err)
 		if markerErr == nil {
@@ -35,7 +35,7 @@ func defaultRecoverFunc(ctx *fool.Ctx, a interface{}) {
 }
 
 //服务端错误处理
-func defaultServerErrorFunc(ctx *fool.Ctx, markerErr *errors.MrKErr) {
+func defaultServerErrorFunc(ctx *slim.Ctx, markerErr *errors.MrKErr) {
 	ctx.Response().Buffer().Reset()
 	isDebug := ctx.App().Debug()
 	isJSON := (!ctx.Request().AcceptText() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
@@ -91,7 +91,7 @@ func defaultServerErrorFunc(ctx *fool.Ctx, markerErr *errors.MrKErr) {
 }
 
 //客户端错误处理
-func defaultClientErrorFunc(ctx *fool.Ctx, markerErr *errors.MrKErr) {
+func defaultClientErrorFunc(ctx *slim.Ctx, markerErr *errors.MrKErr) {
 	ctx.Response().Buffer().Reset()
 	isJSON := (!ctx.Request().AcceptText() || (ctx.Route() != nil && ctx.Route().HasLabel("json")))
 	var responseErr error
@@ -120,7 +120,7 @@ func defaultClientErrorFunc(ctx *fool.Ctx, markerErr *errors.MrKErr) {
 }
 
 //错误处理
-func defaultErrorFunc(ctx *fool.Ctx, err error) {
+func defaultErrorFunc(ctx *slim.Ctx, err error) {
 	if err == nil {
 		return
 	}
@@ -137,7 +137,7 @@ func defaultErrorFunc(ctx *fool.Ctx, err error) {
 }
 
 //默认路由
-func defaultRoute(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func defaultRoute(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	ctx.Response().Buffer().Reset()
 	ctx.Throw(code.New(code.INVALID_ROUTE))
 	return nil

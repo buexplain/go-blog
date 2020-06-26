@@ -6,7 +6,7 @@ import (
 	m_content "github.com/buexplain/go-blog/models/content"
 	m_tag "github.com/buexplain/go-blog/models/tag"
 	s_services "github.com/buexplain/go-blog/services"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"strings"
 	"time"
 	"xorm.io/builder"
@@ -19,7 +19,7 @@ type Tag struct {
 
 type List []*Tag
 
-func GetList(ctx *fool.Ctx) (counter int64, result List, err error) {
+func GetList(ctx *slim.Ctx) (counter int64, result List, err error) {
 	query := s_services.NewQuery("Tag", ctx)
 	//先获取分页所需的总条数
 	counter = query.Where().Count()

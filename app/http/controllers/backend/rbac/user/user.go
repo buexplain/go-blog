@@ -8,7 +8,7 @@ import (
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/user"
-	"github.com/buexplain/go-fool"
+	"github.com/buexplain/go-slim"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -41,7 +41,7 @@ func init() {
 	})
 }
 
-func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Index(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	query := s_services.NewQuery("User", ctx)
 	//设置查询条件后，先进行分页统计
 	count := query.Where().Count()
@@ -69,13 +69,13 @@ func Index(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/rbac/user/index.html")
 }
 
-func Create(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Create(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	return w.
 		Assign(a_boot.Config.CSRF.Field, csrf.TemplateField(r.Raw())).
 		View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
-func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Store(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_user.User)
 
 	if err := r.FormToStruct(mod); err != nil {
@@ -101,7 +101,7 @@ func Store(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 	return w.JumpBack("操作成功")
 }
 
-func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Edit(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	result := new(m_user.User)
 
 	result.ID = r.ParamInt("id", 0)
@@ -121,7 +121,7 @@ func Edit(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
 		View(http.StatusOK, "backend/rbac/user/create.html")
 }
 
-func Update(ctx *fool.Ctx, w *fool.Response, r *fool.Request) error {
+func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	mod := new(m_user.User)
 	if err := r.FormToStruct(mod); err != nil {
 		return err

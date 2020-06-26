@@ -39,7 +39,7 @@ echo "  https://github.com/buexplain/go-blog" >> ./build/readme.txt
 #复制配置文件
 cp config.example.toml build/config.example.toml
 # 复制安装器
-cp installer-linux.sh build/installer.sh
+cp linux-installer.sh build/installer.sh
 
 # 打开cgo
 export CGO_ENABLED=1

@@ -14,6 +14,10 @@ type Server struct {
 	Port          uint
 	CertFile      string
 	KeyFile       string
+	//http请求的表单编码类型为multipart/form-data的内容解析到内存中的大小，超出会解析到磁盘
+	FormMaxMemory  int64
+	//http请求的body的大小限制
+	BodyMaxBytes   int64
 	ReadTimeout   Duration
 	WriteTimeout  Duration
 	CloseTimedOut Duration
