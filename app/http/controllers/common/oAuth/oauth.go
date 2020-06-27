@@ -11,6 +11,7 @@ import (
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	s_user "github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-slim"
+	"github.com/buexplain/go-slim/errors"
 	"github.com/gorilla/csrf"
 	"net/http"
 )
@@ -71,7 +72,7 @@ func Register(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	nickname := r.Form("nickname")
 	userInfo, ok := r.Session().Get("oauthUserInfo").(s_oauth.UserInfo)
 	if !ok {
-		return fmt.Errorf("未找到oauth信息")
+		return errors.MarkClient(fmt.Errorf("未找到oauth信息"))
 	}
 	status := m_oauth.Status(r.Session().GetInt("oauthUserStatus"))
 	user, err := s_user.RegisterByOauth(account, nickname, status, userInfo)
@@ -96,7 +97,7 @@ func Bind(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	password := r.Form("password")
 	userInfo, ok := r.Session().Get("oauthUserInfo").(s_oauth.UserInfo)
 	if !ok {
-		return fmt.Errorf("未找到oauth信息")
+		return errors.MarkClient(fmt.Errorf("未找到oauth信息"))
 	}
 	status := m_oauth.Status(r.Session().GetInt("oauthUserStatus"))
 	user, err := s_user.BindByOauth(account, password, status, userInfo)

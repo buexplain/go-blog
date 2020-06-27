@@ -5,7 +5,6 @@ import (
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
 	"github.com/cloudflare/tableflip"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -20,7 +19,8 @@ func Run() {
 	//初始化重启组件
 	upg, err := tableflip.New(tableflip.Options{})
 	if err != nil {
-		log.Fatalln(err)
+		a_boot.Logger.Error(err.Error())
+		os.Exit(1)
 	}
 	defer upg.Stop()
 
@@ -33,7 +33,7 @@ func Run() {
 		for range sigCH {
 			err := upg.Upgrade()
 			if err != nil {
-				log.Println("Upgrade failed:", err)
+				a_boot.Logger.ErrorF("upgrade failed: %w", err)
 			}
 		}
 	}()
@@ -43,7 +43,8 @@ func Run() {
 	var ln net.Listener
 	ln, err = upg.Listen("tcp", addr)
 	if err != nil {
-		log.Fatalln("Can't listen:", err)
+		a_boot.Logger.ErrorF("can't listen: %w", err)
+		os.Exit(1)
 	}
 
 	//初始化http
@@ -55,13 +56,13 @@ func Run() {
 	go func() {
 		if a_boot.Config.App.Server.CertFile != "" && a_boot.Config.App.Server.KeyFile != "" {
 			go NewRedirectHttps()
-			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
+			a_boot.Logger.Info("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
 			if err := server.ServeTLS(ln, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.CertFile), filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.KeyFile)); err != nil && err != http.ErrServerClosed {
 				a_boot.Logger.Error(err.Error())
 				os.Exit(1)
 			}
 		} else {
-			log.Println("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
+			a_boot.Logger.Info("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "http://" + addr + "/backend/sign")
 			if err := server.Serve(ln); err != nil && err != http.ErrServerClosed {
 				a_boot.Logger.Error(err.Error())
 				os.Exit(1)
@@ -82,13 +83,13 @@ func Run() {
 
 	//设定进程结束超时
 	time.AfterFunc(time.Duration(a_boot.Config.App.Server.CloseTimedOut.Nanoseconds()), func() {
-		a_boot.Logger.Error("Graceful shutdown timed out")
+		a_boot.Logger.Error("graceful shutdown timed out")
 		os.Exit(1)
 	})
 
 	//关闭http
 	if err := server.Shutdown(context.Background()); err != nil {
-		a_boot.Logger.Error("Graceful shutdown err: " + err.Error())
+		a_boot.Logger.Error("graceful shutdown err: " + err.Error())
 	}
 
 	//等待事件调度器结束

@@ -147,16 +147,17 @@ type CSRFErrorHandler struct {
 }
 
 func (this *CSRFErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	isJSON := strings.Contains(r.Header.Get(constant.HeaderAccept), constant.MIMEApplicationJSON)
-	if isJSON {
+	isText := strings.Contains(r.Header.Get(constant.HeaderAccept), constant.MIMETextHTML) ||
+		strings.Contains(r.Header.Get(constant.HeaderAccept), constant.MIMETextPlain)
+	if isText {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(code.Text(code.INVALID_CSRF)))
+	} else {
 		var content []byte
-		content, _ = json.Marshal(map[string]interface{}{"code": code.INVALID_CSRF, "message": code.New(code.INVALID_CSRF), "data": ""})
+		content, _ = json.Marshal(map[string]interface{}{"code": code.INVALID_CSRF, "message": code.Text(code.INVALID_CSRF), "data": ""})
 		w.Header().Set(constant.HeaderContentType, constant.MIMEApplicationJSONCharsetUTF8)
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(content)
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte(code.Text(code.INVALID_CSRF)))
 	}
 }
 

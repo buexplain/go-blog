@@ -3,10 +3,12 @@ package c_sign
 import (
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
+	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/services/captcha"
 	s_oauth "github.com/buexplain/go-blog/services/oauth"
 	"github.com/buexplain/go-blog/services/user"
 	"github.com/buexplain/go-slim"
+	"github.com/buexplain/go-slim/errors"
 	"github.com/buexplain/go-validator"
 	"github.com/gorilla/csrf"
 	"net/http"
@@ -41,7 +43,7 @@ func In(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	}
 	mod := &In{}
 	if err := r.FormToStruct(mod); err != nil {
-		return w.JumpBack(err)
+		return errors.MarkClient(err)
 	}
 
 	vClone := v.Clone()
@@ -63,16 +65,15 @@ func In(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	if r, err := vClone.Validate(mod); err != nil {
 		return err
 	} else if !r.IsEmpty() {
-		return w.JumpBack(r)
+		return w.Error(code.INVALID_ARGUMENT, r.ToSimpleString())
 	}
 
 	var err error
 	_, err = s_user.OfficialSignIn(ctx.Request().Session(), mod.Account, mod.Password)
 	if err != nil {
-		return w.JumpBack(err)
+		return err
 	}
-
-	return w.Redirect(http.StatusFound, "/backend/skeleton")
+	return w.Success()
 }
 
 //退出登录

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	a_boot "github.com/buexplain/go-blog/app/boot"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -28,7 +27,8 @@ func Run() {
 	addr := a_boot.Config.App.Server.IP + ":" + strconv.Itoa(int(a_boot.Config.App.Server.Port))
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatalln(fmt.Errorf("can't create new listener: %w", err))
+		a_boot.Logger.Error(fmt.Errorf("can't create new listener: %w", err).Error())
+		os.Exit(1)
 	}
 
 	//初始化http

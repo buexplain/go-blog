@@ -24,7 +24,7 @@ func RbacCheck(ctx *slim.Ctx, w *slim.Response, r *slim.Request) {
 	}
 	node := s_node.GetByURL(ctx.Route().GetPath(), ctx.Request().Raw().Method)
 	if node == nil {
-		ctx.Throw(code.NewF(code.SERVER, "路由 %s 没有写入到Node表", ctx.Route().GetPath()))
+		ctx.Throw(code.NewF(code.SERVER, "路由 %s %s 没有写入到Node表", ctx.Request().Raw().Method, ctx.Route().GetPath()))
 	} else {
 		ctx.Throw(code.New(code.INVALID_AUTH))
 	}

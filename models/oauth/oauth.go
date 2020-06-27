@@ -18,3 +18,5 @@ type Oauth struct {
 	//第三方类型
 	Status Status `xorm:"INTEGER"`
 }
+
+type List []Oauth

@@ -42,7 +42,6 @@
                 <th>身份</th>
                 <th>状态</th>
                 <th>创建时间</th>
-                <th>更新时间</th>
                 <th>登录时间</th>
                 <th>操作</th>
             </tr>
@@ -57,10 +56,10 @@
                     <td>{{$v.Identity}}</td>
                     <td>{{$v.Status}}</td>
                     <td>{{$v.CreatedAt}}
-                    <td>{{$v.UpdatedAt}}</td>
                     <td>{{$v.LastTime}}</td>
-                    <td style="width:120px;">
+                    <td style="width:200px;">
                         <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/edit/{{$v.ID}}">编辑</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-warm" onclick="aouthList('“{{$v.Account}}”的三方账号',{{$v.ID}})" href="javascript:;">三方账号</a>
                         {{if eq $v.Identity 1}}
                         <a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/user/role/{{$v.ID}}">角色</a>
                         {{end}}
@@ -96,5 +95,19 @@
                 }
             });
         });
+
+        function aouthList(title, id) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer;
+                var index = layer.open({
+                    type: 2,
+                    title: title,
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['80%', '80%'],
+                    content: '/backend/rbac/user/oauth/'+id
+                });
+            });
+        }
     </script>
 {{end}}

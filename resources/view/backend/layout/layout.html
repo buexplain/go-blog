@@ -29,11 +29,17 @@
         }
         return o.value;
     }
-    //锁定鼠标到页面的第一个输入框
+    //锁定焦点到第一个空值的input框
     layui.use('jquery', function() {
         var $ = layui.jquery;
         $(function () {
-            $('input').eq(0).focus();
+            var input = $(':input[type="text"]');
+            for(var i in input) {
+                if(input[i].value.length === 0) {
+                    input[i].focus();
+                    break;
+                }
+            }
         });
     });
 </script>

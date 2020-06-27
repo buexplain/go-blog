@@ -40,7 +40,7 @@ func (this List) Get(key string) string {
 			return v.Value
 		}
 	}
-	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group,".", key))
+	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group, ".", key))
 }
 
 func (this List) GetToHTML(key string) template.HTML {
@@ -49,7 +49,7 @@ func (this List) GetToHTML(key string) template.HTML {
 			return template.HTML(v.Value)
 		}
 	}
-	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group,".", key))
+	panic(code.NewF(code.INVALID_CONFIG, "请在管理后台设置: %s%s%s", this.group, ".", key))
 }
 
 func GetByGroup(groupName string) *List {

@@ -5,6 +5,7 @@ import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/app/http/boot/code"
 	"github.com/buexplain/go-blog/dao"
+	m_oauth "github.com/buexplain/go-blog/models/oauth"
 	"github.com/buexplain/go-blog/models/user"
 	"github.com/buexplain/go-blog/services"
 	"github.com/buexplain/go-blog/services/user"
@@ -162,4 +163,21 @@ func Update(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
 	}
 
 	return w.Jump("/backend/rbac/user", "操作成功")
+}
+
+//列出用户的三方账号信息
+func OauthList(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
+	id := r.ParamInt("id", 0)
+	result := &m_oauth.List{}
+	dao.Dao.Where("UserID=?", id).Find(result)
+	return w.
+		Assign("result", result).
+		View(http.StatusOK, "backend/rbac/user/oauth.html")
+}
+
+//删除用户的三方账号绑定
+func OauthDestroy(ctx *slim.Ctx, w *slim.Response, r *slim.Request) error {
+	id := r.ParamInt("id", 0)
+	dao.Dao.Where("ID=?", id).Delete(&m_oauth.Oauth{})
+	return w.Success()
 }

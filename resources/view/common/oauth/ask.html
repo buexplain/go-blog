@@ -107,7 +107,7 @@
                         验证码
                     </label>
                     <div class="layui-input-inline" style="width: 76px;" >
-                        <input type="text" name="captchaVal" value="" required lay-verify="required" autocomplete="off" class="layui-input">
+                        <input type="text" maxlength="4" minlength="4" name="captchaVal" value="" required lay-verify="required" autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-input-inline" style="width: auto;margin: 0;" id="j-captcha">
                         <a href="javascript:;" onclick="getCaptcha()" style="line-height: 38px;">点击获取验证码</a>
@@ -166,6 +166,9 @@
             url: "/common/captcha",
             success: function(json) {
                 $("#j-captcha").html('<img onclick="getCaptcha()" src="'+json.data+'" alt="验证码">');
+                var o = $(':input[name="captchaVal"]');
+                o.val('');
+                o.focus();
             }
         });
     }
@@ -178,10 +181,21 @@
         buttonList.on('click', function () {
             $("#j-ask").hide();
             $(".login").hide();
-            $("#"+$(this).attr('data-ask')).show();
+            var o = $("#"+$(this).attr('data-ask'));
+            o.show();
+            //锁定焦点到第一个空值的input框
+            $(function () {
+                var input = o.find(':input[type="text"]');
+                for(var i in input) {
+                    if(input[i].value.length === 0) {
+                        input[i].focus();
+                        break;
+                    }
+                }
+            });
         });
         //提交表单
-        function submit(data) {
+        function submit(that, data) {
             var loading = layui.layer.load(1, {
                 shade: [0.1, '#fff']
             });
@@ -190,17 +204,20 @@
                 if(json.code === 0) {
                     window.location.href = json.data.redirectURL;
                 }else {
-                    layer.alert(json.message, {icon: 2, shade: [0.1, '#fff']});
+                    layer.tips(json.message, that, {
+                        tips: [2, '#FFB800'],
+                        time:1500
+                    });
                 }
             });
         }
         //绑定提交事件
         layui.form.on('submit(bind)', function(data) {
-            submit(data);
+            submit(this, data);
             return false;
         });
         layui.form.on('submit(register)', function(data) {
-            submit(data);
+            submit(this, data);
             return false;
         });
         //判断是否已经登录

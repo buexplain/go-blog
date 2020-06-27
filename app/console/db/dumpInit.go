@@ -41,7 +41,7 @@ func init() {
 			if err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				defer func() {
 					_ = memoryDao.Close()
 				}()
@@ -63,7 +63,7 @@ func init() {
 			if err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				for _, v := range nodeList {
 					if _, err := memoryDao.Insert(v); err != nil {
 						a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
@@ -79,10 +79,10 @@ func init() {
 			if _, err := memoryDao.Insert(adminRole); err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				roleNodeRelationList := make(m_roleNodeRelation.List, 0, len(nodeList))
-				for _,v := range nodeList {
-					roleNodeRelationList = append(roleNodeRelationList, m_roleNodeRelation.RoleNodeRelation{RoleID:adminRole.ID, NodeID:v.ID})
+				for _, v := range nodeList {
+					roleNodeRelationList = append(roleNodeRelationList, m_roleNodeRelation.RoleNodeRelation{RoleID: adminRole.ID, NodeID: v.ID})
 				}
 				if _, err := memoryDao.Insert(roleNodeRelationList); err != nil {
 					a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
@@ -96,12 +96,12 @@ func init() {
 			if _, err := memoryDao.Insert(guestRole); err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				roleNodeRelationList := make(m_roleNodeRelation.List, 0, len(nodeList))
 				denyNodeList := map[string]bool{
-					"/backend/backup/start":true,
-					"/backend/backup/download":true,
-					"/backend/backup/delete":true,
+					"/backend/backup/start":    true,
+					"/backend/backup/download": true,
+					"/backend/backup/delete":   true,
 				}
 				for _, v := range nodeList {
 					//跳过非 GET 的 路由
@@ -112,7 +112,7 @@ func init() {
 					if _, ok := denyNodeList[v.URL]; ok {
 						continue
 					}
-					roleNodeRelationList = append(roleNodeRelationList, m_roleNodeRelation.RoleNodeRelation{RoleID:guestRole.ID, NodeID:v.ID})
+					roleNodeRelationList = append(roleNodeRelationList, m_roleNodeRelation.RoleNodeRelation{RoleID: guestRole.ID, NodeID: v.ID})
 				}
 				if _, err := memoryDao.Insert(roleNodeRelationList); err != nil {
 					a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
@@ -134,7 +134,7 @@ func init() {
 			if _, err := memoryDao.Insert(adminUser); err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				userRoleRelation := m_userRoleRelation.UserRoleRelation{}
 				userRoleRelation.UserID = adminUser.ID
 				userRoleRelation.RoleID = adminRole.ID
@@ -157,7 +157,7 @@ func init() {
 			if _, err := memoryDao.Insert(guestUser); err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				userRoleRelation := m_userRoleRelation.UserRoleRelation{}
 				userRoleRelation.UserID = guestUser.ID
 				userRoleRelation.RoleID = guestRole.ID
@@ -174,13 +174,13 @@ func init() {
 			if _, err := memoryDao.Insert(siteInfo); err != nil {
 				a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 				os.Exit(1)
-			}else {
+			} else {
 				siteInfoItem := m_configItem.List{}
-				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID:siteInfo.ID, Name:"站点名称", Key:"Name", Value:"梦想星辰大海"})
-				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID:siteInfo.ID, Name:"站点关键词", Key:"Keywords", Value:"博客,个人博客,梦想星辰大海"})
-				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID:siteInfo.ID, Name:"站点描述", Key:"Description", Value:"个人的博客，记录所思所想。"})
-				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID:siteInfo.ID, Name:"底部信息", Key:"Footer", Value:"© "+time.Now().Format("2006")})
-				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID:siteInfo.ID, Name:"统计代码", Key:"Statistical", Value:""})
+				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID: siteInfo.ID, Name: "站点名称", Key: "Name", Value: "梦想星辰大海"})
+				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID: siteInfo.ID, Name: "站点关键词", Key: "Keywords", Value: "博客,个人博客,梦想星辰大海"})
+				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID: siteInfo.ID, Name: "站点描述", Key: "Description", Value: "个人的博客，记录所思所想。"})
+				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID: siteInfo.ID, Name: "底部信息", Key: "Footer", Value: "© " + time.Now().Format("2006")})
+				siteInfoItem = append(siteInfoItem, &m_configItem.ConfigItem{GroupID: siteInfo.ID, Name: "统计代码", Key: "Statistical", Value: ""})
 				if _, err := memoryDao.Insert(siteInfoItem); err != nil {
 					a_boot.Logger.ErrorF("导出数据库到./database/init.sql失败: %s", err)
 					os.Exit(1)
@@ -217,4 +217,3 @@ func init() {
 	}
 	dbCmd.AddCommand(dumpInitCmd)
 }
-

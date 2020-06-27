@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/buexplain/go-blog/app/boot"
 	"github.com/buexplain/go-blog/dao"
+	m_user "github.com/buexplain/go-blog/models/user"
 	s_services "github.com/buexplain/go-blog/services"
 	"github.com/spf13/cobra"
 	"os"
@@ -19,6 +20,10 @@ func init() {
 			//同步模型到数据库
 			if err := syncModels(dao.Dao); err != nil {
 				a_boot.Logger.ErrorF("导入 ./database/init.sql 文件到数据库失败: %s", err)
+				os.Exit(1)
+			}
+			if has, err := dao.Dao.Limit(0, 1).Get(&m_user.User{}); err == nil && has {
+				a_boot.Logger.Error("导入 ./database/init.sql 文件到数据库失败: 数据库已存在相关数据")
 				os.Exit(1)
 			}
 			fpath := "./database/init.sql"

@@ -60,12 +60,13 @@ var submit = {
         if(ctx[1] === null) {
             ctx = scanCtx(window.parent, callback);
         }
-        if(ctx[1] === null || typeof ctx[1] !== 'function') {
-            throw 'submit._callUserFunc not found function: '+callback;
+        if(ctx[1] === null) {
+           eval(callback);
+        }else if(typeof ctx[1] === 'function') {
+            var args = Array.apply(null, arguments);
+            args.shift();
+            return ctx[1].apply(ctx[0], args);
         }
-        var args = Array.apply(null, arguments);
-        args.shift();
-        return ctx[1].apply(ctx[0], args);
     },
 
     /**

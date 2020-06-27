@@ -65,6 +65,8 @@ func backend(mux *slim.Mux) {
 				c_official_user.Edit,
 				c_official_user.Update,
 			)
+			mux.Get("user/oauth/:id", c_official_user.OauthList)
+			mux.Delete("user/oauth/:id", c_official_user.OauthDestroy)
 			mux.Any("user/role/:id", c_official_user.EditRole, http.MethodGet, http.MethodPost)
 
 			//角色管理

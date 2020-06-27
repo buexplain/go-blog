@@ -1,0 +1,43 @@
+{{define "extend"}}
+    backend/layout/layout.html
+{{end}}
+
+{{define "title"}}用户管理-三方账号{{end}}
+
+{{define "css"}}{{end}}
+
+{{define "content"}}
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>账号</th>
+            <th>昵称</th>
+            <th>来源</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $_, $v := .result}}
+            <tr>
+                <td>{{$v.ID}}</td>
+                <td>{{$v.Account}}</td>
+                <td>{{$v.Nickname}}</td>
+                <td>{{$v.Status}}</td>
+                <td>{{$v.CreatedAt}}
+                <td>
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="submit.confirm(this, 'ajax')" data-call-success="window.location.reload" data-_method="delete" data-url="/backend/rbac/user/oauth/{{$v.ID}}" href="javascript:;">删除</a>
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+{{end}}
+
+{{define "js"}}
+    <script>
+        //渲染表单
+        layui.use('form', function() {});
+    </script>
+{{end}}

@@ -73,7 +73,7 @@
         <legend>
             登 录
         </legend>
-        <form class="layui-form" action="" method="post">
+        <form class="layui-form" action="/backend/sign" method="post">
             <div class="layui-form-item">
                 <label class="layui-form-label">
                     账 号
@@ -97,7 +97,7 @@
                     验证码
                 </label>
                 <div class="layui-input-inline" style="width: 76px;" >
-                    <input type="text" name="captchaVal" value="" requiredx lay-verify="required" autocomplete="off" class="layui-input">
+                    <input type="text" maxlength="4" minlength="4" name="captchaVal" value="" requiredx lay-verify="required" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-input-inline" style="width: auto;margin: 0;" id="j-captcha">
                     <a href="javascript:;" onclick="getCaptcha()" style="line-height: 38px;">点击获取验证码</a>
@@ -125,14 +125,42 @@
             url: "/common/captcha",
             success: function(json) {
                 $("#j-captcha").html('<img onclick="getCaptcha()" src="'+json.data+'" alt="验证码">');
+                var o = $(':input[name="captchaVal"]');
+                o.val('');
+                o.focus();
             }
         });
     }
 
     layui.use(['form', 'jquery'], function() {
+        var $ = layui.jquery;
+        ////锁定焦点到第一个空值的input框
+        $(function () {
+            var input = $(':input[type="text"]');
+            for(var i in input) {
+                if(input[i].value.length === 0) {
+                    input[i].focus();
+                    break;
+                }
+            }
+        });
         layui.form.on('submit(signIn)', function(data) {
-            layer.msg('登录中……');
-            return true;
+            var that = this;
+            var loading = layui.layer.load(1, {
+                shade: [0.1, '#fff']
+            });
+            layui.jquery.post(data.form.action, data.field, function (json) {
+                layui.layer.close(loading);
+                if(json.code === 0) {
+                    window.location.href = '/backend/skeleton';
+                }else {
+                    layer.tips(json.message, that, {
+                        tips: [2, '#FFB800'],
+                        time:1500
+                    });
+                }
+            });
+            return false;
         });
     });
 </script>

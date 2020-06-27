@@ -156,7 +156,7 @@ func RegisterByOauth(account string, nickname string, status m_oauth.Status, use
 	user.Nickname = nickname
 	if m_user.Identity(a_boot.Config.Business.OAuth.User.Identity).String() == m_models.EnumUNKNOWN {
 		user.Identity = m_user.IdentityCitizen
-	}else {
+	} else {
 		user.Identity = m_user.Identity(a_boot.Config.Business.OAuth.User.Identity)
 	}
 	user.Password = password
