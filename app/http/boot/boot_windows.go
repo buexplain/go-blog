@@ -38,9 +38,17 @@ func Run() {
 		ReadTimeout:  time.Duration(a_boot.Config.App.Server.ReadTimeout.Nanoseconds()),
 		WriteTimeout: time.Duration(a_boot.Config.App.Server.WriteTimeout.Nanoseconds()),
 	}
+	//开启https后需要开启80端口做非https转发到https
+	var redirectHttps *http.Server
 	go func() {
 		if a_boot.Config.App.Server.CertFile != "" && a_boot.Config.App.Server.KeyFile != "" {
-			go NewRedirectHttps()
+			redirectHttps = NewRedirectHttps()
+			go func() {
+				<- time.After(time.Second*1)
+				if err := redirectHttps.ListenAndServe(); err != nil && err != http.ErrServerClosed  {
+					a_boot.Logger.Error(err.Error())
+				}
+			}()
 			a_boot.Logger.Info("server running [pid " + strconv.Itoa(os.Getpid()) + "] " + "https://" + addr + "/backend/sign")
 			if err := server.ServeTLS(ln, filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.CertFile), filepath.Join(a_boot.ROOT_PATH, a_boot.Config.App.Server.KeyFile)); err != nil && err != http.ErrServerClosed {
 				a_boot.Logger.Error(err.Error())
@@ -64,6 +72,13 @@ func Run() {
 			a_boot.Logger.Error("shutdown timed out")
 			os.Exit(1)
 		})
+
+		//优先关闭跳转服务器
+		if redirectHttps != nil {
+			if err := redirectHttps.Shutdown(context.Background()); err != nil {
+				a_boot.Logger.Error("shutdown redirect server err: " + err.Error())
+			}
+		}
 
 		//关闭http
 		if err := server.Shutdown(context.Background()); err != nil {

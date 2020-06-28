@@ -44,25 +44,19 @@ windows-build.bat
 
 ## 其它
 
-### 二次开发
-
-#### 制作`database/init.sql`注意事项
+### 制作`database/init.sql`注意事项
 
 1. 权限节点是根据现有的权限节点导出而成的。
 2. `配置管理`的数据写在`artisan.exe db dumpInit -h`命令代码里。
 3. 用户、角色的数据写在`artisan.exe db dumpInit -h`命令代码里。
 
-#### 相关命令
-
 ```bash
-# 同步表结构
-go build -o artisan.exe artisan.go && artisan.exe db sync
+# 导入 database/init.sql
+go build -o artisan.exe artisan.go && artisan.exe db importInit
 # 导出 database/init.sql
 go build -o artisan.exe artisan.go && artisan.exe db dumpInit
-# 导入  database/init.sql
-go build -o artisan.exe artisan.go && artisan.exe db importInit
-# 静态文件打包
-go build -o artisan.exe artisan.go && artisan.exe asset pack
+# 同步表结构
+go build -o artisan.exe artisan.go && artisan.exe db sync
 ```
 
 ### 引用本地包

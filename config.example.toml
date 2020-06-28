@@ -17,7 +17,7 @@ Debug = false
 
 [App.Server]
 # 如果配置为空，会自动获取本机公网ip地址
-IP ="0.0.0.0"
+IP =""
 Port = 80
 # 测试环境可用用 https://github.com/FiloSottile/mkcert 生成测试的证书
 CertFile = ""
@@ -27,10 +27,10 @@ FormMaxMemory = 1048576
 # http请求的body的大小限制 单位字节
 BodyMaxBytes = 2097152
 # 读取http请求的时间
-ReadTimeout = "2s"
+ReadTimeout = "3s"
 # http响应的时间
-WriteTimeout = "2s"
-# 进程收到信号后，服务强制关闭时间
+WriteTimeout = "3s"
+# 进程收到SIGHUP信号后，延迟一定时间服务强制关闭
 CloseTimedOut = "5s"
 
 # 事件调度器配置

@@ -20,16 +20,16 @@ func (*RedirectHttps) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			r.URL.Host = r.Host
 		}
 	}
-	http.Redirect(w, r, r.URL.String(), http.StatusFound)
+	http.Redirect(w, r, r.URL.String(), http.StatusMovedPermanently)
 }
 
 //开启https后需要开启80端口做非https转发到https
-func NewRedirectHttps() {
+func NewRedirectHttps() *http.Server {
 	server := &http.Server{
 		Addr:         a_boot.Config.App.Server.IP + ":80",
 		WriteTimeout: time.Millisecond * 300,
 		ReadTimeout:  time.Millisecond * 500,
 		Handler:      &RedirectHttps{},
 	}
-	a_boot.Logger.Error(server.ListenAndServe().Error())
+	return server
 }
