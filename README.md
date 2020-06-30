@@ -14,8 +14,8 @@ chmod u+x ./blog.bin
 ./blog.bin
 ```
 > 请查看`config.toml`的相关配置，做出必要的变更
-> 账号：admin
-> 密码：123456
+> 管理员：admin 123456
+> 来宾：guest 123456
 
 ## 发布程序
 

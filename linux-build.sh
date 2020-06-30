@@ -32,7 +32,7 @@ echo "  2、执行 ./blog.bin 不要关闭它，屏幕会提示网址。" >> ./b
 echo "  3、打开浏览器，输入 blog.bin 提示的网址，有些云服务器和虚拟机，提示的网址是内网ip，请替换成公网ip。" >> ./build/readme.txt
 echo "  4、账号 admin 密码 123456" >> ./build/readme.txt
 echo "三、生产环境部署" >> ./build/readme.txt
-echo "  nohup ./blog.bin 1>/dev/null 2>error.log &" >> ./build/readme.txt
+echo "  nohup ./blog.bin 1>info.log 2>error.log &" >> ./build/readme.txt
 echo "四、更多信息" >> ./build/readme.txt
 echo "  https://github.com/buexplain/go-blog" >> ./build/readme.txt
 
