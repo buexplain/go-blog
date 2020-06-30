@@ -99,9 +99,16 @@ func init() {
 			} else {
 				roleNodeRelationList := make(m_roleNodeRelation.List, 0, len(nodeList))
 				denyNodeList := map[string]bool{
+					//禁止备份数据操作
 					"/backend/backup/start":    true,
+					//禁止下载备份的数据
 					"/backend/backup/download": true,
-					"/backend/backup/delete":   true,
+					//禁止查看config.toml
+					"/backend/server/reset/index": true,
+					//禁止下载系统日志
+					"/backend/server/sysLog/download": true,
+					//禁止查看系统日志
+					"/backend/server/sysLog/show": true,
 				}
 				for _, v := range nodeList {
 					//跳过非 GET 的 路由

@@ -57,9 +57,9 @@
                     <td>{{$v.Status}}</td>
                     <td>{{$v.CreatedAt}}
                     <td>{{$v.LastTime}}</td>
-                    <td style="width:200px;">
+                    <td>
                         <a class="layui-btn layui-btn-sm" href="/backend/rbac/user/edit/{{$v.ID}}">编辑</a>
-                        <a class="layui-btn layui-btn-sm layui-btn-warm" onclick="aouthList('“{{$v.Account}}”的三方账号',{{$v.ID}})" href="javascript:;">三方账号</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-warm" onclick="authList('“{{$v.Account}}”的三方账号',{{$v.ID}})" href="javascript:;">三方账号</a>
                         {{if eq $v.Identity 1}}
                         <a class="layui-btn layui-btn-sm layui-btn-normal" href="/backend/rbac/user/role/{{$v.ID}}">角色</a>
                         {{end}}
@@ -96,7 +96,7 @@
             });
         });
 
-        function aouthList(title, id) {
+        function authList(title, id) {
             layui.use(['layer'], function () {
                 var layer = layui.layer;
                 var index = layer.open({
