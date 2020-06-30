@@ -30,6 +30,7 @@ func NewRedirectHttps() *http.Server {
 		WriteTimeout: time.Millisecond * 300,
 		ReadTimeout:  time.Millisecond * 500,
 		Handler:      &RedirectHttps{},
+		ErrorLog: NullLogger(),
 	}
 	return server
 }

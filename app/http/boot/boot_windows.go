@@ -37,6 +37,7 @@ func Run() {
 		Handler:      Server,
 		ReadTimeout:  time.Duration(a_boot.Config.App.Server.ReadTimeout.Nanoseconds()),
 		WriteTimeout: time.Duration(a_boot.Config.App.Server.WriteTimeout.Nanoseconds()),
+		ErrorLog: NullLogger(),
 	}
 	//开启https后需要开启80端口做非https转发到https
 	var redirectHttps *http.Server
