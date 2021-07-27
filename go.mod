@@ -11,7 +11,7 @@ require (
 	github.com/buexplain/go-flog v0.0.0-20200228033642-65fa41160b1c
 	github.com/buexplain/go-slim v0.0.0-20200626092415-57fa29bd0f00
 	github.com/buexplain/go-validator v0.0.0-20191215080829-cf8c8f6b7fa2
-	github.com/cloudflare/tableflip v1.2.0
+	github.com/cloudflare/tableflip v1.2.1
 	github.com/djherbis/fscache v0.10.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
